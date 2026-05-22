@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Отзывы | BuildHouse</title>
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:#f5f6fa;
+
+    color:#222;
+}
+
+.container{
+
+    width:90%;
+
+    max-width:1350px;
+
+    margin:auto;
+}
+
+
+
+/* HEADER */
+
+.header{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    background:rgba(255,255,255,0.95);
+
+    backdrop-filter:blur(12px);
+
+    border-bottom:1px solid #eee;
+
+    z-index:1000;
+}
+
+.header-content{
+
+    height:90px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+.logo{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit; /* наследует цвет от .logo */
+    display: inline-block; /* или block, если нужно */
+}
+
+.nav{
+
+    display:flex;
+
+    gap:35px;
+}
+
+.nav a{
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:500;
+}
+
+.login-btn{
+
+    background:#ffb547;
+
+    padding:14px 24px;
+
+    border-radius:16px;
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:600;
+}
+
+
+
+/* HERO */
+
+.hero{
+
+    padding-top:170px;
+
+    padding-bottom:80px;
+}
+
+.hero-box{
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1400');
+
+    background-size:cover;
+
+    background-position:center;
+
+    border-radius:42px;
+
+    padding:120px 70px;
+
+    color:white;
+}
+
+.hero-subtitle{
+
+    color:#ffb547;
+
+    margin-bottom:18px;
+
+    font-weight:600;
+}
+
+.hero-box h1{
+
+    font-size:72px;
+
+    line-height:1.05;
+
+    margin-bottom:28px;
+}
+
+.hero-text{
+
+    font-size:19px;
+
+    line-height:1.8;
+
+    max-width:700px;
+}
+
+
+
+/* REVIEWS */
+
+.reviews{
+
+    padding-bottom:120px;
+}
+
+.reviews-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:40px;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+}
+
+.rating-box{
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:28px;
+
+    min-width:260px;
+}
+
+.rating-box h2{
+
+    font-size:60px;
+
+    margin-bottom:10px;
+}
+
+.rating-stars{
+
+    color:#ffb547;
+
+    font-size:24px;
+
+    margin-bottom:10px;
+}
+
+
+
+/* AUTH MESSAGE */
+
+.auth-warning{
+
+    background:#fff3df;
+
+    color:#a86500;
+
+    padding:22px 28px;
+
+    border-radius:24px;
+
+    margin-bottom:40px;
+
+    font-weight:600;
+}
+
+
+
+/* REVIEW FORM */
+
+.review-form{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:40px;
+
+    margin-bottom:60px;
+}
+
+.review-form h2{
+
+    margin-bottom:25px;
+
+    font-size:38px;
+}
+
+.stars{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:25px;
+}
+
+.star{
+
+    font-size:36px;
+
+    cursor:pointer;
+
+    color:#ddd;
+
+    transition:0.2s;
+}
+
+.star.active{
+
+    color:#ffb547;
+}
+
+.review-form input,
+.review-form textarea{
+
+    width:100%;
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#f5f5f5;
+
+    margin-bottom:18px;
+
+    font-size:16px;
+}
+
+.review-form textarea{
+
+    min-height:180px;
+
+    resize:none;
+}
+
+.file-upload{
+
+    margin-bottom:24px;
+}
+
+.review-form button{
+
+    padding:20px 30px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:#ffb547;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* REVIEWS GRID */
+
+.reviews-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(350px,1fr));
+
+    gap:28px;
+}
+
+.review-card{
+
+    background:white;
+
+    border-radius:32px;
+
+    overflow:hidden;
+}
+
+.review-image{
+
+    height:260px;
+
+    background-size:cover;
+
+    background-position:center;
+}
+
+.review-content{
+
+    padding:30px;
+}
+
+.review-user{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    margin-bottom:20px;
+}
+
+.user-avatar{
+
+    width:58px;
+
+    height:58px;
+
+    border-radius:50%;
+
+    background:#ffb547;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:800;
+
+    font-size:20px;
+}
+
+.review-name{
+
+    font-size:22px;
+
+    font-weight:700;
+}
+
+.review-stars{
+
+    color:#ffb547;
+
+    margin-top:5px;
+}
+
+.review-text{
+
+    color:#666;
+
+    line-height:1.9;
+}
+
+
+
+/* CTA */
+
+.cta{
+
+    padding-bottom:120px;
+}
+
+.cta-box{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:60px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:60px;
+}
+
+.cta-left h2{
+
+    font-size:54px;
+
+    line-height:1.1;
+
+    margin-bottom:24px;
+}
+
+.cta-left p{
+
+    line-height:1.8;
+
+    color:#666;
+}
+
+.cta-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.cta-form input,
+.cta-form textarea{
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#f5f5f5;
+
+    font-size:16px;
+}
+
+.cta-form textarea{
+
+    min-height:150px;
+
+    resize:none;
+}
+
+.cta-form button{
+
+    padding:20px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:#ffb547;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* FOOTER */
+
+.footer{
+
+    background:#111;
+
+    color:white;
+
+    padding:60px 0;
+}
+
+.footer-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:50px;
+}
+
+
+
+/* ADAPTIVE */
+
+@media(max-width:992px){
+
+    .cta-box{
+
+        grid-template-columns:1fr;
+    }
+
+    .hero-box h1{
+
+        font-size:52px;
+    }
+
+    .nav{
+
+        display:none;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero-box{
+
+        padding:70px 40px;
+    }
+
+    .hero-box h1{
+
+        font-size:42px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header class="header">
+
+<div class="container header-content">
+
+<div class="logo">
+    <a href="index.html">BuildHouse</a>
+</div>
+
+<nav class="nav">
+
+<a href="services.html">Услуги</a>
+<a href="portfolio.html">Портфолио</a>
+<a href="prices.html">Цены</a>
+<a href="about.html">О нас</a>
+<a href="reviews.html">Отзывы</a>
+<a href="contacts.html">Контакты</a>
+
+</nav>
+
+<a href="login.html"
+class="login-btn">
+
+Личный кабинет
+
+</a>
+
+</div>
+
+</header>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="container">
+
+<div class="hero-box">
+
+<p class="hero-subtitle">
+Отзывы клиентов
+</p>
+
+<h1>
+
+Что говорят
+о нас клиенты
+
+</h1>
+
+<p class="hero-text">
+
+Реальные отзывы,
+оценки и фотографии
+после завершения ремонта.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- REVIEWS -->
+
+<section class="reviews">
+
+<div class="container">
+
+
+
+<div class="reviews-top">
+
+<div>
+
+<h2 style="font-size:54px;margin-bottom:12px;">
+
+Отзывы клиентов
+
+</h2>
+
+<p class="hero-text">
+
+Каждый отзыв проходит проверку
+и доступен только
+авторизованным клиентам.
+
+</p>
+
+</div>
+
+
+
+<div class="rating-box">
+
+<h2>
+4.9
+</h2>
+
+<div class="rating-stars">
+
+★★★★★
+
+</div>
+
+<p>
+На основе 127 отзывов
+</p>
+
+</div>
+
+</div>
+
+
+
+<!-- AUTH WARNING -->
+
+<div class="auth-warning">
+
+Отзывы могут оставлять
+только авторизованные пользователи,
+которые зарегистрированы
+в системе BuildHouse.
+
+</div>
+
+
+
+<!-- REVIEW FORM -->
+
+<div class="review-form">
+
+<h2>
+
+Оставить отзыв
+
+</h2>
+
+<div class="stars">
+
+<span class="star active">★</span>
+<span class="star active">★</span>
+<span class="star active">★</span>
+<span class="star active">★</span>
+<span class="star active">★</span>
+
+</div>
+
+<input type="text"
+placeholder="Ваше имя"
+disabled>
+
+<textarea placeholder="Напишите ваш отзыв..."
+disabled></textarea>
+
+<div class="file-upload">
+
+<input type="file"
+disabled>
+
+</div>
+
+<button onclick="showAuthMessage()">
+
+Войдите в аккаунт,
+чтобы оставить отзыв
+
+</button>
+
+</div>
+
+
+
+<!-- REVIEWS GRID -->
+
+<div class="reviews-grid">
+
+
+
+<!-- CARD -->
+
+<div class="review-card">
+
+<div class="review-image"
+style="background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200')">
+
+</div>
+
+<div class="review-content">
+
+<div class="review-user">
+
+<div class="user-avatar">
+
+А
+
+</div>
+
+<div>
+
+<div class="review-name">
+
+Анна
+
+</div>
+
+<div class="review-stars">
+
+★★★★★
+
+</div>
+
+</div>
+
+</div>
+
+<div class="review-text">
+
+Очень понравилась работа команды.
+Все сроки были соблюдены,
+менеджер всегда был на связи,
+а качество ремонта оказалось
+даже лучше ожиданий.
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- CARD -->
+
+<div class="review-card">
+
+<div class="review-image"
+style="background-image:url('https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200')">
+
+</div>
+
+<div class="review-content">
+
+<div class="review-user">
+
+<div class="user-avatar">
+
+М
+
+</div>
+
+<div>
+
+<div class="review-name">
+
+Максим
+
+</div>
+
+<div class="review-stars">
+
+★★★★★
+
+</div>
+
+</div>
+
+</div>
+
+<div class="review-text">
+
+Сделали капитальный ремонт
+под ключ. Очень удобно,
+что можно было следить
+за всеми этапами онлайн
+через личный кабинет.
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- CARD -->
+
+<div class="review-card">
+
+<div class="review-image"
+style="background-image:url('https://images.unsplash.com/photo-1484154218962-a197022b5858?q=80&w=1200')">
+
+</div>
+
+<div class="review-content">
+
+<div class="review-user">
+
+<div class="user-avatar">
+
+Е
+
+</div>
+
+<div>
+
+<div class="review-name">
+
+Екатерина
+
+</div>
+
+<div class="review-stars">
+
+★★★★★
+
+</div>
+
+</div>
+
+</div>
+
+<div class="review-text">
+
+Понравилась прозрачность работы
+и подробная смета.
+Никаких скрытых платежей,
+все максимально понятно.
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- CTA -->
+
+<section class="cta">
+
+<div class="container">
+
+<div class="cta-box">
+
+<div class="cta-left">
+
+<h2>
+
+Хотите
+такой же результат?
+
+</h2>
+
+<p>
+
+Оставьте заявку —
+мы бесплатно проконсультируем
+вас по ремонту.
+
+</p>
+
+</div>
+
+
+
+<form class="cta-form">
+
+<input type="text"
+placeholder="Ваше имя">
+
+<input type="tel"
+placeholder="Телефон">
+
+<textarea placeholder="Комментарий"></textarea>
+
+<button type="submit">
+
+Получить консультацию
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<footer class="footer">
+
+<div class="container footer-content">
+
+<div>
+
+<h3>
+BuildHouse
+</h3>
+
+<p>
+Современный ремонт
+квартир под ключ.
+</p>
+
+</div>
+
+
+
+<div>
+
+<h4>
+Контакты
+</h4>
+
+<p>
++7 (999) 999-99-99
+</p>
+
+<p>
+info@buildhouse.ru
+</p>
+
+</div>
+
+</div>
+
+</footer>
+
+
+
+<script>
+
+function showAuthMessage(){
+
+    alert(
+'Чтобы оставить отзыв, необходимо войти в личный кабинет.'
+    );
+
+}
+
+</script>
+
+</body>
+</html>

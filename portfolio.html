@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Портфолио | BuildHouse</title>
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:#f5f6fa;
+
+    color:#222;
+}
+
+.container{
+
+    width:90%;
+
+    max-width:1350px;
+
+    margin:auto;
+}
+
+
+
+/* HEADER */
+
+.header{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    background:rgba(255,255,255,0.95);
+
+    backdrop-filter:blur(12px);
+
+    border-bottom:1px solid #eee;
+
+    z-index:1000;
+}
+
+.header-content{
+
+    height:90px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+.logo{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit; /* наследует цвет от .logo */
+    display: inline-block; /* или block, если нужно */
+}
+
+.nav{
+
+    display:flex;
+
+    gap:35px;
+}
+
+.nav a{
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:500;
+}
+
+.login-btn{
+
+    background:#ffb547;
+
+    padding:14px 24px;
+
+    border-radius:16px;
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:600;
+}
+
+
+
+/* HERO */
+
+.hero{
+
+    padding-top:170px;
+
+    padding-bottom:80px;
+}
+
+.hero-box{
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400');
+
+    background-size:cover;
+
+    background-position:center;
+
+    border-radius:42px;
+
+    padding:120px 70px;
+
+    color:white;
+}
+
+.hero-subtitle{
+
+    color:#ffb547;
+
+    margin-bottom:18px;
+
+    font-weight:600;
+}
+
+.hero-box h1{
+
+    font-size:72px;
+
+    line-height:1.05;
+
+    margin-bottom:28px;
+}
+
+.hero-text{
+
+    font-size:19px;
+
+    line-height:1.8;
+
+    max-width:700px;
+}
+
+
+
+/* PROJECTS */
+
+.projects{
+
+    padding-bottom:120px;
+}
+
+.project-card{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:40px;
+
+    margin-bottom:40px;
+}
+
+.project-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:35px;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+}
+
+.project-title{
+
+    font-size:38px;
+
+    font-weight:800;
+}
+
+.project-badge{
+
+    background:#fff3df;
+
+    color:#ff9800;
+
+    padding:12px 18px;
+
+    border-radius:14px;
+
+    font-weight:700;
+}
+
+
+
+/* BEFORE AFTER */
+
+.before-after{
+
+    position:relative;
+
+    width:100%;
+
+    height:500px;
+
+    overflow:hidden;
+
+    border-radius:30px;
+
+    margin-bottom:35px;
+}
+
+.before-img,
+.after-img{
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background-size:cover;
+
+    background-position:center;
+}
+
+.after-img{
+
+    width:50%;
+
+    overflow:hidden;
+
+    border-right:4px solid white;
+}
+
+.slider{
+
+    position:absolute;
+
+    width:100%;
+    bottom:20px;
+
+    left:0;
+}
+
+
+
+/* INFO */
+
+.project-info{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:40px;
+}
+
+.info-box{
+
+    background:#f8f8f8;
+
+    border-radius:28px;
+
+    padding:30px;
+}
+
+.info-box h3{
+
+    margin-bottom:20px;
+
+    font-size:26px;
+}
+
+.info-box p{
+
+    line-height:1.9;
+
+    color:#555;
+}
+
+.work-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+    color:#444;
+}
+
+
+
+/* STATS */
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+
+    margin-top:40px;
+}
+
+.stat-card{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:40px;
+
+    text-align:center;
+}
+
+.stat-card h2{
+
+    font-size:54px;
+
+    margin-bottom:10px;
+}
+
+.stat-card p{
+
+    color:#666;
+}
+
+
+
+/* CTA */
+
+.cta{
+
+    padding-bottom:120px;
+}
+
+.cta-box{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:60px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:60px;
+}
+
+.cta-left h2{
+
+    font-size:54px;
+
+    line-height:1.1;
+
+    margin-bottom:24px;
+}
+
+.cta-left p{
+
+    line-height:1.8;
+
+    color:#666;
+}
+
+.cta-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.cta-form input,
+.cta-form textarea{
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#f5f5f5;
+
+    font-size:16px;
+}
+
+.cta-form textarea{
+
+    min-height:150px;
+
+    resize:none;
+}
+
+.cta-form button{
+
+    padding:20px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:#ffb547;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* FOOTER */
+
+.footer{
+
+    background:#111;
+
+    color:white;
+
+    padding:60px 0;
+}
+
+.footer-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:50px;
+}
+
+
+
+/* ADAPTIVE */
+
+@media(max-width:992px){
+
+    .project-info,
+    .cta-box{
+
+        grid-template-columns:1fr;
+    }
+
+    .hero-box h1{
+
+        font-size:52px;
+    }
+
+    .nav{
+
+        display:none;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero-box{
+
+        padding:70px 40px;
+    }
+
+    .hero-box h1{
+
+        font-size:42px;
+    }
+
+    .before-after{
+
+        height:320px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header class="header">
+
+<div class="container header-content">
+
+<div class="logo">
+    <a href="index.html">BuildHouse</a>
+</div>
+
+<nav class="nav">
+
+<a href="services.html">Услуги</a>
+<a href="portfolio.html">Портфолио</a>
+<a href="prices.html">Цены</a>
+<a href="about.html">О нас</a>
+<a href="reviews.html">Отзывы</a>
+<a href="contacts.html">Контакты</a>
+
+</nav>
+<a href="login.html"
+class="login-btn">
+
+Личный кабинет
+
+</a>
+
+</div>
+
+</header>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="container">
+
+<div class="hero-box">
+
+<p class="hero-subtitle">
+Наши проекты
+</p>
+
+<h1>
+
+Портфолио
+наших ремонтов
+
+</h1>
+
+<p class="hero-text">
+
+Сравните квартиры
+до и после ремонта.
+Показываем реальные объекты,
+сроки и выполненные работы.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- PROJECTS -->
+
+<section class="projects">
+
+<div class="container">
+
+
+
+<!-- PROJECT -->
+
+<div class="project-card">
+
+<div class="project-top">
+
+<div class="project-title">
+
+3-комнатная квартира
+в современном стиле
+
+</div>
+
+<div class="project-badge">
+
+72 м² • 3 месяца
+
+</div>
+
+</div>
+
+
+
+<div class="before-after">
+
+<div class="before-img"
+style="background-image:url('https://images.unsplash.com/photo-1484154218962-a197022b5858?q=80&w=1400')">
+
+</div>
+
+<div class="after-img"
+id="after1"
+style="background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400')">
+
+</div>
+
+<input type="range"
+min="0"
+max="100"
+value="50"
+class="slider"
+oninput="slideImage(this,'after1')">
+
+</div>
+
+
+
+<div class="project-info">
+
+<div class="info-box">
+
+<h3>
+Описание проекта
+</h3>
+
+<p>
+
+Полный капитальный ремонт
+квартиры с перепланировкой,
+новой электрикой,
+натяжными потолками
+и дизайнерским освещением.
+
+</p>
+
+</div>
+
+
+
+<div class="info-box">
+
+<h3>
+Что было выполнено
+</h3>
+
+<div class="work-list">
+
+<div>
+✔ Демонтаж старой отделки
+</div>
+
+<div>
+✔ Замена электрики
+</div>
+
+<div>
+✔ Укладка плитки
+</div>
+
+<div>
+✔ Монтаж освещения
+</div>
+
+<div>
+✔ Натяжные потолки
+</div>
+
+<div>
+✔ Установка кухни
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- PROJECT -->
+
+<div class="project-card">
+
+<div class="project-top">
+
+<div class="project-title">
+
+Кухня-гостиная
+в минимализме
+
+</div>
+
+<div class="project-badge">
+
+48 м² • 2 месяца
+
+</div>
+
+</div>
+
+
+
+<div class="before-after">
+
+<div class="before-img"
+style="background-image:url('https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1400')">
+
+</div>
+
+<div class="after-img"
+id="after2"
+style="background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400')">
+
+</div>
+
+<input type="range"
+min="0"
+max="100"
+value="50"
+class="slider"
+oninput="slideImage(this,'after2')">
+
+</div>
+
+
+
+<div class="project-info">
+
+<div class="info-box">
+
+<h3>
+Описание проекта
+</h3>
+
+<p>
+
+Современная кухня-гостиная
+с акцентным освещением,
+теплым полом
+и встроенной техникой.
+
+</p>
+
+</div>
+
+
+
+<div class="info-box">
+
+<h3>
+Что было выполнено
+</h3>
+
+<div class="work-list">
+
+<div>
+✔ Теплый пол
+</div>
+
+<div>
+✔ Выравнивание стен
+</div>
+
+<div>
+✔ Новая сантехника
+</div>
+
+<div>
+✔ Декоративная подсветка
+</div>
+
+<div>
+✔ Установка мебели
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- STATS -->
+
+<div class="stats">
+
+<div class="stat-card">
+
+<h2>
+127
+</h2>
+
+<p>
+Завершенных проектов
+</p>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h2>
+9 лет
+</h2>
+
+<p>
+Опыт работы
+</p>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h2>
+4.9
+</h2>
+
+<p>
+Средняя оценка клиентов
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- CTA -->
+
+<section class="cta">
+
+<div class="container">
+
+<div class="cta-box">
+
+<div class="cta-left">
+
+<h2>
+
+Хотите такой же результат?
+
+</h2>
+
+<p>
+
+Оставьте заявку —
+мы бесплатно проконсультируем,
+подберем стиль ремонта
+и рассчитаем стоимость.
+
+</p>
+
+</div>
+
+
+
+<form class="cta-form">
+
+<input type="text"
+placeholder="Ваше имя">
+
+<input type="tel"
+placeholder="Телефон">
+
+<textarea placeholder="Комментарий"></textarea>
+
+<button type="submit">
+
+Получить консультацию
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<footer class="footer">
+
+<div class="container footer-content">
+
+<div>
+
+<h3>
+BuildHouse
+</h3>
+
+<p>
+Современный ремонт
+квартир под ключ.
+</p>
+
+</div>
+
+
+
+<div>
+
+<h4>
+Контакты
+</h4>
+
+<p>
++7 (999) 999-99-99
+</p>
+
+<p>
+info@buildhouse.ru
+</p>
+
+</div>
+
+</div>
+
+</footer>
+
+
+
+<script>
+
+function slideImage(
+slider,
+id
+){
+
+    document.getElementById(id)
+    .style.width =
+    slider.value + '%';
+
+}
+
+</script>
+
+</body>
+</html>

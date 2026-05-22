@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>О нас | BuildHouse</title>
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:#f5f6fa;
+
+    color:#222;
+}
+
+.container{
+
+    width:90%;
+
+    max-width:1350px;
+
+    margin:auto;
+}
+
+
+
+/* HEADER */
+
+.header{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    background:rgba(255,255,255,0.95);
+
+    backdrop-filter:blur(12px);
+
+    border-bottom:1px solid #eee;
+
+    z-index:1000;
+}
+
+.header-content{
+
+    height:90px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+.logo{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit; /* наследует цвет от .logo */
+    display: inline-block; /* или block, если нужно */
+}
+
+.nav{
+
+    display:flex;
+
+    gap:35px;
+}
+
+.nav a{
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:500;
+}
+
+.login-btn{
+
+    background:#ffb547;
+
+    padding:14px 24px;
+
+    border-radius:16px;
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:600;
+}
+
+
+
+/* HERO */
+
+.hero{
+
+    padding-top:170px;
+
+    padding-bottom:80px;
+}
+
+.hero-box{
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1400');
+
+    background-size:cover;
+
+    background-position:center;
+
+    border-radius:42px;
+
+    padding:120px 70px;
+
+    color:white;
+}
+
+.hero-subtitle{
+
+    color:#ffb547;
+
+    margin-bottom:18px;
+
+    font-weight:600;
+}
+
+.hero-box h1{
+
+    font-size:72px;
+
+    line-height:1.05;
+
+    margin-bottom:28px;
+}
+
+.hero-text{
+
+    font-size:19px;
+
+    line-height:1.8;
+
+    max-width:700px;
+}
+
+
+
+/* ABOUT */
+
+.about{
+
+    padding-bottom:120px;
+}
+
+.about-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:40px;
+
+    align-items:center;
+
+    margin-bottom:80px;
+}
+
+.about-image{
+
+    height:550px;
+
+    border-radius:36px;
+
+    background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1400');
+
+    background-size:cover;
+
+    background-position:center;
+}
+
+.about-content{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:50px;
+}
+
+.about-content h2{
+
+    font-size:54px;
+
+    margin-bottom:24px;
+
+    line-height:1.1;
+}
+
+.about-content p{
+
+    color:#666;
+
+    line-height:1.9;
+
+    margin-bottom:20px;
+}
+
+
+
+/* STATS */
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+
+    margin-bottom:100px;
+}
+
+.stat-card{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:40px;
+
+    text-align:center;
+}
+
+.stat-card h2{
+
+    font-size:56px;
+
+    margin-bottom:10px;
+}
+
+.stat-card p{
+
+    color:#666;
+}
+
+
+
+/* TEAM */
+
+.team{
+
+    margin-bottom:120px;
+}
+
+.section-title{
+
+    font-size:56px;
+
+    margin-bottom:50px;
+}
+
+.team-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:28px;
+}
+
+.team-card{
+
+    background:white;
+
+    border-radius:32px;
+
+    overflow:hidden;
+
+    transition:0.3s;
+}
+
+.team-card:hover{
+
+    transform:translateY(-8px);
+}
+
+.team-image{
+
+    height:320px;
+
+    background-size:cover;
+
+    background-position:center;
+}
+
+.team-content{
+
+    padding:30px;
+}
+
+.team-content h3{
+
+    font-size:28px;
+
+    margin-bottom:10px;
+}
+
+.team-role{
+
+    color:#ff9800;
+
+    font-weight:700;
+
+    margin-bottom:16px;
+}
+
+.team-content p{
+
+    color:#666;
+
+    line-height:1.8;
+}
+
+
+
+/* VALUES */
+
+.values{
+
+    margin-bottom:120px;
+}
+
+.values-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:25px;
+}
+
+.value-card{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:35px;
+}
+
+.value-card h3{
+
+    font-size:28px;
+
+    margin-bottom:18px;
+}
+
+.value-card p{
+
+    color:#666;
+
+    line-height:1.8;
+}
+
+
+
+/* CTA */
+
+.cta{
+
+    padding-bottom:120px;
+}
+
+.cta-box{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:60px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:60px;
+}
+
+.cta-left h2{
+
+    font-size:54px;
+
+    line-height:1.1;
+
+    margin-bottom:24px;
+}
+
+.cta-left p{
+
+    line-height:1.8;
+
+    color:#666;
+}
+
+.cta-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.cta-form input,
+.cta-form textarea{
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#f5f5f5;
+
+    font-size:16px;
+}
+
+.cta-form textarea{
+
+    min-height:150px;
+
+    resize:none;
+}
+
+.cta-form button{
+
+    padding:20px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:#ffb547;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* FOOTER */
+
+.footer{
+
+    background:#111;
+
+    color:white;
+
+    padding:60px 0;
+}
+
+.footer-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:50px;
+}
+
+
+
+/* ADAPTIVE */
+
+@media(max-width:992px){
+
+    .about-grid,
+    .cta-box{
+
+        grid-template-columns:1fr;
+    }
+
+    .hero-box h1{
+
+        font-size:52px;
+    }
+
+    .nav{
+
+        display:none;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero-box{
+
+        padding:70px 40px;
+    }
+
+    .hero-box h1{
+
+        font-size:42px;
+    }
+
+    .section-title{
+
+        font-size:42px;
+    }
+
+    .about-content h2{
+
+        font-size:42px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header class="header">
+
+<div class="container header-content">
+
+<div class="logo">
+    <a href="index.html">BuildHouse</a>
+</div>
+
+<nav class="nav">
+
+<a href="services.html">Услуги</a>
+<a href="portfolio.html">Портфолио</a>
+<a href="prices.html">Цены</a>
+<a href="about.html">О нас</a>
+<a href="reviews.html">Отзывы</a>
+<a href="contacts.html">Контакты</a>
+
+</nav>
+
+<a href="login.html"
+class="login-btn">
+
+Личный кабинет
+
+</a>
+
+</div>
+
+</header>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="container">
+
+<div class="hero-box">
+
+<p class="hero-subtitle">
+О компании
+</p>
+
+<h1>
+
+Создаем
+современные
+пространства
+для жизни
+
+</h1>
+
+<p class="hero-text">
+
+BuildHouse —
+команда специалистов,
+которая уже много лет
+создает стильные,
+качественные
+и комфортные интерьеры.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ABOUT -->
+
+<section class="about">
+
+<div class="container">
+
+
+
+<div class="about-grid">
+
+<div class="about-image">
+
+</div>
+
+
+
+<div class="about-content">
+
+<h2>
+
+Кто мы?
+
+</h2>
+
+<p>
+
+Компания BuildHouse
+была основана в 2016 году.
+Мы начинали как небольшая
+бригада отделочников,
+а сегодня выполняем
+полный цикл ремонта
+под ключ.
+
+</p>
+
+<p>
+
+Наша команда объединяет
+дизайнеров, инженеров,
+прорабов и мастеров,
+которые работают
+как единая система.
+
+</p>
+
+<p>
+
+Мы делаем акцент
+не только на красоте,
+но и на удобстве,
+качестве и прозрачности
+всех процессов.
+
+</p>
+
+</div>
+
+</div>
+
+
+
+<!-- STATS -->
+
+<div class="stats">
+
+<div class="stat-card">
+
+<h2>
+9+
+</h2>
+
+<p>
+Лет опыта
+</p>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h2>
+127
+</h2>
+
+<p>
+Завершенных проектов
+</p>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h2>
+34
+</h2>
+
+<p>
+Сотрудника в команде
+</p>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h2>
+4.9
+</h2>
+
+<p>
+Средняя оценка клиентов
+</p>
+
+</div>
+
+</div>
+
+
+
+<!-- TEAM -->
+
+<div class="team">
+
+<h2 class="section-title">
+
+Наша команда
+
+</h2>
+
+
+
+<div class="team-grid">
+
+
+
+<div class="team-card">
+
+<div class="team-image"
+style="background-image:url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1200')">
+
+</div>
+
+<div class="team-content">
+
+<h3>
+Александр
+</h3>
+
+<div class="team-role">
+
+Руководитель компании
+
+</div>
+
+<p>
+
+Контролирует качество работ
+и взаимодействие
+с клиентами.
+
+</p>
+
+</div>
+
+</div>
+
+
+
+<div class="team-card">
+
+<div class="team-image"
+style="background-image:url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200')">
+
+</div>
+
+<div class="team-content">
+
+<h3>
+Мария
+</h3>
+
+<div class="team-role">
+
+Дизайнер интерьеров
+
+</div>
+
+<p>
+
+Создает современные
+и функциональные
+дизайн-проекты.
+
+</p>
+
+</div>
+
+</div>
+
+
+
+<div class="team-card">
+
+<div class="team-image"
+style="background-image:url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1200')">
+
+</div>
+
+<div class="team-content">
+
+<h3>
+Дмитрий
+</h3>
+
+<div class="team-role">
+
+Главный инженер
+
+</div>
+
+<p>
+
+Отвечает за техническую часть
+и контроль строительных норм.
+
+</p>
+
+</div>
+
+</div>
+
+
+
+<div class="team-card">
+
+<div class="team-image"
+style="background-image:url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1200')">
+
+</div>
+
+<div class="team-content">
+
+<h3>
+Екатерина
+</h3>
+
+<div class="team-role">
+
+Менеджер проектов
+
+</div>
+
+<p>
+
+Помогает клиентам
+и сопровождает проект
+на всех этапах.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- VALUES -->
+
+<div class="values">
+
+<h2 class="section-title">
+
+Почему выбирают нас
+
+</h2>
+
+
+
+<div class="values-grid">
+
+
+
+<div class="value-card">
+
+<h3>
+Прозрачность
+</h3>
+
+<p>
+
+Все этапы ремонта
+отображаются онлайн
+в личном кабинете клиента.
+
+</p>
+
+</div>
+
+
+
+<div class="value-card">
+
+<h3>
+Контроль качества
+</h3>
+
+<p>
+
+Каждый объект проверяется
+прорабом и инженером
+на всех этапах работ.
+
+</p>
+
+</div>
+
+
+
+<div class="value-card">
+
+<h3>
+Современные технологии
+</h3>
+
+<p>
+
+Используем цифровые системы
+для контроля сроков,
+документов и задач.
+
+</p>
+
+</div>
+
+
+
+<div class="value-card">
+
+<h3>
+Гарантия
+</h3>
+
+<p>
+
+Предоставляем официальную
+гарантию на все виды
+ремонтных работ.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- CTA -->
+
+<section class="cta">
+
+<div class="container">
+
+<div class="cta-box">
+
+<div class="cta-left">
+
+<h2>
+
+Обсудим
+ваш проект?
+
+</h2>
+
+<p>
+
+Оставьте заявку —
+мы свяжемся с вами
+и поможем подобрать
+идеальное решение.
+
+</p>
+
+</div>
+
+
+
+<form class="cta-form">
+
+<input type="text"
+placeholder="Ваше имя">
+
+<input type="tel"
+placeholder="Телефон">
+
+<textarea placeholder="Комментарий"></textarea>
+
+<button type="submit">
+
+Получить консультацию
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<footer class="footer">
+
+<div class="container footer-content">
+
+<div>
+
+<h3>
+BuildHouse
+</h3>
+
+<p>
+Современный ремонт
+квартир под ключ.
+</p>
+
+</div>
+
+
+
+<div>
+
+<h4>
+Контакты
+</h4>
+
+<p>
++7 (999) 999-99-99
+</p>
+
+<p>
+info@buildhouse.ru
+</p>
+
+</div>
+
+</div>
+
+</footer>
+
+</body>
+</html>

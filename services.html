@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Услуги | BuildHouse</title>
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:#f5f6fa;
+
+    color:#222;
+}
+
+.container{
+
+    width:90%;
+
+    max-width:1300px;
+
+    margin:auto;
+}
+
+
+
+/* HEADER */
+
+.header{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    background:rgba(255,255,255,0.95);
+
+    backdrop-filter:blur(12px);
+
+    border-bottom:1px solid #eee;
+
+    z-index:1000;
+}
+
+.header-content{
+
+    height:90px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+.logo{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit; /* наследует цвет от .logo */
+    display: inline-block; /* или block, если нужно */
+}
+
+
+.nav{
+
+    display:flex;
+
+    gap:35px;
+}
+
+.nav a{
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:500;
+
+    transition:0.3s;
+}
+
+.nav a:hover{
+
+    color:#ff8c42;
+}
+
+.login-btn{
+
+    text-decoration:none;
+
+    background:#ffb547;
+
+    color:#222;
+
+    padding:14px 24px;
+
+    border-radius:16px;
+
+    font-weight:600;
+}
+
+
+
+/* HERO */
+
+.hero{
+
+    padding-top:170px;
+
+    padding-bottom:80px;
+}
+
+.hero-box{
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400');
+
+    background-size:cover;
+
+    background-position:center;
+
+    border-radius:40px;
+
+    padding:120px 70px;
+
+    color:white;
+}
+
+.hero-subtitle{
+
+    color:#ffb547;
+
+    font-weight:600;
+
+    margin-bottom:18px;
+}
+
+.hero-box h1{
+
+    font-size:72px;
+
+    line-height:1.05;
+
+    margin-bottom:28px;
+}
+
+.hero-text{
+
+    font-size:19px;
+
+    line-height:1.8;
+
+    max-width:700px;
+}
+
+
+
+/* SERVICES */
+
+.services-page{
+
+    padding-bottom:120px;
+}
+
+.services-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(320px,1fr));
+
+    gap:28px;
+}
+
+.service-card{
+
+    background:white;
+
+    border-radius:32px;
+
+    overflow:hidden;
+
+    transition:0.3s;
+}
+
+.service-card:hover{
+
+    transform:translateY(-10px);
+}
+
+.service-image{
+
+    height:260px;
+
+    background-size:cover;
+
+    background-position:center;
+}
+
+.service-content{
+
+    padding:34px;
+}
+
+.service-content h3{
+
+    font-size:32px;
+
+    margin-bottom:18px;
+}
+
+.service-content p{
+
+    color:#666;
+
+    line-height:1.8;
+
+    margin-bottom:24px;
+}
+
+.service-price{
+
+    font-size:32px;
+
+    font-weight:800;
+
+    margin-bottom:24px;
+}
+
+.service-btn{
+
+    width:100%;
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#ffb547;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* CTA */
+
+.cta{
+
+    padding-bottom:120px;
+}
+
+.cta-box{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:60px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:60px;
+}
+
+.cta-left h2{
+
+    font-size:54px;
+
+    line-height:1.1;
+
+    margin-bottom:24px;
+}
+
+.cta-left p{
+
+    color:#666;
+
+    line-height:1.8;
+}
+
+.cta-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.cta-form input,
+.cta-form textarea{
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#f5f5f5;
+
+    font-size:16px;
+}
+
+.cta-form textarea{
+
+    min-height:150px;
+
+    resize:none;
+}
+
+.cta-form button{
+
+    padding:20px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:#ffb547;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* MODAL */
+
+.modal{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,0.55);
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:9999;
+}
+
+.modal-content{
+
+    width:90%;
+
+    max-width:650px;
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:40px;
+
+    position:relative;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+}
+
+.close-modal{
+
+    position:absolute;
+
+    top:20px;
+    right:20px;
+
+    border:none;
+
+    background:none;
+
+    font-size:28px;
+
+    cursor:pointer;
+}
+
+.modal-content h2{
+
+    font-size:42px;
+
+    margin-bottom:20px;
+}
+
+.service-modal-price{
+
+    font-size:34px;
+
+    font-weight:800;
+
+    margin-bottom:30px;
+}
+
+.service-modal-list{
+
+    color:#555;
+
+    line-height:2;
+
+    margin-bottom:35px;
+}
+
+#serviceForm{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+#serviceForm input{
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#f5f5f5;
+
+    font-size:16px;
+}
+
+.submit-btn{
+
+    padding:20px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:#ffb547;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* FOOTER */
+
+.footer{
+
+    background:#111;
+
+    color:white;
+
+    padding:60px 0;
+}
+
+.footer-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:50px;
+}
+
+
+
+/* ADAPTIVE */
+
+@media(max-width:992px){
+
+    .cta-box{
+
+        grid-template-columns:1fr;
+    }
+
+    .hero-box h1{
+
+        font-size:52px;
+    }
+
+    .nav{
+
+        display:none;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero-box{
+
+        padding:70px 40px;
+    }
+
+    .hero-box h1{
+
+        font-size:40px;
+    }
+
+    .cta-left h2{
+
+        font-size:40px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header class="header">
+
+<div class="container header-content">
+
+<div class="logo">
+    <a href="index.html">BuildHouse</a>
+</div>
+
+<nav class="nav">
+
+<a href="services.html">Услуги</a>
+<a href="portfolio.html">Портфолио</a>
+<a href="prices.html">Цены</a>
+<a href="about.html">О нас</a>
+<a href="reviews.html">Отзывы</a>
+<a href="contacts.html">Контакты</a>
+
+</nav>
+
+<a href="login.html"
+class="login-btn">
+
+Личный кабинет
+
+</a>
+
+</div>
+
+</header>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="container">
+
+<div class="hero-box">
+
+<p class="hero-subtitle">
+Наши услуги
+</p>
+
+<h1>
+
+Ремонт квартир
+любой сложности
+
+</h1>
+
+<p class="hero-text">
+
+Выполняем капитальный,
+косметический и дизайнерский
+ремонт под ключ
+с полным онлайн-контролем.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- SERVICES -->
+
+<section class="services-page">
+
+<div class="container">
+
+<div class="services-grid">
+
+
+
+<!-- CARD -->
+
+<div class="service-card">
+
+<div class="service-image"
+style="background-image:url('https://images.unsplash.com/photo-1484154218962-a197022b5858?q=80&w=1200')">
+
+</div>
+
+<div class="service-content">
+
+<h3>
+Косметический ремонт
+</h3>
+
+<p>
+
+Быстрое обновление квартиры
+без сложных перепланировок.
+
+</p>
+
+<div class="service-price">
+
+от 7 000 ₽/м²
+
+</div>
+
+<button class="service-btn"
+onclick="openServiceModal(
+'Косметический ремонт',
+'от 7 000 ₽/м²',
+`
+• Подготовка стен<br>
+• Покраска и обои<br>
+• Замена ламината<br>
+• Установка плинтусов<br>
+• Монтаж освещения<br>
+• Замена розеток<br>
+• Обновление интерьера
+`
+)">
+
+Подробнее
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- CARD -->
+
+<div class="service-card">
+
+<div class="service-image"
+style="background-image:url('https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200')">
+
+</div>
+
+<div class="service-content">
+
+<h3>
+Капитальный ремонт
+</h3>
+
+<p>
+
+Полное обновление жилья
+с заменой всех коммуникаций.
+
+</p>
+
+<div class="service-price">
+
+от 12 000 ₽/м²
+
+</div>
+
+<button class="service-btn"
+onclick="openServiceModal(
+'Капитальный ремонт',
+'от 12 000 ₽/м²',
+`
+• Демонтаж старой отделки<br>
+• Замена электрики<br>
+• Замена сантехники<br>
+• Выравнивание стен<br>
+• Стяжка пола<br>
+• Плиточные работы<br>
+• Натяжные потолки<br>
+• Полная отделка
+`
+)">
+
+Подробнее
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- CARD -->
+
+<div class="service-card">
+
+<div class="service-image"
+style="background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200')">
+
+</div>
+
+<div class="service-content">
+
+<h3>
+Дизайнерский ремонт
+</h3>
+
+<p>
+
+Премиальный ремонт
+по индивидуальному проекту.
+
+</p>
+
+<div class="service-price">
+
+от 18 000 ₽/м²
+
+</div>
+
+<button class="service-btn"
+onclick="openServiceModal(
+'Дизайнерский ремонт',
+'от 18 000 ₽/м²',
+`
+• Индивидуальный дизайн-проект<br>
+• 3D визуализация<br>
+• Авторский надзор<br>
+• Премиальные материалы<br>
+• Сложные инженерные решения<br>
+• Умный дом<br>
+• Декоративное освещение
+`
+)">
+
+Подробнее
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- CTA -->
+
+<section class="cta">
+
+<div class="container">
+
+<div class="cta-box">
+
+<div class="cta-left">
+
+<p class="hero-subtitle">
+Бесплатная консультация
+</p>
+
+<h2>
+
+Поможем подобрать
+идеальный вариант ремонта
+
+</h2>
+
+<p>
+
+Оставьте заявку —
+мы свяжемся с вами
+и рассчитаем стоимость.
+
+</p>
+
+</div>
+
+
+
+<form class="cta-form">
+
+<input type="text"
+placeholder="Ваше имя">
+
+<input type="tel"
+placeholder="Телефон">
+
+<textarea placeholder="Комментарий"></textarea>
+
+<button type="submit">
+
+Получить консультацию
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- MODAL -->
+
+<div class="modal"
+id="serviceModal">
+
+<div class="modal-content">
+
+<button class="close-modal"
+onclick="closeServiceModal()">
+
+✕
+
+</button>
+
+<h2 id="modalTitle">
+Косметический ремонт
+</h2>
+
+<div class="service-modal-price"
+id="modalPrice">
+
+от 7 000 ₽/м²
+
+</div>
+
+<div class="service-modal-list"
+id="modalList">
+
+</div>
+
+
+
+<form id="serviceForm">
+
+<input type="text"
+id="serviceClientName"
+placeholder="Ваше имя"
+required>
+
+<input type="tel"
+id="serviceClientPhone"
+placeholder="Телефон"
+required>
+
+<button type="submit"
+class="submit-btn">
+
+Заказать услугу
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+
+<footer class="footer">
+
+<div class="container footer-content">
+
+<div>
+
+<h3>
+BuildHouse
+</h3>
+
+<p>
+Современный ремонт
+квартир под ключ.
+</p>
+
+</div>
+
+
+
+<div>
+
+<h4>
+Контакты
+</h4>
+
+<p>
++7 (999) 999-99-99
+</p>
+
+<p>
+info@buildhouse.ru
+</p>
+
+</div>
+
+</div>
+
+</footer>
+
+
+
+<script>
+
+const serviceModal =
+document.getElementById('serviceModal');
+
+
+
+function openServiceModal(
+title,
+price,
+list
+){
+
+    document.getElementById(
+    'modalTitle'
+    ).innerHTML = title;
+
+
+
+    document.getElementById(
+    'modalPrice'
+    ).innerHTML = price;
+
+
+
+    document.getElementById(
+    'modalList'
+    ).innerHTML = list;
+
+
+
+    serviceModal.style.display = 'flex';
+
+}
+
+
+
+function closeServiceModal(){
+
+    serviceModal.style.display = 'none';
+
+}
+
+
+
+window.addEventListener(
+'click',
+(e)=>{
+
+    if(e.target === serviceModal){
+
+        closeServiceModal();
+
+    }
+
+});
+
+
+
+document.getElementById(
+'serviceForm'
+).addEventListener(
+'submit',
+function(e){
+
+    e.preventDefault();
+
+
+
+    const name =
+    document.getElementById(
+    'serviceClientName'
+    ).value;
+
+
+
+    const phone =
+    document.getElementById(
+    'serviceClientPhone'
+    ).value;
+
+
+
+    alert(
+`Заявка отправлена!
+
+Имя: ${name}
+Телефон: ${phone}`
+    );
+
+
+
+    closeServiceModal();
+
+
+
+    this.reset();
+
+});
+
+</script>
+
+</body>
+</html>

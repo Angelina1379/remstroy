@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BuildHouse Manager</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h2>BuildHouse</h2>
+      <p>Панель менеджера</p>
+    </div>
+
+    <nav class="menu">
+
+      <a class="active">Рабочий стол</a>
+      <a>Клиенты</a>
+      <a>Заказы</a>
+      <a>Сообщения</a>
+      <a>Календарь</a>
+      <a>Замеры</a>
+      <a>Сметы</a>
+      <a>Договоры</a>
+      <a>Бригады</a>
+      <a>Задачи</a>
+      <button id="logoutBtn">
+        Выйти
+      </button>
+    <script type="module"
+    src="../js/logout.js"></script>
+
+    </nav>
+
+    <div class="profile">
+      <div class="avatar"></div>
+
+      <div>
+        <h4>Менеджер</h4>
+        <p>Сотрудник</p>
+      </div>
+    </div>
+
+  </aside>
+
+  <main class="main-content">
+
+    <header class="topbar">
+      <h1>Рабочий стол</h1>
+    </header>
+
+    <section class="stats">
+
+      <div class="card">
+        <h3>Новые заявки</h3>
+        <span>12</span>
+      </div>
+
+      <div class="card">
+        <h3>В работе</h3>
+        <span>28</span>
+      </div>
+
+      <div class="card">
+        <h3>Завершенные</h3>
+        <span>18</span>
+      </div>
+
+      <div class="card">
+        <h3>Выручка</h3>
+        <span>2 450 000 ₽</span>
+      </div>
+
+
+    </section>
+
+    <section class="grid-layout">
+
+  <div class="big-card">
+
+    <div class="section-header">
+      <h2>Клиенты и заказы</h2>
+      <a href="#">Открыть все</a>
+    </div>
+
+    <div class="client-row">
+      <div class="client-avatar"></div>
+
+      <div class="client-info">
+        <h4>Новый клиент</h4>
+        <p>Замер назначен</p>
+      </div>
+
+      <span class="status blue">Новый</span>
+    </div>
+
+    <div class="client-row">
+      <div class="client-avatar"></div>
+
+      <div class="client-info">
+        <h4>Заявка в работе</h4>
+        <p>Смета отправлена</p>
+      </div>
+
+      <span class="status orange">В работе</span>
+    </div>
+
+    <div class="client-row">
+      <div class="client-avatar"></div>
+
+      <div class="client-info">
+        <h4>Завершенный заказ</h4>
+        <p>Работы завершены</p>
+      </div>
+
+      <span class="status green">Завершен</span>
+    </div>
+
+  </div>
+
+  <div class="big-card">
+
+    <div class="section-header">
+      <h2>Сообщения</h2>
+      <a href="#">Все чаты</a>
+    </div>
+
+    <div class="chat-user">
+      <div class="client-avatar"></div>
+
+      <div class="chat-info">
+        <h4>Клиент</h4>
+        <p>Когда можно провести замер?</p>
+      </div>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+      <div class="bubble left">
+        Добрый день! Подскажите свободное время.
+      </div>
+
+      <div class="bubble right">
+        Свободно завтра в 15:00.
+      </div>
+    </div>
+
+    <div class="chat-input">
+
+      <label class="attach-btn">
+        📎
+        <input type="file" id="fileInput">
+      </label>
+
+      <input type="text" id="messageInput" placeholder="Введите сообщение">
+
+      <button id="sendBtn">➤</button>
+
+    </div>
+  </div>
+
+  <div class="calendar-card">
+
+    <div class="section-header">
+      <h2>Календарь</h2>
+      <a href="#">Май</a>
+    </div>
+
+    <div class="calendar-event">
+      <span>16</span>
+      <p>Замер квартиры</p>
+    </div>
+
+    <div class="calendar-event">
+      <span>17</span>
+      <p>Согласование сметы</p>
+    </div>
+
+    <div class="calendar-event">
+      <span>18</span>
+      <p>Выезд бригады</p>
+    </div>
+
+  </div>
+
+</section>
+<script type="module"
+src="../js/auth_check.js"></script>
+
+  </main>
+
+</div>
+
+</body>
+</html>

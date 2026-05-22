@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Личный кабинет</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cabinet.css">
+
+  <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar">
+
+    <div class="logo">
+
+      <h2>BuildHouse</h2>
+
+      <p>Личный кабинет</p>
+
+    </div>
+
+
+
+    <nav class="menu">
+
+      <a class="active">
+        Главная
+      </a>
+
+      <a href="messages.html">
+        Сообщения
+      </a>
+
+      <a>
+        Календарь работ
+      </a>
+
+      <a>
+        Смета
+      </a>
+
+      <a>
+        Документы
+      </a>
+
+      <a>
+        Настройки
+      </a>
+
+      <button id="logoutBtn">
+        Выйти
+      </button>
+
+    <script type="module"
+    src="../js/logout.js"></script>
+
+    </nav>
+
+  </aside>
+
+
+
+  <!-- MAIN -->
+
+  <main class="main-content">
+
+    <!-- TOP -->
+
+    <div class="top-bar">
+
+      <div>
+
+        <h1>
+          Добро пожаловать 👋
+        </h1>
+
+        <p>
+          Ваш личный кабинет клиента
+        </p>
+
+      </div>
+
+
+
+      <div class="profile-card">
+
+        <div class="profile-avatar"></div>
+
+        <div>
+
+          <h4 id="clientName">
+            Клиент
+          </h4>
+
+          <p id="clientPhone">
+            Телефон не указан
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- PROFILE SETTINGS -->
+
+    <div class="profile-settings">
+
+      <h2>
+        Личные данные
+      </h2>
+
+      <div class="settings-grid">
+
+        <input
+          type="text"
+          id="editName"
+          placeholder="Имя"
+        >
+
+
+
+        <input
+          type="text"
+          id="editPhone"
+          placeholder="Телефон"
+        >
+
+
+
+        <button id="saveProfileBtn">
+          Сохранить изменения
+        </button>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- PROJECT CARD -->
+
+    <div class="project-card">
+
+      <div>
+
+        <p class="card-label">
+          Статус проекта
+        </p>
+
+        <h2>
+          Активный проект пока не создан
+        </h2>
+
+      </div>
+
+
+
+      <div class="project-info">
+
+        <div>
+
+          <p class="card-label">
+            Адрес объекта
+          </p>
+
+          <h3>
+            —
+          </h3>
+
+        </div>
+
+
+
+        <div>
+
+          <p class="card-label">
+            Менеджер
+          </p>
+
+          <h3>
+            —
+          </h3>
+
+        </div>
+
+
+
+        <div>
+
+          <p class="card-label">
+            Срок сдачи
+          </p>
+
+          <h3>
+            —
+          </h3>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- STATUS -->
+
+    <div class="status-section">
+
+      <h2>
+        Этапы ремонта
+      </h2>
+
+
+
+      <div class="empty-state">
+
+        <p>
+          Проект пока не создан.
+          Этапы ремонта появятся после назначения менеджером.
+        </p>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- GRID -->
+
+    <div class="cabinet-grid">
+
+      <!-- CHAT -->
+
+      <div class="cabinet-card">
+
+        <div class="card-top">
+
+          <h3>
+            Сообщения
+          </h3>
+
+          <a href="messages.html">
+            Открыть
+          </a>
+
+        </div>
+
+
+
+        <div class="empty-state">
+
+          <p>
+            Сообщений пока нет
+          </p>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- CALENDAR -->
+
+      <div class="cabinet-card">
+
+        <div class="card-top">
+
+          <h3>
+            Ближайшие работы
+          </h3>
+
+        </div>
+
+
+
+        <div class="empty-state">
+
+          <p>
+            Замеры и работы пока не назначены
+          </p>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- DOCUMENTS -->
+
+      <div class="cabinet-card">
+
+        <div class="card-top">
+
+          <h3>
+            Документы
+          </h3>
+
+        </div>
+
+
+
+        <div class="empty-state">
+
+          <p>
+            Документы пока отсутствуют
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script type="module" src="js/cabinet.js"></script>
+
+</body>
+</html>

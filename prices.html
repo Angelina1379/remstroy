@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Цены | BuildHouse</title>
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:#f5f6fa;
+
+    color:#222;
+}
+
+.container{
+
+    width:90%;
+
+    max-width:1350px;
+
+    margin:auto;
+}
+
+
+
+/* HEADER */
+
+.header{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    background:rgba(255,255,255,0.95);
+
+    backdrop-filter:blur(12px);
+
+    border-bottom:1px solid #eee;
+
+    z-index:1000;
+}
+
+.header-content{
+
+    height:90px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+.logo{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit; /* наследует цвет от .logo */
+    display: inline-block; /* или block, если нужно */
+}
+
+.nav{
+
+    display:flex;
+
+    gap:35px;
+}
+
+.nav a{
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:500;
+}
+
+.login-btn{
+
+    background:#ffb547;
+
+    padding:14px 24px;
+
+    border-radius:16px;
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:600;
+}
+
+
+
+/* HERO */
+
+.hero{
+
+    padding-top:170px;
+
+    padding-bottom:80px;
+}
+
+.hero-box{
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400');
+
+    background-size:cover;
+
+    background-position:center;
+
+    border-radius:42px;
+
+    padding:120px 70px;
+
+    color:white;
+}
+
+.hero-subtitle{
+
+    color:#ffb547;
+
+    margin-bottom:18px;
+
+    font-weight:600;
+}
+
+.hero-box h1{
+
+    font-size:72px;
+
+    line-height:1.05;
+
+    margin-bottom:28px;
+}
+
+.hero-text{
+
+    font-size:19px;
+
+    line-height:1.8;
+
+    max-width:700px;
+}
+
+
+
+/* PRICE SECTION */
+
+.prices{
+
+    padding-bottom:120px;
+}
+
+.price-category{
+
+    margin-bottom:80px;
+}
+
+.category-title{
+
+    font-size:44px;
+
+    margin-bottom:35px;
+}
+
+.price-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(320px,1fr));
+
+    gap:28px;
+}
+
+.price-card{
+
+    background:white;
+
+    border-radius:32px;
+
+    padding:35px;
+
+    transition:0.3s;
+}
+
+.price-card:hover{
+
+    transform:translateY(-8px);
+}
+
+.price-card h3{
+
+    font-size:28px;
+
+    margin-bottom:20px;
+}
+
+.price{
+
+    font-size:38px;
+
+    font-weight:800;
+
+    margin-bottom:24px;
+}
+
+.price-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+    margin-bottom:30px;
+
+    color:#555;
+}
+
+.price-btn{
+
+    width:100%;
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#ffb547;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* BONUS */
+
+.bonus{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:60px;
+
+    margin-bottom:120px;
+}
+
+.bonus h2{
+
+    font-size:52px;
+
+    margin-bottom:25px;
+}
+
+.bonus-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+
+    margin-top:40px;
+}
+
+.bonus-card{
+
+    background:#f7f7f7;
+
+    border-radius:24px;
+
+    padding:30px;
+}
+
+.bonus-card h3{
+
+    margin-bottom:14px;
+}
+
+.bonus-card p{
+
+    color:#666;
+
+    line-height:1.7;
+}
+
+
+
+/* CTA */
+
+.cta{
+
+    padding-bottom:120px;
+}
+
+.cta-box{
+
+    background:white;
+
+    border-radius:36px;
+
+    padding:60px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:60px;
+}
+
+.cta-left h2{
+
+    font-size:54px;
+
+    line-height:1.1;
+
+    margin-bottom:24px;
+}
+
+.cta-left p{
+
+    line-height:1.8;
+
+    color:#666;
+}
+
+.cta-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.cta-form input,
+.cta-form textarea{
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#f5f5f5;
+
+    font-size:16px;
+}
+
+.cta-form textarea{
+
+    min-height:150px;
+
+    resize:none;
+}
+
+.cta-form button{
+
+    padding:20px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:#ffb547;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+
+
+/* FOOTER */
+
+.footer{
+
+    background:#111;
+
+    color:white;
+
+    padding:60px 0;
+}
+
+.footer-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:50px;
+}
+
+
+
+/* ADAPTIVE */
+
+@media(max-width:992px){
+
+    .cta-box{
+
+        grid-template-columns:1fr;
+    }
+
+    .hero-box h1{
+
+        font-size:52px;
+    }
+
+    .nav{
+
+        display:none;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero-box{
+
+        padding:70px 40px;
+    }
+
+    .hero-box h1{
+
+        font-size:42px;
+    }
+
+    .category-title{
+
+        font-size:34px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header class="header">
+
+<div class="container header-content">
+
+<div class="logo">
+    <a href="index.html">BuildHouse</a>
+</div>
+
+<nav class="nav">
+
+<a href="services.html">Услуги</a>
+<a href="portfolio.html">Портфолио</a>
+<a href="prices.html">Цены</a>
+<a href="about.html">О нас</a>
+<a href="reviews.html">Отзывы</a>
+<a href="contacts.html">Контакты</a>
+
+</nav>
+
+<a href="login.html"
+class="login-btn">
+
+Личный кабинет
+
+</a>
+
+</div>
+
+</header>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="container">
+
+<div class="hero-box">
+
+<p class="hero-subtitle">
+Прайс-лист
+</p>
+
+<h1>
+
+Стоимость
+ремонтных работ
+
+</h1>
+
+<p class="hero-text">
+
+Прозрачные цены
+без скрытых платежей.
+Подбираем оптимальный
+вариант ремонта под ваш бюджет.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<section class="prices">
+
+<div class="container">
+
+
+
+<!-- CATEGORY -->
+
+<div class="price-category">
+
+<h2 class="category-title">
+
+Косметический ремонт
+
+</h2>
+
+<div class="price-grid">
+
+
+
+<div class="price-card">
+
+<h3>
+Комната
+</h3>
+
+<div class="price">
+
+от 6 500 ₽/м²
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Покраска стен
+</div>
+
+<div>
+✔ Замена обоев
+</div>
+
+<div>
+✔ Ламинат
+</div>
+
+<div>
+✔ Плинтусы
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+
+
+<div class="price-card">
+
+<h3>
+Кухня
+</h3>
+
+<div class="price">
+
+от 8 000 ₽/м²
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Подготовка стен
+</div>
+
+<div>
+✔ Укладка плитки
+</div>
+
+<div>
+✔ Освещение
+</div>
+
+<div>
+✔ Монтаж фартука
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+
+
+<div class="price-card">
+
+<h3>
+Ванная
+</h3>
+
+<div class="price">
+
+от 10 000 ₽/м²
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Плиточные работы
+</div>
+
+<div>
+✔ Сантехника
+</div>
+
+<div>
+✔ Потолок
+</div>
+
+<div>
+✔ Гидроизоляция
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- CATEGORY -->
+
+<div class="price-category">
+
+<h2 class="category-title">
+
+Капитальный ремонт
+
+</h2>
+
+<div class="price-grid">
+
+
+
+<div class="price-card">
+
+<h3>
+1-комнатная квартира
+</h3>
+
+<div class="price">
+
+от 450 000 ₽
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Демонтаж
+</div>
+
+<div>
+✔ Новая электрика
+</div>
+
+<div>
+✔ Сантехника
+</div>
+
+<div>
+✔ Полная отделка
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+
+
+<div class="price-card">
+
+<h3>
+2-комнатная квартира
+</h3>
+
+<div class="price">
+
+от 680 000 ₽
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Перепланировка
+</div>
+
+<div>
+✔ Выравнивание стен
+</div>
+
+<div>
+✔ Потолки
+</div>
+
+<div>
+✔ Освещение
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+
+
+<div class="price-card">
+
+<h3>
+3-комнатная квартира
+</h3>
+
+<div class="price">
+
+от 920 000 ₽
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Дизайн-проект
+</div>
+
+<div>
+✔ Полный цикл работ
+</div>
+
+<div>
+✔ Умный дом
+</div>
+
+<div>
+✔ Премиальная отделка
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- CATEGORY -->
+
+<div class="price-category">
+
+<h2 class="category-title">
+
+Дополнительные услуги
+
+</h2>
+
+<div class="price-grid">
+
+
+
+<div class="price-card">
+
+<h3>
+Натяжные потолки
+</h3>
+
+<div class="price">
+
+от 950 ₽/м²
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Матовые
+</div>
+
+<div>
+✔ Глянцевые
+</div>
+
+<div>
+✔ Теневые
+</div>
+
+<div>
+✔ Подсветка
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+
+
+<div class="price-card">
+
+<h3>
+Электромонтаж
+</h3>
+
+<div class="price">
+
+от 25 000 ₽
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Розетки
+</div>
+
+<div>
+✔ Освещение
+</div>
+
+<div>
+✔ Щиток
+</div>
+
+<div>
+✔ Автоматы
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+
+
+<div class="price-card">
+
+<h3>
+Сантехнические работы
+</h3>
+
+<div class="price">
+
+от 30 000 ₽
+
+</div>
+
+<div class="price-list">
+
+<div>
+✔ Разводка труб
+</div>
+
+<div>
+✔ Установка ванны
+</div>
+
+<div>
+✔ Инсталляция
+</div>
+
+<div>
+✔ Смесители
+</div>
+
+</div>
+
+<button class="price-btn">
+
+Оставить заявку
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- BONUS -->
+
+<div class="bonus">
+
+<h2>
+
+Почему цены
+у нас прозрачные?
+
+</h2>
+
+<p class="hero-text">
+
+Мы фиксируем стоимость
+в договоре и не увеличиваем
+ее в процессе ремонта.
+
+</p>
+
+
+
+<div class="bonus-grid">
+
+<div class="bonus-card">
+
+<h3>
+Без скрытых платежей
+</h3>
+
+<p>
+
+Все работы и материалы
+фиксируются в смете.
+
+</p>
+
+</div>
+
+
+
+<div class="bonus-card">
+
+<h3>
+Фотоотчеты онлайн
+</h3>
+
+<p>
+
+Контроль ремонта
+через личный кабинет.
+
+</p>
+
+</div>
+
+
+
+<div class="bonus-card">
+
+<h3>
+Поэтапная оплата
+</h3>
+
+<p>
+
+Вы оплачиваете
+только выполненные работы.
+
+</p>
+
+</div>
+
+
+
+<div class="bonus-card">
+
+<h3>
+Гарантия до 5 лет
+</h3>
+
+<p>
+
+На все виды
+ремонтных работ.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- CTA -->
+
+<section class="cta">
+
+<div class="container">
+
+<div class="cta-box">
+
+<div class="cta-left">
+
+<h2>
+
+Получить
+точный расчет?
+
+</h2>
+
+<p>
+
+Оставьте заявку —
+мы свяжемся с вами
+и подготовим
+индивидуальную смету.
+
+</p>
+
+</div>
+
+
+
+<form class="cta-form">
+
+<input type="text"
+placeholder="Ваше имя">
+
+<input type="tel"
+placeholder="Телефон">
+
+<textarea placeholder="Комментарий"></textarea>
+
+<button type="submit">
+
+Получить расчет
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<footer class="footer">
+
+<div class="container footer-content">
+
+<div>
+
+<h3>
+BuildHouse
+</h3>
+
+<p>
+Современный ремонт
+квартир под ключ.
+</p>
+
+</div>
+
+
+
+<div>
+
+<h4>
+Контакты
+</h4>
+
+<p>
++7 (999) 999-99-99
+</p>
+
+<p>
+info@buildhouse.ru
+</p>
+
+</div>
+
+</div>
+
+</footer>
+
+</body>
+</html>

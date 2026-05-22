@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Календарь замеров</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h2>BuildHouse</h2>
+      <p>Панель менеджера</p>
+    </div>
+
+    <nav class="menu">
+
+      <a href="manager.html">Рабочий стол</a>
+      <a class="active">Календарь</a>
+      <a>Клиенты</a>
+      <a>Заказы</a>
+      <a>Сообщения</a>
+      <a>Сметы</a>
+
+    </nav>
+
+  </aside>
+
+  <main class="main-content">
+
+    <div class="calendar-top">
+
+      <h1>Календарь замеров</h1>
+
+      <button id="openModalBtn">
+        + Добавить задачу
+      </button>
+
+    </div>
+
+    <div class="calendar-wrapper">
+      <div id="calendar"></div>
+    </div>
+
+  </main>
+
+</div>
+
+    <div class="modal" id="taskModal">
+
+    <div class="modal-content">
+
+        <h2>Новая задача</h2>
+
+        <select id="clientName">
+
+    <option value="">Выберите клиента</option>
+
+    <option>Клиент 1</option>
+    <option>Клиент 2</option>
+    <option>Клиент 3</option>
+    <option>Клиент 4</option>
+
+    </select>
+
+    <input type="text" id="clientAddress" placeholder="Адрес" readonly>
+
+    <input type="text" id="workType" placeholder="Тип работ">
+
+    <textarea id="comment" placeholder="Комментарий"></textarea>
+
+    <input type="datetime-local" id="eventDate">
+
+    <button id="saveTaskBtn">
+      Сохранить задачу
+    </button>
+
+  </div>
+
+</div>
+
+<script src="js/calendar.js"></script>
+
+</body>
+</html>
