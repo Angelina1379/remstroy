@@ -1,6 +1,6 @@
-console.log("register.js загрузился");
 // Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getAuth,
@@ -31,9 +31,7 @@ const firebaseConfig = {
 
   messagingSenderId: "404840020044",
 
-  appId: "1:404840020044:web:f81c9613321ac170c19ce9",
-
-  measurementId: "G-J7S537NP48"
+  appId: "1:404840020044:web:f81c9613321ac170c19ce9"
 
 };
 
@@ -41,154 +39,161 @@ const firebaseConfig = {
 
 // INIT
 
-const app = initializeApp(firebaseConfig);
+const app =
+initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const auth =
+getAuth(app);
 
-const db = getFirestore(app);
-
-
-
-// BUTTON
-
-const registerBtn =
-document.getElementById("registerBtn");
+const db =
+getFirestore(app);
 
 
 
-registerBtn.addEventListener(
-"click",
-async () => {
+// ЖДЕМ ЗАГРУЗКУ HTML
 
-  const name =
-  document.getElementById("name").value;
+window.addEventListener(
+"DOMContentLoaded",
+() => {
 
-  const email =
-  document.getElementById("email").value;
-
-  const password =
-  document.getElementById("password").value;
+  console.log("HTML загружен");
 
 
 
-  // ПРОВЕРКА
-
-  if(!name || !email || !password){
-
-    alert("Заполните все поля");
-
-    return;
-
-  }
+  const registerBtn =
+  document.getElementById("registerBtn");
 
 
 
-  try{
-
-    // СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ
-
-    const userCredential =
-    await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+  console.log(registerBtn);
 
 
 
-    const user =
-    userCredential.user;
+  registerBtn.addEventListener(
+  "click",
+  async () => {
+
+    const name =
+    document.getElementById("name").value;
+
+    const email =
+    document.getElementById("email").value;
+
+    const password =
+    document.getElementById("password").value;
 
 
 
-    // СОХРАНЯЕМ В БАЗУ
+    // ПРОВЕРКА
 
-    await setDoc(
-      doc(db, "users", user.uid),
-      {
+    if(!name || !email || !password){
 
-        uid: user.uid,
+      alert("Заполните все поля");
 
-        name: name,
+      return;
 
-        email: email,
+    }
 
-        role: "client",
 
-        createdAt:
-        new Date()
+
+    try{
+
+      // СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ
+
+      const userCredential =
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+
+
+      const user =
+      userCredential.user;
+
+
+
+      // СОХРАНЯЕМ В БАЗУ
+
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+
+          uid: user.uid,
+
+          name: name,
+
+          email: email,
+
+          role: "client",
+
+          createdAt:
+          new Date()
+
+        }
+      );
+
+
+
+      alert("Регистрация успешна");
+
+
+
+      window.location.href =
+      "client-dashboard.html";
+
+
+
+    }catch(error){
+
+      console.log(error);
+
+
+
+      if(
+        error.code ===
+        "auth/email-already-in-use"
+      ){
+
+        alert(
+          "Эта почта уже зарегистрирована"
+        );
 
       }
-    );
 
+      else if(
+        error.code ===
+        "auth/weak-password"
+      ){
 
+        alert(
+          "Пароль должен быть минимум 6 символов"
+        );
 
-    // УСПЕШНО
+      }
 
-    alert("Регистрация успешна");
+      else if(
+        error.code ===
+        "auth/invalid-email"
+      ){
 
+        alert(
+          "Введите корректный email"
+        );
 
+      }
 
-    // ПЕРЕХОД В ЛК
+      else{
 
-    window.location.href =
-    "client-dashboard.html";
+        alert(
+          "Ошибка регистрации"
+        );
 
-
-
-  }catch(error){
-
-    console.log(error);
-
-
-
-    // ЕСЛИ ПОЧТА УЖЕ ИСПОЛЬЗУЕТСЯ
-
-    if(
-      error.code ===
-      "auth/email-already-in-use"
-    ){
-
-      alert(
-        "Эта почта уже зарегистрирована"
-      );
+      }
 
     }
 
-    // СЛАБЫЙ ПАРОЛЬ
-
-    else if(
-      error.code ===
-      "auth/weak-password"
-    ){
-
-      alert(
-        "Пароль должен быть минимум 6 символов"
-      );
-
-    }
-
-    // НЕПРАВИЛЬНАЯ ПОЧТА
-
-    else if(
-      error.code ===
-      "auth/invalid-email"
-    ){
-
-      alert(
-        "Введите корректный email"
-      );
-
-    }
-
-    else{
-
-      alert(
-        "Ошибка регистрации"
-      );
-
-    }
-
-  }
+  });
 
 });
