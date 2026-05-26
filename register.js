@@ -83,7 +83,7 @@ async () => {
     // ПЕРЕХОД
 
     window.location.href =
-    "client-dashboard.html";
+    "client-cabinet.html";
 
   }
 
