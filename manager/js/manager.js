@@ -1,3 +1,16 @@
+import { arrayUnion, updateDoc, doc } from "firebase/firestore";
+
+async function addNotification(userId, message) {
+  await updateDoc(doc(db, "projects", userId), {
+    notifications: arrayUnion({
+      text: message,
+      time: Date.now(),
+      read: false
+    })
+  });
+}
+
+
 import { auth, db } from "../../js/firebase.js";
 
 import {
