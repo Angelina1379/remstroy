@@ -19,6 +19,7 @@ loginBtn.addEventListener(
 "click",
 async () => {
 
+```
 const email =
 document.getElementById("email")
 .value
@@ -31,110 +32,75 @@ document.getElementById("password")
 
 if(!email || !password){
 
-
-alert("Заполните все поля");
-
-return;
-
-
-}
-
-try{
-
-
-const userCredential =
-await signInWithEmailAndPassword(
-  auth,
-  email,
-  password
-);
-
-const user =
-userCredential.user;
-
-console.log("Вход выполнен");
-
-const userRef =
-doc(
-  db,
-  "users",
-  user.uid
-);
-
-const userSnap =
-await getDoc(userRef);
-
-if(!userSnap.exists()){
-
-  alert(
-    "Данные пользователя не найдены"
-  );
+  alert("Заполните все поля");
 
   return;
 
 }
 
-const userData =
-userSnap.data();
+try{
 
-console.log(userData);
+  const userCredential =
+  await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
 
-alert("Вход выполнен");
+  const user =
+  userCredential.user;
 
-if(
-  userData.role ===
-  "manager"
-){
+  const userSnap =
+  await getDoc(
+    doc(
+      db,
+      "users",
+      user.uid
+    )
+  );
 
-  window.location.href =
-  "manager/manager-cabinet.html";
+  if(!userSnap.exists()){
 
-}
+    alert(
+      "Пользователь не найден"
+    );
 
-else if(
-  userData.role ===
-  "admin"
-){
+    return;
 
-  window.location.href =
-  "admin/admin-panel.html";
+  }
 
-}
+  const userData =
+  userSnap.data();
 
-else{
+  if(
+    userData.role ===
+    "manager"
+  ){
 
-  window.location.href =
-  "client/client-cabinet.html";
+    window.location.href =
+    "manager/manager-cabinet.html";
 
-}
+  }
 
+  else{
+
+    window.location.href =
+    "client/client-cabinet.html";
+
+  }
 
 }
 
 catch(error){
 
-console.log(error);
-
-if(
-  error.code ===
-  "auth/invalid-credential"
-){
+  console.log(error);
 
   alert(
     "Неверная почта или пароль"
   );
 
 }
-
-else{
-
-  alert(
-    "Ошибка входа"
-  );
+```
 
 }
-
-
-}
-
-});
+);
