@@ -1,4 +1,3 @@
-```javascript
 // ======================
 // BUILDHOUSE CABINET
 // ======================
@@ -424,4 +423,4 @@ loadMessages();
 loadCalendar();
 loadDocuments();
 animateCards();
-```
+
