@@ -1,98 +1,141 @@
-import { auth, db } from './firebase.js';
+import { auth, db }
+from "./firebase.js";
 
 import {
-
-    signInWithEmailAndPassword
-
-} from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+signInWithEmailAndPassword
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-
-    doc,
-    getDoc
-
-} from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-
+doc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const loginBtn =
-document.getElementById('loginBtn');
+document.getElementById("loginBtn");
 
+loginBtn.addEventListener(
+"click",
+async () => {
 
+const email =
+document.getElementById("email")
+.value
+.trim();
 
-loginBtn.addEventListener('click', async () => {
+const password =
+document.getElementById("password")
+.value
+.trim();
 
-    const email =
-    document.getElementById('email').value;
+if(!email || !password){
 
-    const password =
-    document.getElementById('password').value;
+```
+alert("Заполните все поля");
 
+return;
+```
 
+}
 
-    try{
+try{
 
-        const userCredential =
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
+```
+const userCredential =
+await signInWithEmailAndPassword(
+  auth,
+  email,
+  password
+);
 
+const user =
+userCredential.user;
 
+console.log("Вход выполнен");
 
-        const user =
-        userCredential.user;
+const userRef =
+doc(
+  db,
+  "users",
+  user.uid
+);
 
+const userSnap =
+await getDoc(userRef);
 
+if(!userSnap.exists()){
 
-        const docRef =
-        doc(db, "users", user.uid);
+  alert(
+    "Данные пользователя не найдены"
+  );
 
+  return;
 
+}
 
-        const docSnap =
-        await getDoc(docRef);
+const userData =
+userSnap.data();
 
+console.log(userData);
 
+alert("Вход выполнен");
 
-        if(docSnap.exists()){
+if(
+  userData.role ===
+  "manager"
+){
 
-            const userData =
-            docSnap.data();
+  window.location.href =
+  "manager/manager-cabinet.html";
 
+}
 
+else if(
+  userData.role ===
+  "admin"
+){
 
-            // МЕНЕДЖЕР
+  window.location.href =
+  "admin/admin-panel.html";
 
-            if(userData.role === "manager"){
+}
 
-                window.location.href =
-                "manager.html";
+else{
 
-            }
+  window.location.href =
+  "client/client-cabinet.html";
 
+}
+```
 
+}
 
-            // КЛИЕНТ
+catch(error){
 
-            else if(userData.role === "client"){
+```
+console.log(error);
 
-                window.location.href =
-                "cabinet.html";
+if(
+  error.code ===
+  "auth/invalid-credential"
+){
 
-            }
+  alert(
+    "Неверная почта или пароль"
+  );
 
-        }
+}
 
+else{
 
+  alert(
+    "Ошибка входа"
+  );
 
-    }catch(error){
+}
+```
 
-        alert(error.message);
-
-    }
+}
 
 });

@@ -2,13 +2,14 @@ import { auth, db }
 from "./firebase.js";
 
 import {
-  createUserWithEmailAndPassword
+createUserWithEmailAndPassword
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-  doc,
-  setDoc
+doc,
+setDoc,
+serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -21,128 +22,138 @@ registerBtn.addEventListener(
 "click",
 async () => {
 
-  const name =
-  document.getElementById("name").value.trim();
+const name =
+document.getElementById("name")
+.value
+.trim();
 
-  const email =
-  document.getElementById("email").value.trim();
+const email =
+document.getElementById("email")
+.value
+.trim();
 
-  const password =
-  document.getElementById("password").value.trim();
+const password =
+document.getElementById("password")
+.value
+.trim();
 
-  // ПРОВЕРКА ПОЛЕЙ
+if(
+!name ||
+!email ||
+!password
+){
 
-  if(!name || !email || !password){
+```
+alert(
+  "Заполните все поля"
+);
 
-    alert("Заполните все поля");
+return;
+```
 
-    return;
+}
+
+try{
+
+```
+const userCredential =
+await createUserWithEmailAndPassword(
+  auth,
+  email,
+  password
+);
+
+const user =
+userCredential.user;
+
+await setDoc(
+  doc(
+    db,
+    "users",
+    user.uid
+  ),
+  {
+
+    uid:
+    user.uid,
+
+    name:
+    name,
+
+    email:
+    email,
+
+    role:
+    "client",
+
+    createdAt:
+    serverTimestamp()
 
   }
+);
 
-  try{
+console.log(
+  "Пользователь создан"
+);
 
-    // СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ
+alert(
+  "Регистрация успешна"
+);
 
-    const userCredential =
-    await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
+window.location.href =
+"client/client-cabinet.html";
+```
+
+}
+
+catch(error){
+
+```
+console.error(error);
+
+switch(error.code){
+
+  case "auth/email-already-in-use":
+
+    alert(
+      "Эта почта уже зарегистрирована"
     );
 
-    const user =
-    userCredential.user;
+    break;
 
-    console.log("Пользователь создан");
+  case "auth/weak-password":
 
-    // СОХРАНЯЕМ В БАЗУ
-
-    await setDoc(
-      doc(db, "users", user.uid),
-      {
-
-        uid: user.uid,
-
-        name: name,
-
-        email: email,
-
-        role: "client",
-
-        createdAt:
-        new Date()
-
-      }
+    alert(
+      "Пароль должен содержать минимум 6 символов"
     );
 
-    console.log("Данные записаны в Firestore");
+    break;
 
-    alert("Регистрация успешна");
+  case "auth/invalid-email":
 
-    // ПЕРЕХОД
-  
-  console.log("Переходим в кабинет...");
-  window.location.href = "client/client-cabinet.html";
+    alert(
+      "Введите корректный email"
+    );
 
-  }
+    break;
 
-  catch(error){
+  case "auth/operation-not-allowed":
 
-    console.log(error);
+    alert(
+      "В Firebase не включен Email/Password Provider"
+    );
 
-    if(
-      error.code ===
-      "auth/email-already-in-use"
-    ){
+    break;
 
-      alert(
-        "Эта почта уже зарегистрирована"
-      );
+  default:
 
-    }
+    alert(
+      "Ошибка регистрации"
+    );
 
-    else if(
-      error.code ===
-      "auth/weak-password"
-    ){
+}
+```
 
-      alert(
-        "Пароль должен быть минимум 6 символов"
-      );
-
-    }
-
-    else if(
-      error.code ===
-      "auth/invalid-email"
-    ){
-
-      alert(
-        "Введите корректный email"
-      );
-
-    }
-
-    else if(
-      error.code ===
-      "auth/operation-not-allowed"
-    ){
-
-      alert(
-        "В Firebase не включен Email/Password"
-      );
-
-    }
-
-    else{
-
-      alert(
-        "Ошибка регистрации"
-      );
-
-    }
-
-  }
+}
 
 });
