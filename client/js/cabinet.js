@@ -1,4 +1,5 @@
-import { auth, db } from "js/firebase.js";
+import { auth, db } from "../../js/firebase.js";
+
 import {
   onAuthStateChanged,
   signOut
@@ -43,7 +44,7 @@ onAuthStateChanged(auth, (user) => {
 
 
 // ======================
-// PROJECT (REALTIME)
+// PROJECT
 // ======================
 function loadProject(uid) {
   const ref = doc(db, "projects", uid);
@@ -94,19 +95,19 @@ function renderStages(stages) {
 // EMPTY BLOCKS
 // ======================
 function renderEmptyBlocks() {
-  const msg = document.getElementById("messagesPreview");
-  if (msg) msg.innerHTML = "<p>Сообщений пока нет</p>";
+  document.getElementById("messagesPreview").innerHTML =
+    "<p>Сообщений пока нет</p>";
 
-  const works = document.getElementById("worksList");
-  if (works) works.innerHTML = "<p>Работы не назначены</p>";
+  document.getElementById("worksList").innerHTML =
+    "<p>Работы не назначены</p>";
 
-  const docs = document.getElementById("documentsList");
-  if (docs) docs.innerHTML = "<p>Документы отсутствуют</p>";
+  document.getElementById("documentsList").innerHTML =
+    "<p>Документы отсутствуют</p>";
 }
 
 
 // ======================
-// NOTIFICATIONS (REALTIME)
+// NOTIFICATIONS
 // ======================
 function loadNotifications(uid) {
   const container = document.getElementById("notificationsList");
@@ -151,7 +152,7 @@ function loadNotifications(uid) {
 
 
 // ======================
-// PROFILE LOAD + SAVE
+// PROFILE
 // ======================
 function loadProfile(uid) {
   const ref = doc(db, "users", uid);
@@ -161,34 +162,27 @@ function loadProfile(uid) {
 
     const data = snap.data();
 
-    const name = document.getElementById("clientName");
-    const phone = document.getElementById("clientPhone");
+    document.getElementById("clientName").textContent =
+      data.name || "Клиент";
 
-    const editName = document.getElementById("editName");
-    const editPhone = document.getElementById("editPhone");
+    document.getElementById("clientPhone").textContent =
+      data.phone || "—";
 
-    if (name) name.textContent = data.name || "Клиент";
-    if (phone) phone.textContent = data.phone || "—";
-
-    if (editName) editName.value = data.name || "";
-    if (editPhone) editPhone.value = data.phone || "";
+    document.getElementById("editName").value = data.name || "";
+    document.getElementById("editPhone").value = data.phone || "";
   });
 
-  const saveBtn = document.getElementById("saveProfileBtn");
+  document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+    const name = document.getElementById("editName").value;
+    const phone = document.getElementById("editPhone").value;
 
-  if (saveBtn) {
-    saveBtn.addEventListener("click", async () => {
-      const name = document.getElementById("editName")?.value || "";
-      const phone = document.getElementById("editPhone")?.value || "";
+    await setDoc(doc(db, "users", uid), {
+      name,
+      phone
+    }, { merge: true });
 
-      await setDoc(doc(db, "users", uid), {
-        name,
-        phone
-      }, { merge: true });
-
-      alert("Сохранено!");
-    });
-  }
+    alert("Сохранено!");
+  });
 }
 
 
@@ -197,12 +191,10 @@ function loadProfile(uid) {
 // ======================
 function setText(id, value) {
   const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = value || "—";
+  if (el) el.textContent = value || "—";
 }
 
 function toggle(id, show) {
   const el = document.getElementById(id);
-  if (!el) return;
-  el.style.display = show ? "block" : "none";
+  if (el) el.style.display = show ? "block" : "none";
 }
