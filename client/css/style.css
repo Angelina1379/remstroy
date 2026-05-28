@@ -540,3 +540,14 @@ button:hover{
   opacity: 0.6;
 }
 
+.notif-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  padding: 10px 14px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+  font-weight: 600;
+}
+
