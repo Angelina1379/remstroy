@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase.js";
-import { setDoc, doc } from "firebase/firestore";
+
 import {
   onAuthStateChanged,
   signOut
@@ -7,6 +7,7 @@ import {
 
 import {
   doc,
+  setDoc,
   onSnapshot,
   collection,
   query,
@@ -17,14 +18,18 @@ import {
 // ======================
 // LOGOUT
 // ======================
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "index.html";
-});
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
+}
 
 
 // ======================
-// AUTH
+// AUTH CHECK
 // ======================
 onAuthStateChanged(auth, (user) => {
   if (!user) {
@@ -32,18 +37,19 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  initProject(user.uid);
-  initNotifications(user.uid);
+  loadProject(user.uid);
+  loadNotifications(user.uid);
+  loadProfile(user.uid);
 });
 
 
 // ======================
 // PROJECT (REALTIME)
 // ======================
-function initProject(uid) {
-  const projectRef = doc(db, "projects", uid);
+function loadProject(uid) {
+  const ref = doc(db, "projects", uid);
 
-  onSnapshot(projectRef, (snap) => {
+  onSnapshot(ref, (snap) => {
     if (!snap.exists()) return;
 
     const data = snap.data();
@@ -57,7 +63,7 @@ function initProject(uid) {
     toggle("statusSection", true);
 
     renderStages(data.stages || []);
-    renderBlocks();
+    renderEmptyBlocks();
   });
 }
 
@@ -72,23 +78,23 @@ function renderStages(stages) {
   container.innerHTML = "";
 
   stages.forEach((stage, i) => {
-    const div = document.createElement("div");
-    div.className = "stage-item";
+    const item = document.createElement("div");
+    item.className = "stage-item";
 
-    div.innerHTML = `
+    item.innerHTML = `
       <div class="stage-icon">${i + 1}</div>
       <div>${stage}</div>
     `;
 
-    container.appendChild(div);
+    container.appendChild(item);
   });
 }
 
 
 // ======================
-// DEFAULT BLOCKS
+// EMPTY BLOCKS
 // ======================
-function renderBlocks() {
+function renderEmptyBlocks() {
   const msg = document.getElementById("messagesPreview");
   if (msg) msg.innerHTML = "<p>Сообщений пока нет</p>";
 
@@ -103,24 +109,24 @@ function renderBlocks() {
 // ======================
 // NOTIFICATIONS (REALTIME)
 // ======================
-function initNotifications(uid) {
-  const notifBadge = document.getElementById("notifBadge");
+function loadNotifications(uid) {
   const container = document.getElementById("notificationsList");
+  const badge = document.getElementById("notifBadge");
 
-  if (!notifBadge || !container) return;
+  if (!container || !badge) return;
 
-  const notifRef = query(
+  const ref = query(
     collection(db, "notifications", uid, "items"),
     orderBy("time", "desc")
   );
 
-  onSnapshot(notifRef, (snap) => {
+  onSnapshot(ref, (snap) => {
     container.innerHTML = "";
 
     let unread = 0;
 
-    snap.forEach(doc => {
-      const n = doc.data();
+    snap.forEach(docSnap => {
+      const n = docSnap.data();
 
       if (!n.read) unread++;
 
@@ -139,20 +145,51 @@ function initNotifications(uid) {
       container.appendChild(div);
     });
 
-    updateBadge(unread);
+    badge.textContent = unread;
+    badge.style.display = unread > 0 ? "inline-block" : "none";
   });
 }
 
 
 // ======================
-// BADGE
+// PROFILE LOAD + SAVE
 // ======================
-function updateBadge(count) {
-  const badge = document.getElementById("notifBadge");
-  if (!badge) return;
+function loadProfile(uid) {
+  const ref = doc(db, "users", uid);
 
-  badge.textContent = count;
-  badge.style.display = count > 0 ? "inline-block" : "none";
+  onSnapshot(ref, (snap) => {
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    const name = document.getElementById("clientName");
+    const phone = document.getElementById("clientPhone");
+
+    const editName = document.getElementById("editName");
+    const editPhone = document.getElementById("editPhone");
+
+    if (name) name.textContent = data.name || "Клиент";
+    if (phone) phone.textContent = data.phone || "—";
+
+    if (editName) editName.value = data.name || "";
+    if (editPhone) editPhone.value = data.phone || "";
+  });
+
+  const saveBtn = document.getElementById("saveProfileBtn");
+
+  if (saveBtn) {
+    saveBtn.addEventListener("click", async () => {
+      const name = document.getElementById("editName")?.value || "";
+      const phone = document.getElementById("editPhone")?.value || "";
+
+      await setDoc(doc(db, "users", uid), {
+        name,
+        phone
+      }, { merge: true });
+
+      alert("Сохранено!");
+    });
+  }
 }
 
 
@@ -170,22 +207,3 @@ function toggle(id, show) {
   if (!el) return;
   el.style.display = show ? "block" : "none";
 }
-
-const saveBtn = document.getElementById("saveProfileBtn");
-
-saveBtn.addEventListener("click", async () => {
-
-  const name = document.getElementById("editName").value;
-  const phone = document.getElementById("editPhone").value;
-
-  const user = auth.currentUser;
-
-  if (!user) return;
-
-  await setDoc(doc(db, "users", user.uid), {
-    name: name,
-    phone: phone
-  }, { merge: true });
-
-  alert("Сохранено!");
-});
