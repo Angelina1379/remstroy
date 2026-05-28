@@ -37,7 +37,9 @@ if(!email || !password){
 
 }
 
-try{
+try {
+
+  console.log("Начинаем вход");
 
   const userCredential =
   await signInWithEmailAndPassword(
@@ -46,22 +48,31 @@ try{
     password
   );
 
+  console.log("Авторизация успешна");
+
   const user =
   userCredential.user;
 
-  const userSnap =
-  await getDoc(
-    doc(
-      db,
-      "users",
-      user.uid
-    )
+  console.log("UID:", user.uid);
+
+  const userRef =
+  doc(
+    db,
+    "users",
+    user.uid
   );
 
-  if(!userSnap.exists()){
+  console.log("Получаем документ");
+
+  const userSnap =
+  await getDoc(userRef);
+
+  console.log("Документ получен");
+
+  if (!userSnap.exists()) {
 
     alert(
-      "Пользователь не найден"
+      "Документ пользователя отсутствует"
     );
 
     return;
@@ -71,17 +82,35 @@ try{
   const userData =
   userSnap.data();
 
-  if(
+  console.log(
+    "Данные пользователя:",
+    userData
+  );
+
+  alert(
+    "Роль: " +
+    userData.role
+  );
+
+  if (
     userData.role ===
     "manager"
-  ){
+  ) {
+
+    console.log(
+      "Переход в кабинет менеджера"
+    );
 
     window.location.href =
     "manager/manager-cabinet.html";
 
   }
 
-  else{
+  else {
+
+    console.log(
+      "Переход в кабинет клиента"
+    );
 
     window.location.href =
     "client/client-cabinet.html";
@@ -89,17 +118,16 @@ try{
   }
 
 }
-
 catch(error){
 
-  console.log(error);
-
-  alert(
-    "Неверная почта или пароль"
+  console.error(
+    "ОШИБКА:",
+    error
   );
 
-}
-
+  alert(
+    error.message
+  );
 
 }
 );
