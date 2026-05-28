@@ -154,9 +154,11 @@ function loadNotifications(uid) {
 // PROFILE
 // ======================
 function loadProfile(uid) {
+
   const ref = doc(db, "users", uid);
 
   onSnapshot(ref, (snap) => {
+
     if (!snap.exists()) return;
 
     const data = snap.data();
@@ -167,23 +169,55 @@ function loadProfile(uid) {
     document.getElementById("clientPhone").textContent =
       data.phone || "—";
 
-    document.getElementById("editName").value = data.name || "";
-    document.getElementById("editPhone").value = data.phone || "";
+    document.getElementById("editName").value =
+      data.name || "";
+
+    document.getElementById("editPhone").value =
+      data.phone || "";
   });
 
-  document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-    const name = document.getElementById("editName").value;
-    const phone = document.getElementById("editPhone").value;
 
-    await setDoc(doc(db, "users", uid), {
-      name,
-      phone
-    }, { merge: true });
+  const saveBtn =
+    document.getElementById("saveProfileBtn");
 
-    alert("Сохранено!");
-  });
+
+  if (!saveBtn.dataset.listenerAdded) {
+
+    saveBtn.dataset.listenerAdded = "true";
+
+    saveBtn.addEventListener("click", async () => {
+
+      const user = auth.currentUser;
+
+      if (!user) {
+        alert("Пользователь не авторизован");
+        return;
+      }
+
+      const name =
+        document.getElementById("editName").value.trim();
+
+      const phone =
+        document.getElementById("editPhone").value.trim();
+
+      if (!name || !phone) {
+        alert("Заполните все поля");
+        return;
+      }
+
+      await setDoc(
+        doc(db, "users", uid),
+        {
+          name,
+          phone
+        },
+        { merge: true }
+      );
+
+      alert("Сохранено!");
+    });
+  }
 }
-
 
 // ======================
 // HELPERS
