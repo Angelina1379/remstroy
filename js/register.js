@@ -81,9 +81,9 @@ async () => {
     alert("Регистрация успешна");
 
     // ПЕРЕХОД
-
-    window.location.href =
-    "../client/client-cabinet.html";
+  
+  console.log("Переходим в кабинет...");
+  window.location.href = "client/client-cabinet.html";
 
   }
 
