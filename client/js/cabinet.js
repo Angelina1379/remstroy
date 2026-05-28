@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase.js";
-
+import { setDoc, doc } from "firebase/firestore";
 import {
   onAuthStateChanged,
   signOut
