@@ -20,7 +20,9 @@ body{
     background:#0b1220;
     color:white;
     padding:30px 20px;
-
+    position: sticky;
+    top: 0;
+    height: 100vh;
     display:flex;
     flex-direction:column;
 }
@@ -685,6 +687,9 @@ body{
 
     .dashboard{
         flex-direction:column;
+        display:flex;
+        min-height:100vh;
+        align-items: flex-start;
     }
 
     .sidebar{
