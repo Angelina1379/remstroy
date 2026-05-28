@@ -1,453 +1,92 @@
-// ======================
-// BUILDHOUSE CABINET
-// ======================
+import { auth, db } from "./firebase.js";
 
-const clientName = document.getElementById("clientName");
-const clientPhone = document.getElementById("clientPhone");
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const editName = document.getElementById("editName");
-const editPhone = document.getElementById("editPhone");
-
-const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-
-// ======================
-// DEMO DATA
-// ======================
-
-let profile = JSON.parse(localStorage.getItem("clientProfile")) || {
-    name: "Ангелина",
-    phone: "+7 (999) 123-45-67"
-};
-
-let project = JSON.parse(localStorage.getItem("clientProject")) || {
-    title: "Ремонт квартиры",
-    status: "Черновые работы",
-    address: "ул. Ленина 24",
-    manager: "Александр",
-    deadline: "25.08.2026",
-    progress: 64
-};
-
-let stages = [
-    {
-        title: "Замеры",
-        completed: true
-    },
-    {
-        title: "Смета",
-        completed: true
-    },
-    {
-        title: "Закупка материалов",
-        completed: true
-    },
-    {
-        title: "Черновые работы",
-        completed: false
-    },
-    {
-        title: "Отделочные работы",
-        completed: false
-    },
-    {
-        title: "Сдача проекта",
-        completed: false
-    }
-];
+import {
+  doc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 // ======================
-// PROFILE
+// LOGOUT
 // ======================
-
-function loadProfile(){
-
-    clientName.textContent = profile.name;
-    clientPhone.textContent = profile.phone;
-
-    editName.value = profile.name;
-    editPhone.value = profile.phone;
-}
-
-saveProfileBtn.addEventListener("click", () => {
-
-    profile.name = editName.value;
-    profile.phone = editPhone.value;
-
-    localStorage.setItem(
-        "clientProfile",
-        JSON.stringify(profile)
-    );
-
-    loadProfile();
-
-    saveProfileBtn.textContent = "Сохранено ✓";
-
-    setTimeout(() => {
-        saveProfileBtn.textContent = "Сохранить изменения";
-    }, 2000);
-
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "index.html";
 });
 
 
 // ======================
-// PROJECT
+// AUTH + REALTIME DATA
 // ======================
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
 
-function loadProject(){
+  const projectRef = doc(db, "projects", user.uid);
 
-    const projectCard = document.querySelector(".project-card");
+  onSnapshot(projectRef, (snap) => {
+    if (!snap.exists()) return;
 
-    projectCard.innerHTML = `
-    
-        <div class="project-top">
-        
-            <div>
-                <p class="card-label">
-                    Статус проекта
-                </p>
+    const data = snap.data();
 
-                <h2>
-                    ${project.title}
-                </h2>
-            </div>
+    // ----------------------
+    // PROJECT INFO
+    // ----------------------
+    setText("projectStatus", data.status);
+    setText("projectAddress", data.address);
+    setText("projectManager", data.manager);
+    setText("projectDeadline", data.deadline);
 
-            <div class="progress-circle">
-                ${project.progress}%
-            </div>
+    toggle("projectCard", true);
+    toggle("statusSection", true);
 
-        </div>
+    // ----------------------
+    // STAGES
+    // ----------------------
+    const stagesList = document.getElementById("stagesList");
+    stagesList.innerHTML = "";
 
-        <div class="project-info">
-
-            <div>
-                <p class="card-label">
-                    Этап
-                </p>
-
-                <h3>
-                    ${project.status}
-                </h3>
-            </div>
-
-            <div>
-                <p class="card-label">
-                    Адрес объекта
-                </p>
-
-                <h3>
-                    ${project.address}
-                </h3>
-            </div>
-
-            <div>
-                <p class="card-label">
-                    Менеджер
-                </p>
-
-                <h3>
-                    ${project.manager}
-                </h3>
-            </div>
-
-            <div>
-                <p class="card-label">
-                    Срок сдачи
-                </p>
-
-                <h3>
-                    ${project.deadline}
-                </h3>
-            </div>
-
-        </div>
-
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
-        </div>
-    
-    `;
-
-    const fill = document.querySelector(".progress-fill");
-
-    setTimeout(() => {
-        fill.style.width = project.progress + "%";
-    }, 300);
-
-}
-
-
-// ======================
-// STAGES
-// ======================
-
-function loadStages(){
-
-    const statusSection =
-        document.querySelector(".status-section");
-
-    const stagesHTML = stages.map(stage => {
-
-        return `
-        
-            <div class="stage-item
-                ${stage.completed ? "done" : ""}
-            ">
-
-                <div class="stage-icon">
-                    ${stage.completed ? "✓" : "•"}
-                </div>
-
-                <span>
-                    ${stage.title}
-                </span>
-
-            </div>
-        
+    if (Array.isArray(data.stages)) {
+      data.stages.forEach((stage, i) => {
+        const item = document.createElement("div");
+        item.className = "stage-item";
+        item.innerHTML = `
+          <div style="padding:12px;background:#f5f5f5;border-radius:12px;margin-bottom:10px;">
+            ${i + 1}. ${stage}
+          </div>
         `;
-
-    }).join("");
-
-    statusSection.innerHTML = `
-    
-        <h2>
-            Этапы ремонта
-        </h2>
-
-        <div class="stages-list">
-            ${stagesHTML}
-        </div>
-    
-    `;
-}
-
-
-// ======================
-// MESSAGES PREVIEW
-// ======================
-
-function loadMessages(){
-
-    const chatCard =
-        document.querySelectorAll(".cabinet-card")[0];
-
-    chatCard.innerHTML = `
-    
-        <div class="card-top">
-
-            <h3>
-                Сообщения
-            </h3>
-
-            <a href="messages.html">
-                Открыть
-            </a>
-
-        </div>
-
-        <div class="message-preview">
-
-            <div class="message-user">
-                Александр
-            </div>
-
-            <p>
-                Завтра начинаем отделочные работы 👌
-            </p>
-
-            <span>
-                12:45
-            </span>
-
-        </div>
-
-        <div class="message-preview">
-
-            <div class="message-user">
-                Менеджер
-            </div>
-
-            <p>
-                Фото прогресса загружены в проект
-            </p>
-
-            <span>
-                Вчера
-            </span>
-
-        </div>
-    
-    `;
-}
-
-
-// ======================
-// CALENDAR
-// ======================
-
-function loadCalendar(){
-
-    const calendarCard =
-        document.querySelectorAll(".cabinet-card")[1];
-
-    calendarCard.innerHTML = `
-    
-        <div class="card-top">
-
-            <h3>
-                Ближайшие работы
-            </h3>
-
-        </div>
-
-        <div class="calendar-work">
-
-            <div>
-                <strong>
-                    15 июня
-                </strong>
-
-                <p>
-                    Монтаж потолков
-                </p>
-            </div>
-
-        </div>
-
-        <div class="calendar-work">
-
-            <div>
-                <strong>
-                    18 июня
-                </strong>
-
-                <p>
-                    Укладка плитки
-                </p>
-            </div>
-
-        </div>
-    
-    `;
-}
-
-
-// ======================
-// DOCUMENTS
-// ======================
-
-function loadDocuments(){
-
-    const docsCard =
-        document.querySelectorAll(".cabinet-card")[2];
-
-    docsCard.innerHTML = `
-    
-        <div class="card-top">
-
-            <h3>
-                Документы
-            </h3>
-
-        </div>
-
-        <div class="document-item">
-
-            <span>
-                📄 Смета.pdf
-            </span>
-
-            <button>
-                Скачать
-            </button>
-
-        </div>
-
-        <div class="document-item">
-
-            <span>
-                📄 Договор.pdf
-            </span>
-
-            <button>
-                Скачать
-            </button>
-
-        </div>
-    
-    `;
-}
-
-
-// ======================
-// ANIMATIONS
-// ======================
-
-function animateCards(){
-
-    const cards =
-        document.querySelectorAll(
-            ".cabinet-card, .project-card, .profile-settings"
-        );
-
-    cards.forEach((card, index) => {
-
-        card.style.opacity = "0";
-        card.style.transform = "translateY(20px)";
-
-        setTimeout(() => {
-
-            card.style.transition =
-                "0.5s ease";
-
-            card.style.opacity = "1";
-            card.style.transform =
-                "translateY(0)";
-
-        }, index * 150);
-
-    });
-
-}
-
-
-// ======================
-// INIT
-// ======================
-
-loadProfile();
-loadProject();
-loadStages();
-loadMessages();
-loadCalendar();
-loadDocuments();
-animateCards();
-
-
-const phoneInput = document.getElementById('editPhone');
-
-phoneInput.addEventListener('input', (e) => {
-
-    let x = e.target.value
-        .replace(/\D/g, '')
-        .match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-
-    if (!x) return;
-
-    e.target.value =
-        '+7' +
-        (x[2] ? ' (' + x[2] : '') +
-        (x[3] ? ') ' + x[3] : '') +
-        (x[4] ? '-' + x[4] : '') +
-        (x[5] ? '-' + x[5] : '');
-});
-
-phoneInput.addEventListener('focus', () => {
-
-    if (phoneInput.value === '') {
-        phoneInput.value = '+7 ';
+        stagesList.appendChild(item);
+      });
     }
 
+    // ----------------------
+    // DEFAULT BLOCKS
+    // ----------------------
+    setText("messagesPreview", "Сообщений пока нет");
+    setText("worksList", "Работы не назначены");
+    setText("documentsList", "Документы отсутствуют");
+  });
 });
 
+
+// ======================
+// HELPERS
+// ======================
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = value || "—";
+}
+
+function toggle(id, show) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = show ? "block" : "none";
+}
