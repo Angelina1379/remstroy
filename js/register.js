@@ -43,19 +43,18 @@ if(
 !password
 ){
 
-```
+
 alert(
   "Заполните все поля"
 );
 
 return;
-```
+
 
 }
 
 try{
 
-```
 const userCredential =
 await createUserWithEmailAndPassword(
   auth,
@@ -102,13 +101,12 @@ alert(
 
 window.location.href =
 "client/client-cabinet.html";
-```
+
 
 }
 
 catch(error){
 
-```
 console.error(error);
 
 switch(error.code){
@@ -152,7 +150,7 @@ switch(error.code){
     );
 
 }
-```
+
 
 }
 

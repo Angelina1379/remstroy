@@ -31,17 +31,17 @@ document.getElementById("password")
 
 if(!email || !password){
 
-```
+
 alert("Заполните все поля");
 
 return;
-```
+
 
 }
 
 try{
 
-```
+
 const userCredential =
 await signInWithEmailAndPassword(
   auth,
@@ -107,13 +107,12 @@ else{
   "client/client-cabinet.html";
 
 }
-```
+
 
 }
 
 catch(error){
 
-```
 console.log(error);
 
 if(
@@ -134,7 +133,7 @@ else{
   );
 
 }
-```
+
 
 }
 
