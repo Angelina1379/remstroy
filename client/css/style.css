@@ -511,6 +511,7 @@ button:hover{
     .cabinet-grid{
         grid-template-columns:1fr;
     }
+}
     .badge {
   background: #ffb547;
   color: black;
@@ -538,4 +539,4 @@ button:hover{
   font-size: 12px;
   opacity: 0.6;
 }
-}
+
