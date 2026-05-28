@@ -170,3 +170,22 @@ function toggle(id, show) {
   if (!el) return;
   el.style.display = show ? "block" : "none";
 }
+
+const saveBtn = document.getElementById("saveProfileBtn");
+
+saveBtn.addEventListener("click", async () => {
+
+  const name = document.getElementById("editName").value;
+  const phone = document.getElementById("editPhone").value;
+
+  const user = auth.currentUser;
+
+  if (!user) return;
+
+  await setDoc(doc(db, "users", user.uid), {
+    name: name,
+    phone: phone
+  }, { merge: true });
+
+  alert("Сохранено!");
+});
