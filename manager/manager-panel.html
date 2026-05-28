@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>BuildHouse Manager</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<aside class="sidebar">
+
+<div class="logo">
+
+<h2>BuildHouse</h2>
+
+<p>Панель менеджера</p>
+
+</div>
+
+<nav class="menu">
+
+<a class="active">
+Рабочий стол
+</a>
+
+<a href="#">
+Проекты
+</a>
+
+<a href="#">
+Клиенты
+</a>
+
+<a href="#">
+Сообщения
+</a>
+
+<a href="#">
+Документы
+</a>
+
+<button id="logoutBtn">
+Выйти
+</button>
+
+</nav>
+
+<div class="profile">
+
+<div class="avatar"></div>
+
+<div>
+
+<h4 id="managerName">
+Менеджер
+</h4>
+
+<p>
+Сотрудник компании
+</p>
+
+</div>
+
+</div>
+
+</aside>
+
+<main class="main-content">
+
+<header class="topbar">
+
+<h1>
+Панель менеджера
+</h1>
+
+<p>
+Управление проектами и клиентами
+</p>
+
+</header>
+
+<section class="stats">
+
+<div class="card">
+<h3>Всего проектов</h3>
+<span id="totalProjects">0</span>
+</div>
+
+<div class="card">
+<h3>Активные проекты</h3>
+<span id="activeProjects">0</span>
+</div>
+
+<div class="card">
+<h3>Завершённые проекты</h3>
+<span id="completedProjects">0</span>
+</div>
+
+<div class="card">
+<h3>Клиенты</h3>
+<span id="clientsCount">0</span>
+</div>
+
+</section>
+
+<section class="big-card">
+
+<h2>
+Создание проекта
+</h2>
+
+<input
+type="text"
+id="projectTitle"
+placeholder="Название проекта">
+
+<input
+type="text"
+id="projectAddress"
+placeholder="Адрес объекта">
+
+<input
+type="email"
+id="clientEmail"
+placeholder="Email клиента">
+
+<input
+type="number"
+id="projectBudget"
+placeholder="Стоимость">
+
+<input
+type="date"
+id="projectDeadline">
+
+<button
+id="createProjectBtn">
+
+Создать проект
+
+</button>
+
+</section>
+
+<section class="big-card">
+
+<h2>
+Редактирование проекта
+</h2>
+
+<select id="projectSelect">
+
+<option value="">
+Выберите проект
+</option>
+
+</select>
+
+<select id="statusSelect">
+
+<option value="Замеры">
+Замеры
+</option>
+
+<option value="Смета">
+Смета
+</option>
+
+<option value="Закупка материалов">
+Закупка материалов
+</option>
+
+<option value="Черновые работы">
+Черновые работы
+</option>
+
+<option value="Отделочные работы">
+Отделочные работы
+</option>
+
+<option value="Завершён">
+Завершён
+</option>
+
+</select>
+
+<input
+type="number"
+id="progressInput"
+min="0"
+max="100"
+placeholder="Готовность (%)">
+
+<button
+id="updateProjectBtn">
+
+Обновить проект
+
+</button>
+
+</section>
+
+<section class="big-card">
+
+<h2>
+Загрузка фотографий
+</h2>
+
+<select id="photoProjectSelect">
+
+<option value="">
+Выберите проект
+</option>
+
+</select>
+
+<input
+type="file"
+id="photoInput">
+
+<button
+id="uploadPhotoBtn">
+
+Загрузить фото
+
+</button>
+
+</section>
+
+<section class="big-card">
+
+<h2>
+Загрузка документов
+</h2>
+
+<select id="documentProjectSelect">
+
+<option value="">
+Выберите проект
+</option>
+
+</select>
+
+<input
+type="file"
+id="documentInput">
+
+<button
+id="uploadDocumentBtn">
+
+Загрузить документ
+
+</button>
+
+</section>
+
+<section class="big-card">
+
+<h2>
+Проекты
+</h2>
+
+<div id="projectsList">
+
+<p>
+Проекты пока отсутствуют
+</p>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+<script
+type="module"
+src="../js/logout.js">
+</script>
+
+<script
+type="module"
+src="js/manager.js">
+</script>
+
+</body>
+
+</html>
