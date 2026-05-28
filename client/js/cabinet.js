@@ -7,7 +7,10 @@ import {
 
 import {
   doc,
-  onSnapshot
+  onSnapshot,
+  collection,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
@@ -21,7 +24,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 
 
 // ======================
-// AUTH + REALTIME DATA
+// AUTH
 // ======================
 onAuthStateChanged(auth, (user) => {
   if (!user) {
@@ -29,16 +32,22 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  const projectRef = doc(db, "projects", user.uid);
+  initProject(user.uid);
+  initNotifications(user.uid);
+});
+
+
+// ======================
+// PROJECT (REALTIME)
+// ======================
+function initProject(uid) {
+  const projectRef = doc(db, "projects", uid);
 
   onSnapshot(projectRef, (snap) => {
     if (!snap.exists()) return;
 
     const data = snap.data();
 
-    // ----------------------
-    // PROJECT INFO
-    // ----------------------
     setText("projectStatus", data.status);
     setText("projectAddress", data.address);
     setText("projectManager", data.manager);
@@ -47,33 +56,104 @@ onAuthStateChanged(auth, (user) => {
     toggle("projectCard", true);
     toggle("statusSection", true);
 
-    // ----------------------
-    // STAGES
-    // ----------------------
-    const stagesList = document.getElementById("stagesList");
-    stagesList.innerHTML = "";
-
-    if (Array.isArray(data.stages)) {
-      data.stages.forEach((stage, i) => {
-        const item = document.createElement("div");
-        item.className = "stage-item";
-        item.innerHTML = `
-          <div style="padding:12px;background:#f5f5f5;border-radius:12px;margin-bottom:10px;">
-            ${i + 1}. ${stage}
-          </div>
-        `;
-        stagesList.appendChild(item);
-      });
-    }
-
-    // ----------------------
-    // DEFAULT BLOCKS
-    // ----------------------
-    setText("messagesPreview", "Сообщений пока нет");
-    setText("worksList", "Работы не назначены");
-    setText("documentsList", "Документы отсутствуют");
+    renderStages(data.stages || []);
+    renderBlocks();
   });
-});
+}
+
+
+// ======================
+// STAGES
+// ======================
+function renderStages(stages) {
+  const container = document.getElementById("stagesList");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  stages.forEach((stage, i) => {
+    const div = document.createElement("div");
+    div.className = "stage-item";
+
+    div.innerHTML = `
+      <div class="stage-icon">${i + 1}</div>
+      <div>${stage}</div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+
+// ======================
+// DEFAULT BLOCKS
+// ======================
+function renderBlocks() {
+  const msg = document.getElementById("messagesPreview");
+  if (msg) msg.innerHTML = "<p>Сообщений пока нет</p>";
+
+  const works = document.getElementById("worksList");
+  if (works) works.innerHTML = "<p>Работы не назначены</p>";
+
+  const docs = document.getElementById("documentsList");
+  if (docs) docs.innerHTML = "<p>Документы отсутствуют</p>";
+}
+
+
+// ======================
+// NOTIFICATIONS (REALTIME)
+// ======================
+function initNotifications(uid) {
+  const notifBadge = document.getElementById("notifBadge");
+  const container = document.getElementById("notificationsList");
+
+  if (!notifBadge || !container) return;
+
+  const notifRef = query(
+    collection(db, "notifications", uid, "items"),
+    orderBy("time", "desc")
+  );
+
+  onSnapshot(notifRef, (snap) => {
+    container.innerHTML = "";
+
+    let unread = 0;
+
+    snap.forEach(doc => {
+      const n = doc.data();
+
+      if (!n.read) unread++;
+
+      const time = n.time?.toDate
+        ? n.time.toDate()
+        : new Date(n.time);
+
+      const div = document.createElement("div");
+      div.className = "notification-item";
+
+      div.innerHTML = `
+        <p>${n.text || "Без текста"}</p>
+        <span>${time.toLocaleString()}</span>
+      `;
+
+      container.appendChild(div);
+    });
+
+    updateBadge(unread);
+  });
+}
+
+
+// ======================
+// BADGE
+// ======================
+function updateBadge(count) {
+  const badge = document.getElementById("notifBadge");
+  if (!badge) return;
+
+  badge.textContent = count;
+  badge.style.display = count > 0 ? "inline-block" : "none";
+}
 
 
 // ======================
@@ -89,40 +169,4 @@ function toggle(id, show) {
   const el = document.getElementById(id);
   if (!el) return;
   el.style.display = show ? "block" : "none";
-}
-
-
-// ======================
-// NOTIFICATIONS
-// ======================
-function renderNotifications(notifications = []) {
-  const container = document.getElementById("notificationsList");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  const unreadCount = notifications.filter(n => !n.read).length;
-  updateBadge(unreadCount);
-
-  notifications
-    .slice()
-    .reverse()
-    .forEach(n => {
-      const div = document.createElement("div");
-      div.className = "notification-item";
-      div.innerHTML = `
-        <p>${n.text}</p>
-        <span>${new Date(n.time).toLocaleString()}</span>
-      `;
-      container.appendChild(div);
-    });
-}
-
-function updateBadge(count) {
-  let badge = document.getElementById("notifBadge");
-
-  if (!badge) return;
-
-  badge.textContent = count;
-  badge.style.display = count > 0 ? "inline-block" : "none";
 }
