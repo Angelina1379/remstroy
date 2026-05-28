@@ -102,7 +102,7 @@ try {
     );
 
     window.location.href =
-    "manager/manager-cabinet.html";
+    "manager/manager-panel.html";
 
   }
 
