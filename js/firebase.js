@@ -55,3 +55,14 @@ const storage = getStorage(app);
 // Экспорт
 
 export { auth, db, storage };
+
+import {
+  doc,
+  onSnapshot,
+  collection,
+  query,
+  orderBy,
+  setDoc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
