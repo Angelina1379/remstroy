@@ -75,263 +75,235 @@
     src="../js/logout.js"></script>
 
 
-  <!-- MAIN -->
 
-  <main class="main-content">
+<main class="main-content">
 
-    <!-- TOP -->
+  <!-- TOP -->
 
-    <div class="top-bar">
+  <div class="top-bar">
+
+    <div>
+
+      <h1>
+        Добро пожаловать 👋
+      </h1>
+
+      <p>
+        Ваш личный кабинет клиента
+      </p>
+
+    </div>
+
+
+
+    <div class="profile-card">
+
+      <div class="profile-avatar"></div>
 
       <div>
 
-        <h1>
-          Добро пожаловать 👋
-        </h1>
+        <h4 id="clientName"></h4>
 
-        <p>
-          Ваш личный кабинет клиента
-        </p>
-
-      </div>
-
-
-
-      <div class="profile-card">
-
-        <div class="profile-avatar"></div>
-
-        <div>
-
-          <h4 id="clientName">
-            Клиент
-          </h4>
-
-          <p id="clientPhone">
-            Телефон не указан
-          </p>
-
-        </div>
+        <p id="clientPhone"></p>
 
       </div>
 
     </div>
 
-
-
-    <!-- PROFILE SETTINGS -->
-
-    <div class="profile-settings">
-
-      <h2>
-        Личные данные
-      </h2>
-
-      <div class="settings-grid">
-
-        <input
-          type="text"
-          id="editName"
-          placeholder="Имя"
-        >
+  </div>
 
 
 
-          <input
-            type="text"
-            id="editPhone"
-            placeholder="+7 (___) ___-__-__"
-          >
+  <!-- PROFILE SETTINGS -->
+
+  <div class="profile-settings">
+
+    <h2>
+      Личные данные
+    </h2>
+
+    <div class="settings-grid">
+
+      <input
+        type="text"
+        id="editName"
+        placeholder="Введите имя"
+      >
 
 
 
+      <input
+        type="text"
+        id="editPhone"
+        placeholder="+7 (___) ___-__-__"
+      >
 
-        <button id="saveProfileBtn">
-          Сохранить изменения
-        </button>
 
-      </div>
+
+      <button id="saveProfileBtn">
+        Сохранить изменения
+      </button>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- PROJECT -->
+
+  <div
+    class="project-card"
+    id="projectCard"
+    style="display:none;"
+  >
+
+    <div>
+
+      <p class="card-label">
+        Статус проекта
+      </p>
+
+      <h2 id="projectStatus"></h2>
 
     </div>
 
 
 
-    <!-- PROJECT CARD -->
-
-    <div class="project-card">
+    <div class="project-info">
 
       <div>
 
         <p class="card-label">
-          Статус проекта
+          Адрес объекта
         </p>
 
-        <h2>
-          Активный проект пока не создан
-        </h2>
+        <h3 id="projectAddress"></h3>
 
       </div>
 
 
 
-      <div class="project-info">
+      <div>
 
-        <div>
-
-          <p class="card-label">
-            Адрес объекта
-          </p>
-
-          <h3>
-            —
-          </h3>
-
-        </div>
-
-
-
-        <div>
-
-          <p class="card-label">
-            Менеджер
-          </p>
-
-          <h3>
-            —
-          </h3>
-
-        </div>
-
-
-
-        <div>
-
-          <p class="card-label">
-            Срок сдачи
-          </p>
-
-          <h3>
-            —
-          </h3>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-
-    <!-- STATUS -->
-
-    <div class="status-section">
-
-      <h2>
-        Этапы ремонта
-      </h2>
-
-
-
-      <div class="empty-state">
-
-        <p>
-          Проект пока не создан.
-          Этапы ремонта появятся после назначения менеджером.
+        <p class="card-label">
+          Менеджер
         </p>
 
+        <h3 id="projectManager"></h3>
+
+      </div>
+
+
+
+      <div>
+
+        <p class="card-label">
+          Срок сдачи
+        </p>
+
+        <h3 id="projectDeadline"></h3>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- STATUS -->
+
+  <div
+    class="status-section"
+    id="statusSection"
+    style="display:none;"
+  >
+
+    <h2>
+      Этапы ремонта
+    </h2>
+
+    <div class="stages-list" id="stagesList"></div>
+
+  </div>
+
+
+
+  <!-- GRID -->
+
+  <div class="cabinet-grid">
+
+    <!-- CHAT -->
+
+    <div class="cabinet-card">
+
+      <div class="card-top">
+
+        <h3>
+          Сообщения
+        </h3>
+
+        <a href="messages.html">
+          Открыть
+        </a>
+
+      </div>
+
+
+
+      <div
+        class="messages-list"
+        id="messagesPreview"
+      >
+
       </div>
 
     </div>
 
 
 
-    <!-- GRID -->
+    <!-- CALENDAR -->
 
-    <div class="cabinet-grid">
+    <div class="cabinet-card">
 
-      <!-- CHAT -->
+      <div class="card-top">
 
-      <div class="cabinet-card">
-
-        <div class="card-top">
-
-          <h3>
-            Сообщения
-          </h3>
-
-          <a href="messages.html">
-            Открыть
-          </a>
-
-        </div>
-
-
-
-        <div class="empty-state">
-
-          <p>
-            Сообщений пока нет
-          </p>
-
-        </div>
+        <h3>
+          Ближайшие работы
+        </h3>
 
       </div>
 
 
 
-      <!-- CALENDAR -->
-
-      <div class="cabinet-card">
-
-        <div class="card-top">
-
-          <h3>
-            Ближайшие работы
-          </h3>
-
-        </div>
-
-
-
-        <div class="empty-state">
-
-          <p>
-            Замеры и работы пока не назначены
-          </p>
-
-        </div>
-
-      </div>
-
-
-
-      <!-- DOCUMENTS -->
-
-      <div class="cabinet-card">
-
-        <div class="card-top">
-
-          <h3>
-            Документы
-          </h3>
-
-        </div>
-
-
-
-        <div class="empty-state">
-
-          <p>
-            Документы пока отсутствуют
-          </p>
-
-        </div>
-
-      </div>
+      <div id="worksList"></div>
 
     </div>
 
-  </main>
+
+
+    <!-- DOCUMENTS -->
+
+    <div class="cabinet-card">
+
+      <div class="card-top">
+
+        <h3>
+          Документы
+        </h3>
+
+      </div>
+
+
+
+      <div id="documentsList"></div>
+
+    </div>
+
+  </div>
+
+</main>
 
 </div>
 
