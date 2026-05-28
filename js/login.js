@@ -19,7 +19,7 @@ loginBtn.addEventListener(
 "click",
 async () => {
 
-```
+
 const email =
 document.getElementById("email")
 .value
@@ -100,7 +100,7 @@ catch(error){
   );
 
 }
-```
+
 
 }
 );
