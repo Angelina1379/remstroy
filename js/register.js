@@ -1,199 +1,148 @@
-// Firebase
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { auth, db }
+from "./firebase.js";
 
 import {
-  getAuth,
   createUserWithEmailAndPassword
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-  getFirestore,
   doc,
   setDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+console.log("register.js подключен");
 
+const registerBtn =
+document.getElementById("registerBtn");
 
-// CONFIG
+registerBtn.addEventListener(
+"click",
+async () => {
 
-const firebaseConfig = {
+  const name =
+  document.getElementById("name").value.trim();
 
-  apiKey: "AIzaSyBuV2dJLDPxsk6E50e5p0E5Buk_NAc46-E",
+  const email =
+  document.getElementById("email").value.trim();
 
-  authDomain: "remont-f7644.firebaseapp.com",
+  const password =
+  document.getElementById("password").value.trim();
 
-  projectId: "remont-f7644",
+  // ПРОВЕРКА ПОЛЕЙ
 
-  storageBucket: "remont-f7644.firebasestorage.app",
+  if(!name || !email || !password){
 
-  messagingSenderId: "404840020044",
+    alert("Заполните все поля");
 
-  appId: "1:404840020044:web:f81c9613321ac170c19ce9"
+    return;
 
-};
+  }
 
+  try{
 
+    // СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ
 
-// INIT
+    const userCredential =
+    await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-const app =
-initializeApp(firebaseConfig);
+    const user =
+    userCredential.user;
 
-const auth =
-getAuth(app);
+    console.log("Пользователь создан");
 
-const db =
-getFirestore(app);
+    // СОХРАНЯЕМ В БАЗУ
 
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
 
+        uid: user.uid,
 
-// ЖДЕМ ЗАГРУЗКУ HTML
+        name: name,
 
-window.addEventListener(
-"DOMContentLoaded",
-() => {
+        email: email,
 
-  console.log("HTML загружен");
+        role: "client",
 
+        createdAt:
+        new Date()
 
+      }
+    );
 
-  const registerBtn =
-  document.getElementById("registerBtn");
+    console.log("Данные записаны в Firestore");
 
+    alert("Регистрация успешна");
 
+    // ПЕРЕХОД
 
-  console.log(registerBtn);
+    window.location.href =
+    "../client/client-cabinet.html";
 
+  }
 
+  catch(error){
 
-  registerBtn.addEventListener(
-  "click",
-  async () => {
+    console.log(error);
 
-    const name =
-    document.getElementById("name").value;
+    if(
+      error.code ===
+      "auth/email-already-in-use"
+    ){
 
-    const email =
-    document.getElementById("email").value;
-
-    const password =
-    document.getElementById("password").value;
-
-
-
-    // ПРОВЕРКА
-
-    if(!name || !email || !password){
-
-      alert("Заполните все поля");
-
-      return;
+      alert(
+        "Эта почта уже зарегистрирована"
+      );
 
     }
 
+    else if(
+      error.code ===
+      "auth/weak-password"
+    ){
 
-
-    try{
-
-      // СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ
-
-      const userCredential =
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
+      alert(
+        "Пароль должен быть минимум 6 символов"
       );
-
-
-
-      const user =
-      userCredential.user;
-
-
-
-      // СОХРАНЯЕМ В БАЗУ
-
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-
-          uid: user.uid,
-
-          name: name,
-
-          email: email,
-
-          role: "client",
-
-          createdAt:
-          new Date()
-
-        }
-      );
-
-
-
-      alert("Регистрация успешна");
-
-
-
-      window.location.href =
-      "client-dashboard.html";
-
-
-
-    }catch(error){
-
-      console.log(error);
-
-
-
-      if(
-        error.code ===
-        "auth/email-already-in-use"
-      ){
-
-        alert(
-          "Эта почта уже зарегистрирована"
-        );
-
-      }
-
-      else if(
-        error.code ===
-        "auth/weak-password"
-      ){
-
-        alert(
-          "Пароль должен быть минимум 6 символов"
-        );
-
-      }
-
-      else if(
-        error.code ===
-        "auth/invalid-email"
-      ){
-
-        alert(
-          "Введите корректный email"
-        );
-
-      }
-
-      else{
-
-        alert(
-          "Ошибка регистрации"
-        );
-
-      }
 
     }
 
-  });
+    else if(
+      error.code ===
+      "auth/invalid-email"
+    ){
+
+      alert(
+        "Введите корректный email"
+      );
+
+    }
+
+    else if(
+      error.code ===
+      "auth/operation-not-allowed"
+    ){
+
+      alert(
+        "В Firebase не включен Email/Password"
+      );
+
+    }
+
+    else{
+
+      alert(
+        "Ошибка регистрации"
+      );
+
+    }
+
+  }
 
 });
