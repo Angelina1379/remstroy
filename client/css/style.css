@@ -127,7 +127,9 @@ button:hover{
 }
 
 #logoutBtn{
-    margin-top:20px;
+    background:#ffb547;
+    color:#111;
+    font-weight:600;
 }
 
 /* ========================================
