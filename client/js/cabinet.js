@@ -90,3 +90,39 @@ function toggle(id, show) {
   if (!el) return;
   el.style.display = show ? "block" : "none";
 }
+
+
+// ======================
+// NOTIFICATIONS
+// ======================
+function renderNotifications(notifications = []) {
+  const container = document.getElementById("notificationsList");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+  updateBadge(unreadCount);
+
+  notifications
+    .slice()
+    .reverse()
+    .forEach(n => {
+      const div = document.createElement("div");
+      div.className = "notification-item";
+      div.innerHTML = `
+        <p>${n.text}</p>
+        <span>${new Date(n.time).toLocaleString()}</span>
+      `;
+      container.appendChild(div);
+    });
+}
+
+function updateBadge(count) {
+  let badge = document.getElementById("notifBadge");
+
+  if (!badge) return;
+
+  badge.textContent = count;
+  badge.style.display = count > 0 ? "inline-block" : "none";
+}
