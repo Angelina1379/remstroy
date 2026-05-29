@@ -1,148 +1,120 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <title>Сообщения</title>
+  <title>Сообщения менеджера</title>
 
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/messages.css">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="dashboard">
+<div class="messenger">
 
-  <aside class="sidebar">
+  <!-- SIDEBAR -->
+  <aside class="chat-sidebar">
 
-    <div class="logo">
-      <h2>BuildHouse</h2>
-      <p>Панель менеджера</p>
+    <div class="sidebar-top">
+      <h2>Сообщения</h2>
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Поиск клиента..."
+      >
     </div>
 
-    <nav class="menu">
-      <a href="manager.html">Рабочий стол</a>
-      <a href="calendar.html">Календарь</a>
-      <a class="active">Сообщения</a>
-    </nav>
+    <div id="clientsList" class="clients-list"></div>
 
   </aside>
 
+  <!-- CHAT -->
+  <main class="chat-main">
 
+    <!-- HEADER -->
+    <div class="chat-header">
 
-  <main class="messages-page">
+      <div class="chat-user">
 
-    <div class="chat-sidebar">
+        <div class="avatar"></div>
 
-      <div class="chat-search">
-        <input type="text" placeholder="Поиск клиента">
-      </div>
-
-
-
-      <div class="chat-list">
-
-        <div class="chat-contact active-chat">
-
-          <div class="chat-avatar"></div>
-
-          <div>
-            <h4>Клиент 1</h4>
-            <p>Последнее сообщение...</p>
-          </div>
-
-        </div>
-
-
-
-        <div class="chat-contact">
-
-          <div class="chat-avatar"></div>
-
-          <div>
-            <h4>Клиент 2</h4>
-            <p>Замер подтвержден</p>
-          </div>
-
-        </div>
-
-
-
-        <div class="chat-contact">
-
-          <div class="chat-avatar"></div>
-
-          <div>
-            <h4>Клиент 3</h4>
-            <p>Отправлена смета</p>
-          </div>
-
+        <div>
+          <h3 id="chatUsername">Выберите чат</h3>
+          <p id="chatStatus">Ожидание...</p>
         </div>
 
       </div>
+
+      <button id="profileBtn">
+        Профиль
+      </button>
 
     </div>
 
+    <!-- MESSAGES -->
+    <div id="messagesContainer" class="messages-container"></div>
 
+    <!-- FILE PREVIEW -->
+    <div id="filePreview" class="file-preview"></div>
 
-    <div class="chat-window">
+    <!-- INPUT -->
+    <div class="chat-input">
 
-      <div class="chat-header">
+      <label class="attach-btn">
+        📎
+        <input type="file" id="fileInput" hidden>
+      </label>
 
-        <div class="chat-user">
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Введите сообщение..."
+      >
 
-          <div class="chat-avatar"></div>
+      <button id="voiceBtn">
+        🎤
+      </button>
 
-          <div>
-            <h3>Клиент 1</h3>
-            <p>Онлайн</p>
-          </div>
-
-        </div>
-
-      </div>
-
-
-
-      <div class="messages-container" id="messagesContainer">
-
-        <div class="message left-message">
-          Добрый день. Когда можно провести замер?
-        </div>
-
-        <div class="message right-message">
-          Завтра в 15:00 будет удобно.
-        </div>
-
-      </div>
-
-
-
-      <div class="message-input-area">
-
-        <label class="file-btn">
-          📎
-          <input type="file" id="fileInput">
-        </label>
-
-        <input
-          type="text"
-          id="messageInput"
-          placeholder="Введите сообщение"
-        >
-
-        <button id="sendBtn">
-          ➤
-        </button>
-
-      </div>
+      <button id="sendBtn">
+        ➤
+      </button>
 
     </div>
 
   </main>
+
+</div>
+
+<!-- PROFILE MODAL -->
+<div id="profileModal" class="modal">
+
+  <div class="modal-content">
+
+    <div class="modal-top">
+
+      <h2>Профиль клиента</h2>
+
+      <button id="closeModal">✕</button>
+
+    </div>
+
+    <div class="profile-info">
+
+      <div class="big-avatar"></div>
+
+      <h3 id="modalName"></h3>
+
+      <p id="modalPhone"></p>
+
+      <p id="modalEmail"></p>
+
+    </div>
+
+  </div>
 
 </div>
 
