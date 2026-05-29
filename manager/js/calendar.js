@@ -1,219 +1,499 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-    // БАЗА КЛИЕНТОВ
+    const calendarEl =
+    document.getElementById("calendar");
 
-    const clients = {
+    const modal =
+    document.getElementById("taskModal");
 
-        "Клиент 1": {
-            address: "ул. Центральная, д. 15"
-        },
+    const openModalBtn =
+    document.getElementById("openModalBtn");
 
-        "Клиент 2": {
-            address: "пр. Победы, д. 21"
-        },
+    const saveTaskBtn =
+    document.getElementById("saveTaskBtn");
 
-        "Клиент 3": {
-            address: "ул. Лесная, д. 7"
-        },
+    const closeModalBtn =
+    document.getElementById("closeModal");
 
-        "Клиент 4": {
-            address: "ул. Садовая, д. 48"
+    let currentEvent = null;
+
+    let selectedDate = null;
+
+    function clearForm(){
+
+        document.getElementById(
+            "clientName"
+        ).value = "";
+
+        document.getElementById(
+            "clientPhone"
+        ).value = "";
+
+        document.getElementById(
+            "clientAddress"
+        ).value = "";
+
+        document.getElementById(
+            "workType"
+        ).value = "";
+
+        document.getElementById(
+            "manager"
+        ).value = "";
+
+        document.getElementById(
+            "comment"
+        ).value = "";
+
+        document.getElementById(
+            "eventDate"
+        ).value = "";
+
+    }
+
+    function getColor(type){
+
+        switch(type){
+
+            case "Замер":
+                return "#ffb547";
+
+            case "Смета":
+                return "#2563eb";
+
+            case "Черновые работы":
+                return "#ef4444";
+
+            case "Отделочные работы":
+                return "#22c55e";
+
+            case "Сдача объекта":
+                return "#8b5cf6";
+
+            default:
+                return "#3b82f6";
+
         }
 
-    };
+    }
 
+    const calendar =
+    new FullCalendar.Calendar(
+        calendarEl,
+        {
 
+            locale:"ru",
 
-    // ЭЛЕМЕНТЫ
+            initialView:"dayGridMonth",
 
-    const calendarEl = document.getElementById('calendar');
+            selectable:true,
 
-    const modal = document.getElementById('taskModal');
+            editable:true,
 
-    const openModalBtn = document.getElementById('openModalBtn');
+            eventDurationEditable:true,
 
-    const saveTaskBtn = document.getElementById('saveTaskBtn');
+            nowIndicator:true,
 
-    const clientSelect = document.getElementById('clientName');
+            height:"auto",
 
-    const addressInput = document.getElementById('clientAddress');
+            headerToolbar:{
 
+                left:"prev,next today",
 
+                center:"title",
 
-    // СОЗДАНИЕ КАЛЕНДАРЯ
+                right:
+                "dayGridMonth,timeGridWeek,timeGridDay"
 
-    let calendar = new FullCalendar.Calendar(calendarEl, {
+            },
 
-        initialView: 'timeGridWeek',
+            dateClick(info){
 
-        locale: 'ru',
+                currentEvent = null;
 
-        height: 'auto',
+                clearForm();
 
-        slotMinTime: "08:00:00",
+                modal.style.display =
+                "flex";
 
-        slotMaxTime: "22:00:00",
+                selectedDate =
+                info.dateStr;
 
-        nowIndicator: true,
+                document.getElementById(
+                    "eventDate"
+                ).value =
+                info.dateStr + "T10:00";
 
-        selectable: true,
+                renderDayTasks();
 
-        headerToolbar: {
+            },
 
-            left: 'prev,next today',
+            eventClick(info){
 
-            center: 'title',
+                currentEvent =
+                info.event;
 
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                const p =
+                info.event.extendedProps;
 
-        },
+                modal.style.display =
+                "flex";
 
+                document.getElementById(
+                    "clientName"
+                ).value =
+                info.event.title;
 
+                document.getElementById(
+                    "clientPhone"
+                ).value =
+                p.phone || "";
 
-        // КЛИК ПО ДАТЕ
+                document.getElementById(
+                    "clientAddress"
+                ).value =
+                p.address || "";
 
-        dateClick: function(info){
+                document.getElementById(
+                    "workType"
+                ).value =
+                p.workType || "";
 
-            modal.style.display = 'flex';
+                document.getElementById(
+                    "manager"
+                ).value =
+                p.manager || "";
 
+                document.getElementById(
+                    "comment"
+                ).value =
+                p.comment || "";
 
+                document.getElementById(
+                    "eventDate"
+                ).value =
+                info.event.start
+                .toISOString()
+                .slice(0,16);
 
-            // АВТОМАТИЧЕСКАЯ ДАТА И ВРЕМЯ
+            },
 
-            const clickedDate = info.dateStr + 'T10:00';
+            eventDrop(){
 
-            document.getElementById('eventDate').value =
-            clickedDate;
+                renderDayTasks();
 
-        },
+            },
 
+            events:[]
 
+        }
 
-        // КЛИК ПО СОБЫТИЮ
-
-        eventClick: function(info){
-
-            const props = info.event.extendedProps;
-
-            alert(
-                'Клиент: ' + info.event.title +
-                '\nАдрес: ' + props.address +
-                '\nТип работ: ' + props.workType +
-                '\nКомментарий: ' + props.comment +
-                '\nДата: ' + info.event.start
-            );
-
-        },
-
-
-
-        events: []
-
-    });
-
-
-
-    // РЕНДЕР КАЛЕНДАРЯ
+    );
 
     calendar.render();
 
+    openModalBtn.addEventListener(
+        "click",
+        ()=>{
 
+            currentEvent = null;
 
-    // КНОПКА "ДОБАВИТЬ ЗАДАЧУ"
+            clearForm();
 
-    openModalBtn.addEventListener('click', () => {
-
-        modal.style.display = 'flex';
-
-    });
-
-
-
-    // ПОДТЯГИВАНИЕ АДРЕСА
-
-    clientSelect.addEventListener('change', function(){
-
-        const selectedClient = clientSelect.value;
-
-        if(clients[selectedClient]){
-
-            addressInput.value =
-            clients[selectedClient].address;
+            modal.style.display =
+            "flex";
 
         }
+    );
 
-    });
+    closeModalBtn.addEventListener(
+        "click",
+        ()=>{
 
+            modal.style.display =
+            "none";
 
+        }
+    );
 
-    // СОХРАНЕНИЕ ЗАДАЧИ
+    saveTaskBtn.addEventListener(
+        "click",
+        ()=>{
 
-    saveTaskBtn.addEventListener('click', () => {
+            const client =
+            document.getElementById(
+                "clientName"
+            ).value;
 
-        const client = document.getElementById('clientName').value;
+            const phone =
+            document.getElementById(
+                "clientPhone"
+            ).value;
 
-        const address = document.getElementById('clientAddress').value;
+            const address =
+            document.getElementById(
+                "clientAddress"
+            ).value;
 
-        const workType = document.getElementById('workType').value;
+            const workType =
+            document.getElementById(
+                "workType"
+            ).value;
 
-        const comment = document.getElementById('comment').value;
+            const manager =
+            document.getElementById(
+                "manager"
+            ).value;
 
-        const date = document.getElementById('eventDate').value;
+            const comment =
+            document.getElementById(
+                "comment"
+            ).value;
 
+            const date =
+            document.getElementById(
+                "eventDate"
+            ).value;
 
+            if(!client || !date){
 
-        // ПРОВЕРКА
+                alert(
+                    "Заполните обязательные поля"
+                );
 
-        if (!client || !date) {
+                return;
 
-            alert('Заполните обязательные поля');
+            }
+
+            const color =
+            getColor(workType);
+
+            if(currentEvent){
+
+                currentEvent.setProp(
+                    "title",
+                    client
+                );
+
+                currentEvent.setStart(
+                    date
+                );
+
+                currentEvent.setProp(
+                    "backgroundColor",
+                    color
+                );
+
+                currentEvent.setProp(
+                    "borderColor",
+                    color
+                );
+
+                currentEvent.setExtendedProp(
+                    "phone",
+                    phone
+                );
+
+                currentEvent.setExtendedProp(
+                    "address",
+                    address
+                );
+
+                currentEvent.setExtendedProp(
+                    "workType",
+                    workType
+                );
+
+                currentEvent.setExtendedProp(
+                    "manager",
+                    manager
+                );
+
+                currentEvent.setExtendedProp(
+                    "comment",
+                    comment
+                );
+
+            }else{
+
+                calendar.addEvent({
+
+                    title:client,
+
+                    start:date,
+
+                    backgroundColor:color,
+
+                    borderColor:color,
+
+                    extendedProps:{
+
+                        phone,
+                        address,
+                        workType,
+                        manager,
+                        comment
+
+                    }
+
+                });
+
+            }
+
+            modal.style.display =
+            "none";
+
+            currentEvent = null;
+
+            clearForm();
+
+            renderDayTasks();
+
+        }
+    );
+
+    window.deleteCurrentEvent =
+    function(){
+
+        if(!currentEvent){
+
+            alert(
+                "Сначала откройте событие"
+            );
 
             return;
 
         }
 
+        if(
+            confirm(
+                "Удалить запись?"
+            )
+        ){
 
+            currentEvent.remove();
 
-        // СОЗДАНИЕ СОБЫТИЯ
+            currentEvent = null;
 
-        calendar.addEvent({
+            modal.style.display =
+            "none";
 
-            title: client,
+            renderDayTasks();
 
-            start: date,
+        }
 
+    }
 
+    function renderDayTasks(){
 
-            extendedProps: {
+        const eventsList =
+        document.getElementById(
+            "eventsList"
+        );
 
-                address,
-                workType,
-                comment
+        if(!eventsList) return;
+
+        if(!selectedDate){
+
+            eventsList.innerHTML =
+            "<p>Выберите дату</p>";
+
+            return;
+
+        }
+
+        const events =
+        calendar.getEvents();
+
+        let html = "";
+
+        events.forEach(event=>{
+
+            const eventDate =
+            event.start
+            .toISOString()
+            .split("T")[0];
+
+            if(
+                eventDate ===
+                selectedDate
+            ){
+
+                const p =
+                event.extendedProps;
+
+                html += `
+
+                <div class="event-item">
+
+                    <strong>
+
+                        ${event.title}
+
+                    </strong>
+
+                    <p>
+
+                        🕒
+
+                        ${event.start.toLocaleTimeString(
+                            "ru-RU",
+                            {
+                                hour:"2-digit",
+                                minute:"2-digit"
+                            }
+                        )}
+
+                    </p>
+
+                    <p>
+
+                        📍
+
+                        ${p.address || "-"}
+
+                    </p>
+
+                    <p>
+
+                        🔨
+
+                        ${p.workType || "-"}
+
+                    </p>
+
+                    <p>
+
+                        👤
+
+                        ${p.manager || "-"}
+
+                    </p>
+
+                </div>
+
+                `;
 
             }
 
         });
 
+        if(html === ""){
 
+            html =
 
-        // ЗАКРЫТИЕ МОДАЛКИ
+            `<div class="event-item">
 
-        modal.style.display = 'none';
+                Нет записей
+                на выбранную дату
 
+            </div>`;
 
+        }
 
-        // ОЧИСТКА ПОЛЕЙ
+        eventsList.innerHTML =
+        html;
 
-        document.getElementById('clientName').value = '';
-
-        document.getElementById('clientAddress').value = '';
-
-        document.getElementById('workType').value = '';
-
-        document.getElementById('comment').value = '';
-
-        document.getElementById('eventDate').value = '';
-
-    });
+    }
 
 });
