@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Проекты | BuildHouse</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:#f5f6fa;
+color:#111;
+}
+
+.dashboard{
+display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:260px;
+background:#0b1220;
+min-height:100vh;
+padding:30px 20px;
+position:fixed;
+left:0;
+top:0;
+}
+
+.logo h2{
+color:#ffb547;
+font-size:28px;
+}
+
+.logo p{
+color:#999;
+margin-top:6px;
+}
+
+.menu{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-top:30px;
+}
+
+.menu a{
+text-decoration:none;
+color:#ffb547;
+padding:14px 18px;
+border-radius:14px;
+transition:0.3s;
+cursor:pointer;
+}
+
+.menu a:hover{
+background:#1d2638;
+color:white;
+}
+
+.menu .active{
+background:#ffb547;
+color:#111;
+font-weight:600;
+}
+
+button{
+border:none;
+background:#ffb547;
+padding:14px 18px;
+border-radius:14px;
+cursor:pointer;
+font-weight:600;
+transition:0.3s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+/* MAIN */
+
+.main{
+margin-left:260px;
+padding:30px;
+width:100%;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+
+.topbar h1{
+font-size:38px;
+margin-bottom:8px;
+}
+
+.topbar p{
+color:#777;
+}
+
+.manager-card{
+background:white;
+padding:16px 20px;
+border-radius:24px;
+display:flex;
+align-items:center;
+gap:14px;
+box-shadow:0 4px 14px rgba(0,0,0,0.04);
+}
+
+.avatar{
+width:54px;
+height:54px;
+border-radius:50%;
+background:#ddd;
+}
+
+/* GRID */
+
+.grid{
+display:grid;
+grid-template-columns:380px 1fr;
+gap:24px;
+}
+
+/* LEFT */
+
+.left-panel{
+background:white;
+border-radius:28px;
+padding:24px;
+box-shadow:0 4px 14px rgba(0,0,0,0.04);
+height:calc(100vh - 120px);
+overflow:auto;
+}
+
+.search{
+width:100%;
+border:none;
+background:#f5f5f5;
+padding:16px;
+border-radius:16px;
+margin-bottom:20px;
+}
+
+.project-card{
+background:#f8f8f8;
+padding:18px;
+border-radius:18px;
+margin-bottom:14px;
+cursor:pointer;
+transition:0.3s;
+border:2px solid transparent;
+}
+
+.project-card:hover{
+background:#efefef;
+}
+
+.project-card.active{
+border-color:#ffb547;
+background:#fff8eb;
+}
+
+.project-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px;
+}
+
+.status{
+padding:6px 10px;
+border-radius:999px;
+font-size:12px;
+font-weight:600;
+}
+
+.status.new{
+background:#e6f4ff;
+color:#1677ff;
+}
+
+.status.measure{
+background:#fff7e6;
+color:#fa8c16;
+}
+
+.status.work{
+background:#f6ffed;
+color:#52c41a;
+}
+
+.status.done{
+background:#f5f5f5;
+color:#555;
+}
+
+/* RIGHT */
+
+.right-panel{
+display:flex;
+flex-direction:column;
+gap:24px;
+}
+
+.block{
+background:white;
+padding:28px;
+border-radius:28px;
+box-shadow:0 4px 14px rgba(0,0,0,0.04);
+}
+
+.block h2{
+margin-bottom:24px;
+}
+
+.form-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:16px;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea{
+border:none;
+background:#f5f5f5;
+padding:16px;
+border-radius:16px;
+font-family:'Inter',sans-serif;
+}
+
+textarea{
+min-height:120px;
+resize:none;
+}
+
+.actions{
+display:flex;
+gap:14px;
+margin-top:24px;
+flex-wrap:wrap;
+}
+
+.timeline{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+.timeline-item{
+display:flex;
+gap:14px;
+align-items:flex-start;
+}
+
+.timeline-dot{
+width:16px;
+height:16px;
+background:#ffb547;
+border-radius:50%;
+margin-top:4px;
+}
+
+.info-list{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;
+}
+
+.info-box{
+background:#f8f8f8;
+padding:18px;
+border-radius:18px;
+}
+
+.info-box p{
+color:#888;
+margin-bottom:6px;
+font-size:14px;
+}
+
+.info-box h3{
+font-size:18px;
+}
+
+@media(max-width:1100px){
+
+.grid{
+grid-template-columns:1fr;
+}
+
+.main{
+margin-left:0;
+}
+
+.sidebar{
+position:relative;
+width:100%;
+min-height:auto;
+}
+
+.dashboard{
+flex-direction:column;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<div class="logo">
+<h2>BuildHouse</h2>
+<p>CRM система</p>
+</div>
+
+<nav class="menu">
+
+<a href="manager.html">Главная</a>
+<a href="messages.html">Сообщения</a>
+<a class="active">Проекты</a>
+<a href="documents.html">Документы</a>
+<a href="analytics.html">Аналитика</a>
+
+<button id="logoutBtn">
+Выйти
+</button>
+
+</nav>
+
+</aside>
+
+<!-- MAIN -->
+
+<main class="main">
+
+<div class="topbar">
+
+<div>
+<h1>Проекты</h1>
+<p>Управление ремонтом и клиентами</p>
+</div>
+
+<div class="manager-card">
+<div class="avatar"></div>
+
+<div>
+<h4>Менеджер</h4>
+<p>BuildHouse CRM</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="grid">
+
+<!-- LEFT -->
+
+<div class="left-panel">
+
+<input
+type="text"
+id="searchInput"
+class="search"
+placeholder="Поиск клиента..."
+>
+
+<div id="projectsList"></div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="right-panel">
+
+<!-- CREATE -->
+
+<div class="block">
+
+<h2>Создание проекта</h2>
+
+<div class="form-grid">
+
+<input
+type="text"
+id="clientName"
+placeholder="Имя клиента"
+>
+
+<input
+type="text"
+id="clientPhone"
+placeholder="Телефон"
+>
+
+<input
+type="email"
+id="clientEmail"
+placeholder="Email"
+>
+
+<input
+type="text"
+id="projectAddress"
+placeholder="Адрес объекта"
+>
+
+<input
+type="text"
+id="projectType"
+placeholder="Тип ремонта"
+>
+
+<input
+type="number"
+id="projectBudget"
+placeholder="Бюджет"
+>
+
+<input
+type="date"
+id="measureDate"
+>
+
+<input
+type="date"
+id="deadline"
+>
+
+<select id="projectStatus">
+
+<option value="Новая заявка">
+Новая заявка
+</option>
+
+<option value="Назначен замер">
+Назначен замер
+</option>
+
+<option value="Документы">
+Документы
+</option>
+
+<option value="В работе">
+В работе
+</option>
+
+<option value="Завершен">
+Завершен
+</option>
+
+</select>
+
+<select id="priority">
+
+<option value="Низкий">
+Низкий приоритет
+</option>
+
+<option value="Средний">
+Средний приоритет
+</option>
+
+<option value="Высокий">
+Высокий приоритет
+</option>
+
+</select>
+
+<textarea
+id="comment"
+placeholder="Комментарий менеджера..."
+></textarea>
+
+</div>
+
+<div class="actions">
+
+<button id="createProjectBtn">
+Создать проект
+</button>
+
+<button id="updateProjectBtn">
+Обновить
+</button>
+
+<button id="deleteProjectBtn">
+Удалить
+</button>
+
+</div>
+
+</div>
+
+<!-- PROJECT INFO -->
+
+<div class="block">
+
+<h2>Информация по объекту</h2>
+
+<div class="info-list">
+
+<div class="info-box">
+<p>Текущий статус</p>
+<h3 id="infoStatus">—</h3>
+</div>
+
+<div class="info-box">
+<p>Бюджет</p>
+<h3 id="infoBudget">—</h3>
+</div>
+
+<div class="info-box">
+<p>Дата замера</p>
+<h3 id="infoMeasure">—</h3>
+</div>
+
+<div class="info-box">
+<p>Срок сдачи</p>
+<h3 id="infoDeadline">—</h3>
+</div>
+
+</div>
+
+</div>
+
+<!-- TIMELINE -->
+
+<div class="block">
+
+<h2>История проекта</h2>
+
+<div class="timeline" id="timeline">
+
+<div class="timeline-item">
+
+<div class="timeline-dot"></div>
+
+<div>
+<h4>Проект создан</h4>
+<p>История появится автоматически</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+
+import {
+collection,
+addDoc,
+getDocs,
+doc,
+updateDoc,
+deleteDoc,
+onSnapshot
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* LOGOUT */
+
+document.getElementById("logoutBtn")
+.addEventListener("click", async () => {
+
+await signOut(auth);
+
+window.location.href = "index.html";
+
+});
+
+/* ELEMENTS */
+
+const projectsList =
+document.getElementById("projectsList");
+
+const searchInput =
+document.getElementById("searchInput");
+
+let selectedProjectId = null;
+
+/* LOAD PROJECTS */
+
+async function loadProjects(){
+
+const snap =
+await getDocs(collection(db,"projects"));
+
+projectsList.innerHTML = "";
+
+snap.forEach(project => {
+
+const data = project.data();
+
+const card =
+document.createElement("div");
+
+card.className = "project-card";
+
+card.innerHTML = `
+<div class="project-top">
+
+<h3>${data.clientName || "Без имени"}</h3>
+
+<div class="status ${
+data.status === "Новая заявка"
+? "new"
+: data.status === "Назначен замер"
+? "measure"
+: data.status === "В работе"
+? "work"
+: "done"
+}">
+${data.status}
+</div>
+
+</div>
+
+<p>${data.address || "Без адреса"}</p>
+
+`;
+
+card.addEventListener("click", () => {
+
+selectedProjectId = project.id;
+
+fillProject(data);
+
+document
+.querySelectorAll(".project-card")
+.forEach(c => c.classList.remove("active"));
+
+card.classList.add("active");
+
+});
+
+projectsList.appendChild(card);
+
+});
+
+}
+
+loadProjects();
+
+/* CREATE */
+
+document
+.getElementById("createProjectBtn")
+.addEventListener("click", async () => {
+
+const data = collectForm();
+
+await addDoc(
+collection(db,"projects"),
+{
+...data,
+createdAt: Date.now()
+}
+);
+
+alert("Проект создан");
+
+clearForm();
+
+loadProjects();
+
+});
+
+/* UPDATE */
+
+document
+.getElementById("updateProjectBtn")
+.addEventListener("click", async () => {
+
+if(!selectedProjectId){
+alert("Выберите проект");
+return;
+}
+
+await updateDoc(
+doc(db,"projects",selectedProjectId),
+collectForm()
+);
+
+alert("Проект обновлен");
+
+loadProjects();
+
+});
+
+/* DELETE */
+
+document
+.getElementById("deleteProjectBtn")
+.addEventListener("click", async () => {
+
+if(!selectedProjectId){
+alert("Выберите проект");
+return;
+}
+
+await deleteDoc(
+doc(db,"projects",selectedProjectId)
+);
+
+alert("Проект удален");
+
+clearForm();
+
+loadProjects();
+
+});
+
+/* FORM */
+
+function collectForm(){
+
+return{
+
+clientName:
+document.getElementById("clientName").value,
+
+phone:
+document.getElementById("clientPhone").value,
+
+email:
+document.getElementById("clientEmail").value,
+
+address:
+document.getElementById("projectAddress").value,
+
+type:
+document.getElementById("projectType").value,
+
+budget:
+document.getElementById("projectBudget").value,
+
+measureDate:
+document.getElementById("measureDate").value,
+
+deadline:
+document.getElementById("deadline").value,
+
+status:
+document.getElementById("projectStatus").value,
+
+priority:
+document.getElementById("priority").value,
+
+comment:
+document.getElementById("comment").value
+
+};
+
+}
+
+function fillProject(data){
+
+document.getElementById("clientName").value =
+data.clientName || "";
+
+document.getElementById("clientPhone").value =
+data.phone || "";
+
+document.getElementById("clientEmail").value =
+data.email || "";
+
+document.getElementById("projectAddress").value =
+data.address || "";
+
+document.getElementById("projectType").value =
+data.type || "";
+
+document.getElementById("projectBudget").value =
+data.budget || "";
+
+document.getElementById("measureDate").value =
+data.measureDate || "";
+
+document.getElementById("deadline").value =
+data.deadline || "";
+
+document.getElementById("projectStatus").value =
+data.status || "";
+
+document.getElementById("priority").value =
+data.priority || "";
+
+document.getElementById("comment").value =
+data.comment || "";
+
+document.getElementById("infoStatus")
+.textContent = data.status || "—";
+
+document.getElementById("infoBudget")
+.textContent = data.budget
+? data.budget + " ₽"
+: "—";
+
+document.getElementById("infoMeasure")
+.textContent = data.measureDate || "—";
+
+document.getElementById("infoDeadline")
+.textContent = data.deadline || "—";
+
+renderTimeline(data);
+
+}
+
+function clearForm(){
+
+selectedProjectId = null;
+
+document
+.querySelectorAll("input, textarea")
+.forEach(el => el.value = "");
+
+}
+
+/* SEARCH */
+
+searchInput.addEventListener("input", () => {
+
+const value =
+searchInput.value.toLowerCase();
+
+document
+.querySelectorAll(".project-card")
+.forEach(card => {
+
+card.style.display =
+card.innerText.toLowerCase()
+.includes(value)
+? "block"
+: "none";
+
+});
+
+});
+
+/* TIMELINE */
+
+function renderTimeline(data){
+
+const timeline =
+document.getElementById("timeline");
+
+timeline.innerHTML = `
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+
+<div>
+<h4>Проект создан</h4>
+<p>${new Date().toLocaleDateString()}</p>
+</div>
+</div>
+
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+
+<div>
+<h4>Текущий статус</h4>
+<p>${data.status}</p>
+</div>
+</div>
+
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+
+<div>
+<h4>Комментарий менеджера</h4>
+<p>${data.comment || "Нет комментария"}</p>
+</div>
+</div>
+`;
+
+}
+
+</script>
+
+</body>
+</html>
