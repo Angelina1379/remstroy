@@ -55,6 +55,85 @@
     </div>
 
   </main>
+  <div id="taskModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Новая запись</h2>
+
+            <button id="closeModal">✕</button>
+
+        </div>
+
+        <div class="modal-grid">
+
+            <input
+            id="clientName"
+            placeholder="ФИО клиента">
+
+            <input
+            id="clientPhone"
+            placeholder="Телефон">
+
+            <input
+            id="clientAddress"
+            placeholder="Адрес">
+
+            <select id="workType">
+
+                <option value="">
+                    Тип работ
+                </option>
+
+                <option>
+                    Замер
+                </option>
+
+                <option>
+                    Смета
+                </option>
+
+                <option>
+                    Черновые работы
+                </option>
+
+                <option>
+                    Отделочные работы
+                </option>
+
+                <option>
+                    Сдача объекта
+                </option>
+
+            </select>
+
+            <input
+            type="datetime-local"
+            id="eventDate">
+
+            <input
+            id="manager"
+            placeholder="Ответственный">
+
+            <textarea
+            id="comment"
+            rows="4"
+            placeholder="Комментарий">
+            </textarea>
+
+        </div>
+
+        <button id="saveTaskBtn">
+
+            Сохранить запись
+
+        </button>
+
+    </div>
+
+</div>
 
 </div>
 
