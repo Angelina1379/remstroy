@@ -9,9 +9,12 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>BuildHouse Manager</title>
+<title>
+BuildHouse CRM
+</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet"
+href="css/style.css">
 
 <link rel="preconnect"
 href="https://fonts.googleapis.com">
@@ -31,32 +34,50 @@ rel="stylesheet">
 
 <aside class="sidebar">
 
-<div>
-
 <div class="logo">
 
-<h2>BuildHouse</h2>
+<h2>
+BuildHouse
+</h2>
 
-<p>Панель менеджера</p>
+<p>
+CRM система
+</p>
 
 </div>
 
 <nav class="menu">
 
 <a class="active">
-Рабочий стол
+🏠 Главная
 </a>
 
-<a href="projects.html">
-Проекты
+<a>
+📋 Заказы
 </a>
 
-<a href="messages.html">
-Сообщения
+<a>
+👥 Клиенты
 </a>
 
-<a href="documents.html">
-Документы
+<a>
+💬 Сообщения
+</a>
+
+<a>
+📐 Замеры
+</a>
+
+<a>
+📄 Сметы
+</a>
+
+<a>
+📁 Документы
+</a>
+
+<a>
+⚙ Настройки
 </a>
 
 <button id="logoutBtn">
@@ -65,43 +86,47 @@ rel="stylesheet">
 
 </nav>
 
-</div>
-
-<div class="profile">
-
-<div class="avatar"></div>
-
-<div>
-
-<h4 id="managerName">
-Менеджер
-</h4>
-
-<p>
-Сотрудник компании
-</p>
-
-</div>
-
-</div>
-
 </aside>
 
 <!-- MAIN -->
 
 <main class="main-content">
 
+<!-- TOPBAR -->
+
 <header class="topbar">
 
 <div>
 
 <h1>
-Панель аналитики
+Панель менеджера
 </h1>
 
 <p>
-Контроль проектов, клиентов и прибыли
+Управление проектами компании
 </p>
+
+</div>
+
+<div class="top-actions">
+
+<button>
+🔔
+</button>
+
+<button>
+📩
+</button>
+
+<div class="manager-profile">
+
+<div class="avatar"></div>
+
+<span id="managerName">
+Менеджер
+</span>
+
+</div>
 
 </div>
 
@@ -112,38 +137,200 @@ rel="stylesheet">
 <section class="stats">
 
 <div class="card">
-<h3>Активные проекты</h3>
-<span id="activeProjects">0</span>
+
+<h3>
+Активные проекты
+</h3>
+
+<span id="activeProjects">
+0
+</span>
+
 </div>
 
 <div class="card">
-<h3>Завершённые</h3>
-<span id="completedProjects">0</span>
+
+<h3>
+Завершённые
+</h3>
+
+<span id="completedProjects">
+0
+</span>
+
 </div>
 
 <div class="card">
-<h3>Просроченные</h3>
-<span id="lateProjects">0</span>
+
+<h3>
+Просроченные
+</h3>
+
+<span id="lateProjects">
+0
+</span>
+
 </div>
 
 <div class="card">
-<h3>Повторные клиенты</h3>
-<span id="repeatClients">0</span>
+
+<h3>
+Повторные клиенты
+</h3>
+
+<span id="repeatClients">
+0
+</span>
+
 </div>
 
 </section>
 
-<!-- FINANCE -->
+<!-- GRID -->
 
-<section class="analytics-grid">
+<section class="dashboard-grid">
 
-<div class="big-card">
+<!-- ПРОЕКТЫ -->
+
+<div class="orders-card">
+
+<div class="card-top">
+
+<h2>
+Последние проекты
+</h2>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+Проект
+</th>
+
+<th>
+Клиент
+</th>
+
+<th>
+Статус
+</th>
+
+<th>
+Срок
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="ordersTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- КАЛЕНДАРЬ -->
+
+<div class="calendar-card">
+
+<h2>
+Календарь
+</h2>
+
+<div id="calendarBox">
+
+<p>
+Нет событий
+</p>
+
+</div>
+
+</div>
+
+<!-- ЗАДАЧИ -->
+
+<div class="tasks-card">
+
+<h2>
+Задачи
+</h2>
+
+<div id="tasksList">
+
+<p>
+Нет задач
+</p>
+
+</div>
+
+</div>
+
+<!-- ДИАГРАММА -->
+
+<div class="chart-card">
+
+<h2>
+Статистика проектов
+</h2>
+
+<canvas id="profitChart">
+
+</canvas>
+
+</div>
+
+<!-- УВЕДОМЛЕНИЯ -->
+
+<div class="notifications-card">
+
+<h2>
+Уведомления
+</h2>
+
+<div id="notificationsList">
+
+<p>
+Уведомлений нет
+</p>
+
+</div>
+
+</div>
+
+<!-- ДОКУМЕНТЫ -->
+
+<div class="documents-card">
+
+<h2>
+Последние документы
+</h2>
+
+<div id="documentsList">
+
+<p>
+Документы отсутствуют
+</p>
+
+</div>
+
+</div>
+
+<!-- ПРИБЫЛЬ -->
+
+<div class="finance-card">
 
 <h2>
 Прибыль за месяц
 </h2>
 
-<div class="money-box">
+<div class="money">
 
 <span id="monthProfit">
 0 ₽
@@ -151,15 +338,11 @@ rel="stylesheet">
 
 </div>
 
-</div>
-
-<div class="big-card">
-
 <h2>
 Прибыль за год
 </h2>
 
-<div class="money-box">
+<div class="money">
 
 <span id="yearProfit">
 0 ₽
@@ -169,88 +352,21 @@ rel="stylesheet">
 
 </div>
 
-</section>
+<!-- ПРОГНОЗ -->
 
-<!-- CHART -->
-
-<section class="big-card">
-
-<div class="card-top">
+<div class="forecast-card">
 
 <h2>
-Динамика прибыли
+Прогноз сроков ремонта
 </h2>
 
-</div>
-
-<canvas id="profitChart"></canvas>
-
-</section>
-
-<!-- UNPAID -->
-
-<section class="big-card">
-
-<div class="card-top">
-
-<h2>
-Неоплаченные проекты
-</h2>
-
-</div>
-
-<div id="unpaidList"
-class="list-box">
+<div id="forecastList">
 
 <p>
 Нет данных
 </p>
 
 </div>
-
-</section>
-
-<!-- FORECAST -->
-
-<section class="big-card">
-
-<div class="card-top">
-
-<h2>
-Прогноз сроков ремонта
-</h2>
-
-</div>
-
-<div id="forecastList"
-class="list-box">
-
-<p>
-Нет проектов
-</p>
-
-</div>
-
-</section>
-
-<!-- PROJECTS -->
-
-<section class="big-card">
-
-<div class="card-top">
-
-<h2>
-Все проекты
-</h2>
-
-</div>
-
-<div id="projectsList"
-class="projects-list">
-
-<p>
-Проекты отсутствуют
-</p>
 
 </div>
 
@@ -260,7 +376,13 @@ class="projects-list">
 
 </div>
 
-<script type="module"
+<script
+type="module"
+src="../js/logout.js">
+</script>
+
+<script
+type="module"
 src="js/manager.js">
 </script>
 
