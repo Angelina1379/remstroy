@@ -533,6 +533,30 @@ tbody tr:hover{
 /* ==========================================
    CALENDAR
 ========================================== */
+.day-events{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:24px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.08);
+
+    min-height:650px;
+}
+
+.delete-btn{
+
+    width:100%;
+
+    margin-top:12px;
+
+    background:#ef4444;
+
+    color:white;
+}
 .modal{
 
     position:fixed;
