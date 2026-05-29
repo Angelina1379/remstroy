@@ -1,443 +1,422 @@
-import { arrayUnion, updateDoc, doc } from "firebase/firestore";
-
-async function addNotification(userId, message) {
-  await updateDoc(doc(db, "projects", userId), {
-    notifications: arrayUnion({
-      text: message,
-      time: Date.now(),
-      read: false
-    })
-  });
-}
-
-
-import { auth, db } from "../../js/firebase.js";
+import { auth, db }
+from "./firebase.js";
 
 import {
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  where,
-  serverTimestamp,
-  onSnapshot,
-  updateDoc,
-  doc
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const createProjectBtn =
-document.getElementById(
-  "createProjectBtn"
-);
+import {
+collection,
+onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const updateProjectBtn =
-document.getElementById(
-  "updateProjectBtn"
-);
+// ======================================
+// LOGOUT
+// ======================================
+
+const logoutBtn =
+document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", async () => {
+
+await signOut(auth);
+
+window.location.href = "login.html";
+
+});
+
+// ======================================
+// ELEMENTS
+// ======================================
+
+const activeProjects =
+document.getElementById("activeProjects");
+
+const completedProjects =
+document.getElementById("completedProjects");
+
+const lateProjects =
+document.getElementById("lateProjects");
+
+const repeatClients =
+document.getElementById("repeatClients");
+
+const monthProfit =
+document.getElementById("monthProfit");
+
+const yearProfit =
+document.getElementById("yearProfit");
+
+const unpaidList =
+document.getElementById("unpaidList");
+
+const forecastList =
+document.getElementById("forecastList");
 
 const projectsList =
-document.getElementById(
-  "projectsList"
-);
+document.getElementById("projectsList");
 
-const projectSelect =
-document.getElementById(
-  "projectSelect"
-);
+// ======================================
+// CHART
+// ======================================
 
-let projects = [];
+const ctx =
+document.getElementById("profitChart");
 
-/* ---------------------------
-   Загрузка проектов
----------------------------- */
+const profitChart =
+new Chart(ctx, {
 
-loadProjects();
+type:"line",
 
-/* ---------------------------
-   Создание проекта
----------------------------- */
+data:{
+labels:[
+"Янв",
+"Фев",
+"Мар",
+"Апр",
+"Май",
+"Июн",
+"Июл",
+"Авг",
+"Сен",
+"Окт",
+"Ноя",
+"Дек"
+],
 
-createProjectBtn.addEventListener(
-  "click",
-  createProject
-);
+```
+datasets:[{
 
-async function createProject(){
+  label:"Прибыль",
 
-  try{
+  data:[
+    0,0,0,0,0,0,0,0,0,0,0,0
+  ],
 
-    const title =
-    document.getElementById(
-      "projectTitle"
-    ).value.trim();
+  borderWidth:3,
+  tension:0.4
 
-    const address =
-    document.getElementById(
-      "projectAddress"
-    ).value.trim();
+}]
+```
 
-    const email =
-    document.getElementById(
-      "clientEmail"
-    ).value.trim();
+},
 
-    const budget =
-    document.getElementById(
-      "projectBudget"
-    ).value.trim();
+options:{
+responsive:true,
+plugins:{
+legend:{
+display:false
+}
+}
+}
 
-    const deadline =
-    document.getElementById(
-      "projectDeadline"
-    ).value;
+});
 
-    if(
-      !title ||
-      !address ||
-      !email
-    ){
+// ======================================
+// LOAD PROJECTS
+// ======================================
 
-      alert(
-        "Заполните обязательные поля"
-      );
+const projectsRef =
+collection(db, "projects");
 
-      return;
+onSnapshot(projectsRef, (snapshot) => {
 
-    }
+let active = 0;
+let completed = 0;
+let late = 0;
 
-    const q =
-    query(
-      collection(
-        db,
-        "users"
-      ),
-      where(
-        "email",
-        "==",
-        email
-      )
-    );
+let monthMoney = 0;
+let yearMoney = 0;
 
-    const clientSnapshot =
-    await getDocs(q);
+let repeats = 0;
 
-    if(
-      clientSnapshot.empty
-    ){
+let monthlyStats =
+[0,0,0,0,0,0,0,0,0,0,0,0];
 
-      alert(
-        "Клиент не найден"
-      );
+let clientsMap = {};
 
-      return;
+unpaidList.innerHTML = "";
+forecastList.innerHTML = "";
+projectsList.innerHTML = "";
 
-    }
+const today =
+new Date();
 
-    const client =
-    clientSnapshot.docs[0];
+snapshot.forEach(docSnap => {
 
-    await addDoc(
-      collection(
-        db,
-        "projects"
-      ),
-      {
+```
+const project =
+docSnap.data();
 
-        title,
+const status =
+project.status || "";
 
-        address,
+const budget =
+Number(project.budget || 0);
 
-        budget:
-        Number(budget || 0),
+const paid =
+project.paid || false;
 
-        deadline,
+const client =
+project.clientName || "Клиент";
 
-        status:
-        "Замеры",
+const email =
+project.clientEmail || "";
 
-        progress:
-        0,
+const deadline =
+new Date(project.deadline);
 
-        clientId:
-        client.id,
+const progress =
+Number(project.progress || 0);
 
-        clientName:
-        client.data().name,
+// ==================================
+// ACTIVE / COMPLETED
+// ==================================
 
-        clientEmail:
-        client.data().email,
+if(status === "Завершён"){
 
-        managerId:
-        auth.currentUser.uid,
+  completed++;
 
-        createdAt:
-        serverTimestamp()
+}else{
 
-      }
-    );
+  active++;
 
-    alert(
-      "Проект успешно создан"
-    );
+}
 
-    document.getElementById(
-      "projectTitle"
-    ).value = "";
+// ==================================
+// LATE
+// ==================================
 
-    document.getElementById(
-      "projectAddress"
-    ).value = "";
+if(deadline < today &&
+   status !== "Завершён"){
 
-    document.getElementById(
-      "clientEmail"
-    ).value = "";
+  late++;
 
-    document.getElementById(
-      "projectBudget"
-    ).value = "";
+}
 
-    document.getElementById(
-      "projectDeadline"
-    ).value = "";
+// ==================================
+// PROFITS
+// ==================================
 
-  }
+const created =
+project.createdAt?.toDate
+? project.createdAt.toDate()
+: new Date();
 
-  catch(error){
+const month =
+created.getMonth();
 
-    console.error(error);
+const year =
+created.getFullYear();
 
-    alert(
-      "Ошибка создания проекта"
-    );
+const currentYear =
+today.getFullYear();
+
+if(year === currentYear){
+
+  yearMoney += budget;
+
+  monthlyStats[month] += budget;
+
+  if(month === today.getMonth()){
+
+    monthMoney += budget;
 
   }
 
 }
 
-/* ---------------------------
-   Отображение проектов
----------------------------- */
+// ==================================
+// REPEAT CLIENTS
+// ==================================
 
-function loadProjects(){
+if(email){
 
-  onSnapshot(
-    collection(
-      db,
-      "projects"
-    ),
-    (snapshot)=>{
+  if(clientsMap[email]){
 
-      projects = [];
+    clientsMap[email]++;
 
-      projectsList.innerHTML = "";
+  }else{
 
-      projectSelect.innerHTML =
-      `
-      <option value="">
-      Выберите проект
-      </option>
-      `;
-
-      let active = 0;
-      let completed = 0;
-
-      snapshot.forEach(
-        (projectDoc)=>{
-
-          const project = {
-
-            id:
-            projectDoc.id,
-
-            ...projectDoc.data()
-
-          };
-
-          projects.push(
-            project
-          );
-
-          if(
-            project.status ===
-            "Завершён"
-          ){
-
-            completed++;
-
-          }
-
-          else{
-
-            active++;
-
-          }
-
-          const option =
-          document.createElement(
-            "option"
-          );
-
-          option.value =
-          project.id;
-
-          option.textContent =
-          project.title;
-
-          projectSelect.appendChild(
-            option
-          );
-
-          const card =
-          document.createElement(
-            "div"
-          );
-
-          card.className =
-          "project-card";
-
-          card.innerHTML = `
-
-          <h3>
-            ${project.title}
-          </h3>
-
-          <p>
-            Клиент:
-            ${project.clientName}
-          </p>
-
-          <p>
-            Email:
-            ${project.clientEmail}
-          </p>
-
-          <p>
-            Статус:
-            ${project.status}
-          </p>
-
-          <p>
-            Готовность:
-            ${project.progress}%
-          </p>
-
-          <p>
-            Адрес:
-            ${project.address}
-          </p>
-
-          <hr>
-
-          `;
-
-          projectsList.appendChild(
-            card
-          );
-
-        }
-      );
-
-      document.getElementById(
-        "totalProjects"
-      ).textContent =
-      projects.length;
-
-      document.getElementById(
-        "activeProjects"
-      ).textContent =
-      active;
-
-      document.getElementById(
-        "completedProjects"
-      ).textContent =
-      completed;
-
-      const uniqueClients =
-      new Set(
-        projects.map(
-          project =>
-          project.clientId
-        )
-      );
-
-      document.getElementById(
-        "clientsCount"
-      ).textContent =
-      uniqueClients.size;
-
-    }
-  );
-
-}
-
-/* ---------------------------
-   Обновление проекта
----------------------------- */
-
-updateProjectBtn.addEventListener(
-  "click",
-  updateProject
-);
-
-async function updateProject(){
-
-  try{
-
-    const projectId =
-    projectSelect.value;
-
-    if(!projectId){
-
-      alert(
-        "Выберите проект"
-      );
-
-      return;
-
-    }
-
-    const status =
-    document.getElementById(
-      "statusSelect"
-    ).value;
-
-    const progress =
-    Number(
-      document.getElementById(
-        "progressInput"
-      ).value
-    );
-
-    await updateDoc(
-      doc(
-        db,
-        "projects",
-        projectId
-      ),
-      {
-
-        status,
-
-        progress
-
-      }
-    );
-
-    alert(
-      "Проект обновлён"
-    );
-
-  }
-
-  catch(error){
-
-    console.error(error);
-
-    alert(
-      "Ошибка обновления проекта"
-    );
+    clientsMap[email] = 1;
 
   }
 
 }
+
+// ==================================
+// UNPAID
+// ==================================
+
+if(!paid){
+
+  const div =
+  document.createElement("div");
+
+  div.className = "list-item";
+
+  div.innerHTML = `
+    <h3>
+      ${project.title || "Проект"}
+    </h3>
+
+    <p>
+      👤 ${client}
+    </p>
+
+    <p>
+      ✉ ${email}
+    </p>
+
+    <p>
+      💰 ${budget.toLocaleString()} ₽
+    </p>
+
+    <button onclick="
+      window.location.href=
+      'messages.html'
+    ">
+      Связаться
+    </button>
+  `;
+
+  unpaidList.appendChild(div);
+
+}
+
+// ==================================
+// FORECAST
+// ==================================
+
+let forecast = "";
+
+if(progress < 30){
+
+  forecast =
+  "Высокий риск задержки";
+
+}else if(progress < 70){
+
+  forecast =
+  "Проект идёт стабильно";
+
+}else{
+
+  forecast =
+  "Проект близок к завершению";
+
+}
+
+const forecastDiv =
+document.createElement("div");
+
+forecastDiv.className =
+"list-item";
+
+forecastDiv.innerHTML = `
+  <h3>
+    ${project.title || "Проект"}
+  </h3>
+
+  <p>
+    Готовность:
+    ${progress}%
+  </p>
+
+  <p>
+    ${forecast}
+  </p>
+`;
+
+forecastList.appendChild(forecastDiv);
+
+// ==================================
+// PROJECTS LIST
+// ==================================
+
+const projectDiv =
+document.createElement("div");
+
+projectDiv.className =
+"project-item";
+
+projectDiv.innerHTML = `
+  <div>
+
+    <h3>
+      ${project.title || "Проект"}
+    </h3>
+
+    <p>
+      ${project.address || ""}
+    </p>
+
+  </div>
+
+  <div>
+
+    <p>
+      ${status}
+    </p>
+
+    <strong>
+      ${budget.toLocaleString()} ₽
+    </strong>
+
+  </div>
+`;
+
+projectsList.appendChild(projectDiv);
+```
+
+});
+
+// ====================================
+// REPEATS
+// ====================================
+
+Object.values(clientsMap)
+.forEach(count => {
+
+```
+if(count > 1){
+
+  repeats++;
+
+}
+```
+
+});
+
+// ====================================
+// UPDATE UI
+// ====================================
+
+activeProjects.textContent =
+active;
+
+completedProjects.textContent =
+completed;
+
+lateProjects.textContent =
+late;
+
+repeatClients.textContent =
+repeats;
+
+monthProfit.textContent =
+monthMoney.toLocaleString() + " ₽";
+
+yearProfit.textContent =
+yearMoney.toLocaleString() + " ₽";
+
+// ====================================
+// CHART UPDATE
+// ====================================
+
+profitChart.data.datasets[0].data =
+monthlyStats;
+
+profitChart.update();
+
+});
