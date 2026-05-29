@@ -34,180 +34,315 @@
 
 <div class="dashboard">
 
+    <!-- БОКОВОЕ МЕНЮ -->
 
-<!-- SIDEBAR -->
-
-<aside class="sidebar">
-
-    <div>
-
-        <div class="logo">
-
-            <h2>BuildHouse</h2>
-
-            <p>Панель менеджера</p>
-
-        </div>
-
-        <nav class="menu">
-
-            <a href="manager.html">
-                Рабочий стол
-            </a>
-
-            <a class="active">
-                Календарь
-            </a>
-
-            <a href="clients.html">
-                Клиенты
-            </a>
-
-            <a href="orders.html">
-                Заказы
-            </a>
-
-            <a href="messages.html">
-                Сообщения
-            </a>
-
-            <a href="estimates.html">
-                Сметы
-            </a>
-
-        </nav>
-
-    </div>
-
-</aside>
-
-<!-- CONTENT -->
-
-<main class="main-content">
-
-    <div class="calendar-top">
+    <aside class="sidebar">
 
         <div>
 
-            <h1>
-                Календарь замеров
-            </h1>
+            <div class="logo">
 
-            <p>
-                Планирование замеров, смет и работ
-            </p>
+                <h2>BuildHouse</h2>
+
+                <p>
+                    Панель менеджера
+                </p>
+
+            </div>
+
+            <nav class="menu">
+
+                <a href="manager-panel.html">
+                    Рабочий стол
+                </a>
+
+                <a href="projects.html">
+                    Проекты
+                </a>
+
+                <a href="clients.html">
+                    Клиенты
+                </a>
+
+                <a class="active">
+                    Сообщения
+                </a>
+
+                <a href="documents.html">
+                    Документы
+                </a>
+
+            </nav>
 
         </div>
 
-        <button id="openModalBtn">
-            + Добавить запись
-        </button>
+        <div>
+
+            <button id="logoutBtn">
+                Выйти
+            </button>
+
+            <div class="profile">
+
+                <div class="avatar-small"></div>
+
+                <div>
+
+                    <h4 id="managerName">
+                        Менеджер
+                    </h4>
+
+                    <p>
+                        Сотрудник компании
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- МЕССЕНДЖЕР -->
+
+    <div class="messenger">
+
+        <!-- СПИСОК ЧАТОВ -->
+
+        <aside class="chat-sidebar">
+
+            <div class="sidebar-top">
+
+                <h2>
+                    Сообщения
+                </h2>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Поиск клиента..."
+                >
+
+            </div>
+
+            <div
+                id="clientsList"
+                class="clients-list"
+            ></div>
+
+        </aside>
+
+        <!-- ЧАТ -->
+
+        <main class="chat-main">
+
+            <div class="chat-header">
+
+                <div class="chat-user">
+
+                    <div
+                        id="chatAvatar"
+                        class="avatar"
+                    ></div>
+
+                    <div>
+
+                        <h3 id="chatUsername">
+                            Выберите чат
+                        </h3>
+
+                        <p id="chatStatus">
+                            Ожидание...
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <button id="profileBtn">
+                    Профиль
+                </button>
+
+            </div>
+
+            <div
+                id="messagesContainer"
+                class="messages-container"
+            >
+
+                <div class="empty-chat">
+
+                    Выберите диалог для просмотра сообщений
+
+                </div>
+
+            </div>
+
+            <div
+                id="filePreview"
+                class="file-preview"
+            ></div>
+
+            <div class="chat-input">
+
+                <label class="attach-btn">
+
+                    📎
+
+                    <input
+                        type="file"
+                        id="fileInput"
+                        hidden
+                    >
+
+                </label>
+
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Введите сообщение..."
+                >
+
+                <button id="voiceBtn">
+                    🎤
+                </button>
+
+                <button id="sendBtn">
+                    ➤
+                </button>
+
+            </div>
+
+        </main>
+
+        <!-- ПРОФИЛЬ КЛИЕНТА -->
+
+        <aside
+            id="clientProfile"
+            class="client-profile"
+        >
+
+            <div class="profile-header">
+
+                <div
+                    id="profileAvatar"
+                    class="profile-avatar"
+                >
+                    👤
+                </div>
+
+                <h2 id="profileName">
+                    Клиент
+                </h2>
+
+            </div>
+
+            <div class="profile-section">
+
+                <h4>
+                    Контактная информация
+                </h4>
+
+                <p>
+                    📞
+                    <span id="profilePhone">
+                        Не указан
+                    </span>
+                </p>
+
+                <p>
+                    ✉
+                    <span id="profileEmail">
+                        Не указан
+                    </span>
+                </p>
+
+                <p>
+                    📍
+                    <span id="profileAddress">
+                        Не указан
+                    </span>
+                </p>
+
+            </div>
+
+            <div class="profile-section">
+
+                <h4>
+                    Информация из системы
+                </h4>
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <strong id="ordersCount">
+                            0
+                        </strong>
+
+                        <span>
+                            Заказов
+                        </span>
+
+                    </div>
+
+                    <div class="stat-card">
+
+                        <strong id="messagesCount">
+                            0
+                        </strong>
+
+                        <span>
+                            Сообщений
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="profile-section">
+
+                <h4>
+                    Последняя активность
+                </h4>
+
+                <p id="lastSeen">
+                    Нет данных
+                </p>
+
+            </div>
+
+            <div class="profile-section">
+
+                <h4>
+                    Вложения
+                </h4>
+
+                <div
+                    id="attachmentsList"
+                    class="attachments-list"
+                >
+
+                    <p class="empty-text">
+                        Пока нет вложений
+                    </p>
+
+                </div>
+
+            </div>
+
+        </aside>
 
     </div>
-
-    <div class="calendar-wrapper">
-
-        <div id="calendar"></div>
-
-    </div>
-
-</main>
-
 
 </div>
 
-<!-- МОДАЛЬНОЕ ОКНО -->
-
-<div
-    id="taskModal"
-    class="modal">
-
-
-<div class="modal-content">
-
-    <div class="modal-header">
-
-        <h2>
-            Новая запись
-        </h2>
-
-        <button id="closeModal">
-            ✕
-        </button>
-
-    </div>
-
-    <div class="modal-grid">
-
-        <input
-            type="text"
-            id="clientName"
-            placeholder="ФИО клиента">
-
-        <input
-            type="tel"
-            id="clientPhone"
-            placeholder="Телефон">
-
-        <input
-            type="text"
-            id="clientAddress"
-            placeholder="Адрес объекта">
-
-        <select id="workType">
-
-            <option value="">
-                Выберите тип работ
-            </option>
-
-            <option value="Замер">
-                Замер
-            </option>
-
-            <option value="Смета">
-                Смета
-            </option>
-
-            <option value="Черновые работы">
-                Черновые работы
-            </option>
-
-            <option value="Отделочные работы">
-                Отделочные работы
-            </option>
-
-            <option value="Сдача объекта">
-                Сдача объекта
-            </option>
-
-        </select>
-
-        <input
-            type="datetime-local"
-            id="eventDate">
-
-        <input
-            type="text"
-            id="manager"
-            placeholder="Ответственный сотрудник">
-
-        <textarea
-            id="comment"
-            rows="4"
-            placeholder="Комментарий"></textarea>
-
-    </div>
-
-    <button id="saveTaskBtn">
-        Сохранить запись
-    </button>
-
-</div>
-
-</div>
-
-<script src="js/calendar.js"></script>
+<script type="module" src="js/messages.js"></script>
 
 </body>
+
 
 </html>
