@@ -1,82 +1,168 @@
-import { db } from './firebase.js';
-const sendBtn = document.getElementById('sendBtn');
+import { auth, db } from "./firebase.js";
 
-const messageInput = document.getElementById('messageInput');
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const messagesContainer =
-document.getElementById('messagesContainer');
+let currentChat = null;
+let currentUser = null;
 
-const fileInput =
-document.getElementById('fileInput');
+// ELEMENTS
 
+const clientsList = document.getElementById("clientsList");
+const messagesContainer = document.getElementById("messagesContainer");
 
+const sendBtn = document.getElementById("sendBtn");
+const messageInput = document.getElementById("messageInput");
 
-sendBtn.addEventListener('click', sendMessage);
+const chatUsername = document.getElementById("chatUsername");
 
+const profileBtn = document.getElementById("profileBtn");
+const profileModal = document.getElementById("profileModal");
 
+// LOAD CLIENTS
 
-messageInput.addEventListener('keypress', function(e){
+loadClients();
 
-    if(e.key === 'Enter'){
+function loadClients(){
 
-        sendMessage();
+  const usersRef = collection(db,"users");
 
+  onSnapshot(usersRef,(snapshot)=>{
+
+    clientsList.innerHTML = "";
+
+    snapshot.forEach((docSnap)=>{
+
+      const user = docSnap.data();
+
+      const div = document.createElement("div");
+
+      div.className = "client-item";
+
+      div.innerHTML = `
+        <div class="client-top">
+          <div class="client-name">${user.name || "Клиент"}</div>
+        </div>
+
+        <div class="client-last">
+          Нажмите чтобы открыть чат
+        </div>
+      `;
+
+      div.addEventListener("click",()=>{
+
+        currentUser = {
+          id: docSnap.id,
+          ...user
+        };
+
+        openChat(docSnap.id,user.name);
+      });
+
+      clientsList.appendChild(div);
+
+    });
+
+  });
+
+}
+
+// OPEN CHAT
+
+function openChat(uid,name){
+
+  currentChat = uid;
+
+  chatUsername.textContent = name || "Клиент";
+
+  const messagesRef = query(
+    collection(db,"messages",uid,"items"),
+    orderBy("time")
+  );
+
+  onSnapshot(messagesRef,(snapshot)=>{
+
+    messagesContainer.innerHTML = "";
+
+    snapshot.forEach((docSnap)=>{
+
+      const msg = docSnap.data();
+
+      const div = document.createElement("div");
+
+      div.className = `
+        message
+        ${msg.sender === "manager" ? "manager" : "client"}
+      `;
+
+      div.innerHTML = `
+        <p>${msg.text || ""}</p>
+      `;
+
+      messagesContainer.appendChild(div);
+
+    });
+
+    messagesContainer.scrollTop =
+      messagesContainer.scrollHeight;
+
+  });
+
+}
+
+// SEND MESSAGE
+
+sendBtn.addEventListener("click",async ()=>{
+
+  if(!currentChat) return;
+
+  const text = messageInput.value.trim();
+
+  if(!text) return;
+
+  await addDoc(
+    collection(db,"messages",currentChat,"items"),
+    {
+      text,
+      sender:"manager",
+      time:serverTimestamp()
     }
+  );
+
+  messageInput.value = "";
 
 });
 
+// PROFILE MODAL
 
+profileBtn.addEventListener("click",()=>{
 
-function sendMessage(){
+  if(!currentUser) return;
 
-    const text = messageInput.value.trim();
+  profileModal.style.display = "flex";
 
+  document.getElementById("modalName").textContent =
+    currentUser.name || "Клиент";
 
+  document.getElementById("modalPhone").textContent =
+    currentUser.phone || "—";
 
-    if(text !== ''){
+  document.getElementById("modalEmail").textContent =
+    currentUser.email || "—";
 
-        const message =
-        document.createElement('div');
+});
 
-        message.classList.add(
-            'message',
-            'right-message'
-        );
+document.getElementById("closeModal")
+.addEventListener("click",()=>{
 
-        message.innerText = text;
+  profileModal.style.display = "none";
 
-        messagesContainer.appendChild(message);
-
-        messageInput.value = '';
-
-    }
-
-
-
-    if(fileInput.files.length > 0){
-
-        const file = fileInput.files[0];
-
-        const fileMessage =
-        document.createElement('div');
-
-        fileMessage.classList.add(
-            'message',
-            'right-message'
-        );
-
-        fileMessage.innerHTML =
-        `📎 ${file.name}`;
-
-        messagesContainer.appendChild(fileMessage);
-
-        fileInput.value = '';
-
-    }
-
-
-
-    messagesContainer.scrollTop =
-    messagesContainer.scrollHeight;
-
-}
+});
