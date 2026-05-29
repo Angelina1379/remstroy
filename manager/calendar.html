@@ -1,85 +1,179 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Календарь замеров</title>
+    <meta charset="UTF-8">
 
-  <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <title>
+        Календарь замеров | BuildHouse CRM
+    </title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
 </head>
 
 <body>
 
 <div class="dashboard">
 
-  <aside class="sidebar">
+    <!-- SIDEBAR -->
 
-    <div class="logo">
-      <h2>BuildHouse</h2>
-      <p>Панель менеджера</p>
-    </div>
+    <aside class="sidebar">
 
-    <nav class="menu">
+        <div class="logo">
 
-      <a href="manager.html">Рабочий стол</a>
-      <a class="active">Календарь</a>
-      <a>Клиенты</a>
-      <a>Заказы</a>
-      <a>Сообщения</a>
-      <a>Сметы</a>
+            <h2>
+                BuildHouse
+            </h2>
 
-    </nav>
+            <p>
+                Панель менеджера
+            </p>
 
-  </aside>
+        </div>
 
-  <main class="main-content">
+        <nav class="menu">
 
-    <div class="calendar-top">
+            <a href="manager.html">
+                Рабочий стол
+            </a>
 
-      <h1>Календарь замеров</h1>
+            <a class="active">
+                Календарь
+            </a>
 
-      <button id="openModalBtn">
-        + Добавить задачу
-      </button>
+            <a>
+                Клиенты
+            </a>
 
-    </div>
+            <a>
+                Заказы
+            </a>
 
-    <div class="calendar-wrapper">
-      <div id="calendar"></div>
-    </div>
+            <a>
+                Сообщения
+            </a>
 
-  </main>
-  <div id="taskModal" class="modal">
+            <a>
+                Сметы
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+        <div class="calendar-top">
+
+            <div>
+
+                <h1>
+                    Календарь замеров и работ
+                </h1>
+
+                <p>
+                    Планирование выездов, замеров и этапов ремонта
+                </p>
+
+            </div>
+
+            <button id="openModalBtn">
+
+                + Добавить запись
+
+            </button>
+
+        </div>
+
+        <div class="calendar-layout">
+
+            <!-- КАЛЕНДАРЬ -->
+
+            <div class="calendar-wrapper">
+
+                <div id="calendar"></div>
+
+            </div>
+
+            <!-- ПЛАН НА ДЕНЬ -->
+
+            <div class="day-events">
+
+                <h2>
+                    План на день
+                </h2>
+
+                <div id="eventsList">
+
+                    <p>
+                        Выберите дату в календаре
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- MODAL -->
+
+<div id="taskModal"
+     class="modal">
 
     <div class="modal-content">
 
         <div class="modal-header">
 
-            <h2>Новая запись</h2>
+            <h2>
 
-            <button id="closeModal">✕</button>
+                Новая запись
+
+            </h2>
+
+            <button id="closeModal">
+
+                ✕
+
+            </button>
 
         </div>
 
         <div class="modal-grid">
 
             <input
-            id="clientName"
-            placeholder="ФИО клиента">
+                id="clientName"
+                type="text"
+                placeholder="ФИО клиента *">
 
             <input
-            id="clientPhone"
-            placeholder="Телефон">
+                id="clientPhone"
+                type="tel"
+                placeholder="Телефон">
 
             <input
-            id="clientAddress"
-            placeholder="Адрес">
+                id="clientAddress"
+                type="text"
+                placeholder="Адрес объекта *">
 
             <select id="workType">
 
@@ -87,90 +181,68 @@
                     Тип работ
                 </option>
 
-                <option>
+                <option value="Замер">
                     Замер
                 </option>
 
-                <option>
+                <option value="Смета">
                     Смета
                 </option>
 
-                <option>
+                <option value="Черновые работы">
                     Черновые работы
                 </option>
 
-                <option>
+                <option value="Отделочные работы">
                     Отделочные работы
                 </option>
 
-                <option>
+                <option value="Сдача объекта">
                     Сдача объекта
                 </option>
 
             </select>
 
             <input
-            type="datetime-local"
-            id="eventDate">
+                id="eventDate"
+                type="datetime-local">
 
             <input
-            id="manager"
-            placeholder="Ответственный">
+                id="manager"
+                type="text"
+                placeholder="Ответственный сотрудник">
 
             <textarea
-            id="comment"
-            rows="4"
-            placeholder="Комментарий">
-            </textarea>
+                id="comment"
+                rows="4"
+                placeholder="Комментарий"></textarea>
 
         </div>
 
-        <button id="saveTaskBtn">
+        <div class="modal-actions">
 
-            Сохранить запись
+            <button id="saveTaskBtn">
 
-        </button>
+                Сохранить запись
+
+            </button>
+
+            <button
+                class="delete-btn"
+                onclick="deleteCurrentEvent()">
+
+                Удалить запись
+
+            </button>
+
+        </div>
 
     </div>
-
-</div>
-
-</div>
-
-    <div class="modal" id="taskModal">
-
-    <div class="modal-content">
-
-        <h2>Новая задача</h2>
-
-        <select id="clientName">
-
-    <option value="">Выберите клиента</option>
-
-    <option>Клиент 1</option>
-    <option>Клиент 2</option>
-    <option>Клиент 3</option>
-    <option>Клиент 4</option>
-
-    </select>
-
-    <input type="text" id="clientAddress" placeholder="Адрес" readonly>
-
-    <input type="text" id="workType" placeholder="Тип работ">
-
-    <textarea id="comment" placeholder="Комментарий"></textarea>
-
-    <input type="datetime-local" id="eventDate">
-
-    <button id="saveTaskBtn">
-      Сохранить задачу
-    </button>
-
-  </div>
 
 </div>
 
 <script src="js/calendar.js"></script>
 
 </body>
+
 </html>
