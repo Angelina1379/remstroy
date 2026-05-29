@@ -1,422 +1,405 @@
-import { auth, db }
-from "./firebase.js";
-
-import {
-signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { auth, db } from "../../js/firebase.js";
 
 import {
 collection,
+getDocs,
 onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ======================================
-// LOGOUT
-// ======================================
+import {
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const logoutBtn =
-document.getElementById("logoutBtn");
+/* ------------------ */
+/* Глобальные элементы */
+/* ------------------ */
 
-logoutBtn.addEventListener("click", async () => {
+const activeProjectsEl =
+document.getElementById(
+"activeProjects"
+);
 
-await signOut(auth);
+const completedProjectsEl =
+document.getElementById(
+"completedProjects"
+);
 
-window.location.href = "login.html";
+const lateProjectsEl =
+document.getElementById(
+"lateProjects"
+);
 
-});
+const repeatClientsEl =
+document.getElementById(
+"repeatClients"
+);
 
-// ======================================
-// ELEMENTS
-// ======================================
+const monthProfitEl =
+document.getElementById(
+"monthProfit"
+);
 
-const activeProjects =
-document.getElementById("activeProjects");
-
-const completedProjects =
-document.getElementById("completedProjects");
-
-const lateProjects =
-document.getElementById("lateProjects");
-
-const repeatClients =
-document.getElementById("repeatClients");
-
-const monthProfit =
-document.getElementById("monthProfit");
-
-const yearProfit =
-document.getElementById("yearProfit");
-
-const unpaidList =
-document.getElementById("unpaidList");
-
-const forecastList =
-document.getElementById("forecastList");
+const yearProfitEl =
+document.getElementById(
+"yearProfit"
+);
 
 const projectsList =
-document.getElementById("projectsList");
+document.getElementById(
+"projectsList"
+);
 
-// ======================================
-// CHART
-// ======================================
+const unpaidList =
+document.getElementById(
+"unpaidList"
+);
 
-const ctx =
-document.getElementById("profitChart");
+const forecastList =
+document.getElementById(
+"forecastList"
+);
 
-const profitChart =
-new Chart(ctx, {
+const managerName =
+document.getElementById(
+"managerName"
+);
 
-type:"line",
+/* ------------------ */
+/* Авторизация */
+/* ------------------ */
 
-data:{
-labels:[
-"Янв",
-"Фев",
-"Мар",
-"Апр",
-"Май",
-"Июн",
-"Июл",
-"Авг",
-"Сен",
-"Окт",
-"Ноя",
-"Дек"
-],
+onAuthStateChanged(
+auth,
+(user)=>{
 
-```
-datasets:[{
+if(!user){
 
-  label:"Прибыль",
+window.location.href =
+"../login.html";
 
-  data:[
-    0,0,0,0,0,0,0,0,0,0,0,0
-  ],
+return;
 
-  borderWidth:3,
-  tension:0.4
-
-}]
-```
-
-},
-
-options:{
-responsive:true,
-plugins:{
-legend:{
-display:false
 }
+
+loadManager(user);
+
 }
+);
+
+/* ------------------ */
+/* Имя менеджера */
+/* ------------------ */
+
+async function loadManager(user){
+
+try{
+
+const usersSnapshot =
+await getDocs(
+collection(
+db,
+"users"
+)
+);
+
+usersSnapshot.forEach(doc=>{
+
+const data =
+doc.data();
+
+if(
+data.uid ===
+user.uid
+){
+
+managerName.textContent =
+data.name;
+
 }
 
 });
 
-// ======================================
-// LOAD PROJECTS
-// ======================================
+}
+catch(error){
 
-const projectsRef =
-collection(db, "projects");
+console.log(error);
 
-onSnapshot(projectsRef, (snapshot) => {
+}
+
+}
+
+/* ------------------ */
+/* Загрузка проектов */
+/* ------------------ */
+
+loadProjects();
+
+function loadProjects(){
+
+onSnapshot(
+collection(
+db,
+"projects"
+),
+(snapshot)=>{
 
 let active = 0;
 let completed = 0;
 let late = 0;
 
-let monthMoney = 0;
-let yearMoney = 0;
+let monthProfit = 0;
+let yearProfit = 0;
 
-let repeats = 0;
+let clients = [];
 
-let monthlyStats =
-[0,0,0,0,0,0,0,0,0,0,0,0];
+let statuses = {
 
-let clientsMap = {};
+"Замеры":0,
+"Смета":0,
+"Черновые работы":0,
+"Отделочные работы":0,
+"Завершён":0
 
+};
+
+projectsList.innerHTML = "";
 unpaidList.innerHTML = "";
 forecastList.innerHTML = "";
-projectsList.innerHTML = "";
 
 const today =
 new Date();
 
-snapshot.forEach(docSnap => {
+snapshot.forEach(projectDoc=>{
 
-```
 const project =
-docSnap.data();
+projectDoc.data();
 
-const status =
-project.status || "";
+clients.push(
+project.clientEmail
+);
 
-const budget =
-Number(project.budget || 0);
+if(
+project.status ===
+"Завершён"
+){
 
-const paid =
-project.paid || false;
+completed++;
 
-const client =
-project.clientName || "Клиент";
+}
+else{
 
-const email =
-project.clientEmail || "";
+active++;
+
+}
+
+if(
+project.deadline
+){
 
 const deadline =
-new Date(project.deadline);
+new Date(
+project.deadline
+);
 
-const progress =
-Number(project.progress || 0);
+if(
+deadline < today &&
+project.status !==
+"Завершён"
+){
 
-// ==================================
-// ACTIVE / COMPLETED
-// ==================================
-
-if(status === "Завершён"){
-
-  completed++;
-
-}else{
-
-  active++;
+late++;
 
 }
 
-// ==================================
-// LATE
-// ==================================
+}
 
-if(deadline < today &&
-   status !== "Завершён"){
+const budget =
+Number(
+project.budget || 0
+);
 
-  late++;
+yearProfit +=
+budget;
+
+if(
+project.createdAt
+){
+
+const date =
+project.createdAt
+.toDate();
+
+if(
+date.getMonth() ===
+today.getMonth()
+){
+
+monthProfit +=
+budget;
 
 }
 
-// ==================================
-// PROFITS
-// ==================================
+}
 
-const created =
-project.createdAt?.toDate
-? project.createdAt.toDate()
-: new Date();
+if(
+statuses[
+project.status
+] !== undefined
+){
 
-const month =
-created.getMonth();
-
-const year =
-created.getFullYear();
-
-const currentYear =
-today.getFullYear();
-
-if(year === currentYear){
-
-  yearMoney += budget;
-
-  monthlyStats[month] += budget;
-
-  if(month === today.getMonth()){
-
-    monthMoney += budget;
-
-  }
+statuses[
+project.status
+]++;
 
 }
 
-// ==================================
-// REPEAT CLIENTS
-// ==================================
+projectsList.innerHTML += `
 
-if(email){
+<div class="project-item">
 
-  if(clientsMap[email]){
+<h3>
+${project.title}
+</h3>
 
-    clientsMap[email]++;
+<p>
+Клиент:
+${project.clientName}
+</p>
 
-  }else{
+<p>
+Статус:
+${project.status}
+</p>
 
-    clientsMap[email] = 1;
+<p>
+Бюджет:
+${budget.toLocaleString()} ₽
+</p>
 
-  }
+</div>
 
-}
-
-// ==================================
-// UNPAID
-// ==================================
-
-if(!paid){
-
-  const div =
-  document.createElement("div");
-
-  div.className = "list-item";
-
-  div.innerHTML = `
-    <h3>
-      ${project.title || "Проект"}
-    </h3>
-
-    <p>
-      👤 ${client}
-    </p>
-
-    <p>
-      ✉ ${email}
-    </p>
-
-    <p>
-      💰 ${budget.toLocaleString()} ₽
-    </p>
-
-    <button onclick="
-      window.location.href=
-      'messages.html'
-    ">
-      Связаться
-    </button>
-  `;
-
-  unpaidList.appendChild(div);
-
-}
-
-// ==================================
-// FORECAST
-// ==================================
-
-let forecast = "";
-
-if(progress < 30){
-
-  forecast =
-  "Высокий риск задержки";
-
-}else if(progress < 70){
-
-  forecast =
-  "Проект идёт стабильно";
-
-}else{
-
-  forecast =
-  "Проект близок к завершению";
-
-}
-
-const forecastDiv =
-document.createElement("div");
-
-forecastDiv.className =
-"list-item";
-
-forecastDiv.innerHTML = `
-  <h3>
-    ${project.title || "Проект"}
-  </h3>
-
-  <p>
-    Готовность:
-    ${progress}%
-  </p>
-
-  <p>
-    ${forecast}
-  </p>
 `;
 
-forecastList.appendChild(forecastDiv);
+if(
+project.status !==
+"Завершён"
+){
 
-// ==================================
-// PROJECTS LIST
-// ==================================
+forecastList.innerHTML += `
 
-const projectDiv =
-document.createElement("div");
+<div class="forecast-item">
 
-projectDiv.className =
-"project-item";
+<strong>
+${project.title}
+</strong>
 
-projectDiv.innerHTML = `
-  <div>
+<p>
+Срок:
+${project.deadline || "-"}
+</p>
 
-    <h3>
-      ${project.title || "Проект"}
-    </h3>
+</div>
 
-    <p>
-      ${project.address || ""}
-    </p>
-
-  </div>
-
-  <div>
-
-    <p>
-      ${status}
-    </p>
-
-    <strong>
-      ${budget.toLocaleString()} ₽
-    </strong>
-
-  </div>
 `;
 
-projectsList.appendChild(projectDiv);
-```
+}
 
 });
 
-// ====================================
-// REPEATS
-// ====================================
-
-Object.values(clientsMap)
-.forEach(count => {
-
-```
-if(count > 1){
-
-  repeats++;
-
-}
-```
-
-});
-
-// ====================================
-// UPDATE UI
-// ====================================
-
-activeProjects.textContent =
+activeProjectsEl.textContent =
 active;
 
-completedProjects.textContent =
+completedProjectsEl.textContent =
 completed;
 
-lateProjects.textContent =
+lateProjectsEl.textContent =
 late;
 
-repeatClients.textContent =
-repeats;
+repeatClientsEl.textContent =
+new Set(clients).size;
 
-monthProfit.textContent =
-monthMoney.toLocaleString() + " ₽";
+monthProfitEl.textContent =
+monthProfit.toLocaleString()
 
-yearProfit.textContent =
-yearMoney.toLocaleString() + " ₽";
+* " ₽";
 
-// ====================================
-// CHART UPDATE
-// ====================================
+yearProfitEl.textContent =
+yearProfit.toLocaleString()
 
-profitChart.data.datasets[0].data =
-monthlyStats;
+* " ₽";
 
-profitChart.update();
+drawChart(statuses);
 
-});
+}
+);
+
+}
+
+/* ------------------ */
+/* Диаграмма */
+/* ------------------ */
+
+let chart = null;
+
+function drawChart(statuses){
+
+const ctx =
+document.getElementById(
+"profitChart"
+);
+
+if(!ctx) return;
+
+if(chart){
+
+chart.destroy();
+
+}
+
+chart =
+new Chart(
+ctx,
+{
+
+type:"doughnut",
+
+data:{
+
+labels:
+Object.keys(
+statuses
+),
+
+datasets:[{
+
+data:
+Object.values(
+statuses
+)
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{
+
+legend:{
+
+position:"bottom"
+
+}
+
+}
+
+}
+
+}
+);
+
+}
