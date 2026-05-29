@@ -11,9 +11,13 @@ body{
 }
 
 .dashboard{
+    display:flex;
     min-height:100vh;
 }
 
+/* =========================
+   SIDEBAR
+========================= */
 
 .sidebar{
     position:fixed;
@@ -36,12 +40,9 @@ body{
     color:#ffb547;
     font-size:28px;
 }
-.main-content{
-    margin-left: 260px;
-}
 
 .logo p{
-    opacity:0.7;
+    opacity:.7;
     margin-top:5px;
 }
 
@@ -55,23 +56,20 @@ body{
     flex:1;
 }
 
-.profile{
-    display:flex;
-    align-items:center;
-    gap:14px;
-
-    margin-top:auto;
-}
-
 .menu a{
+    text-decoration:none;
+    color:#ffb547;
+
     padding:14px 18px;
     border-radius:14px;
+
+    transition:.3s;
     cursor:pointer;
-    transition:0.3s;
 }
 
 .menu a:hover{
     background:#1d2638;
+    color:white;
 }
 
 .menu .active{
@@ -80,31 +78,29 @@ body{
     font-weight:600;
 }
 
-.menu a{
-    padding:14px 18px;
-    border-radius:14px;
+.profile{
+    display:flex;
+    align-items:center;
+    gap:14px;
 
-    cursor:pointer;
-    transition:0.3s;
-
-    text-decoration:none;
-
-    color:#ffb547;
-
-    font-weight:500;
+    margin-top:auto;
 }
-.menu a:hover{
-    background:#1d2638;
-    color:white;
-}
+
 .avatar{
     width:50px;
     height:50px;
+
     border-radius:50%;
+
     background:#d9d9d9;
 }
 
+/* =========================
+   MAIN
+========================= */
+
 .main-content{
+    flex:1;
     margin-left:260px;
     padding:30px;
 }
@@ -117,6 +113,15 @@ body{
     font-size:34px;
 }
 
+.topbar p{
+    margin-top:6px;
+    opacity:.6;
+}
+
+/* =========================
+   KPI
+========================= */
+
 .stats{
     display:grid;
     grid-template-columns:repeat(4,1fr);
@@ -127,13 +132,15 @@ body{
     background:white;
     border-radius:24px;
     padding:30px;
-    box-shadow:0 4px 14px rgba(0,0,0,0.04);
+
+    box-shadow:
+    0 4px 14px rgba(0,0,0,.04);
 }
 
 .card h3{
-    font-size:16px;
-    opacity:0.7;
-    margin-bottom:15px;
+    font-size:15px;
+    opacity:.7;
+    margin-bottom:12px;
 }
 
 .card span{
@@ -141,606 +148,33 @@ body{
     font-weight:700;
 }
 
-.grid-layout{
-    margin-top:30px;
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(320px,1fr));
-
-    gap:20px;
-}
-
-.big-card,
-.calendar-card{
-    background:white;
-    border-radius:24px;
-    padding:24px;
-    box-shadow:0 4px 14px rgba(0,0,0,0.04);
-}
-
-.big-card h2,
-.calendar-card h2{
-    margin-bottom:20px;
-}
-
-.table-item{
-    height:72px;
-    background:#f7f7f7;
-    border-radius:16px;
-    margin-bottom:14px;
-}
-
-.message{
-    height:90px;
-    background:#f7f7f7;
-    border-radius:16px;
-    margin-bottom:14px;
-}
-
-.calendar-item{
-    height:80px;
-    background:#f7f7f7;
-    border-radius:16px;
-    margin-bottom:14px;
-}
-
-.section-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:24px;
-}
-
-.section-header a{
-    text-decoration:none;
-    color:#ffb547;
-    font-weight:600;
-}
-
-.client-row,
-.chat-user{
-    display:flex;
-    align-items:center;
-    gap:14px;
-
-    padding:16px;
-    border-radius:18px;
-    background:#f8f8f8;
-
-    margin-bottom:16px;
-}
-
-.client-avatar{
-    width:52px;
-    height:52px;
-    border-radius:50%;
-    background:#d8d8d8;
-}
-
-.client-info h4,
-.chat-info h4{
-    margin-bottom:4px;
-}
-
-.client-info p,
-.chat-info p{
-    opacity:0.6;
-    font-size:14px;
-}
-
-.status{
-    margin-left:auto;
-    padding:8px 14px;
-    border-radius:12px;
-    font-size:13px;
-    font-weight:600;
-}
-
-.blue{
-    background:#dbeafe;
-    color:#2563eb;
-}
-
-.orange{
-    background:#ffedd5;
-    color:#ea580c;
-}
-
-.green{
-    background:#dcfce7;
-    color:#16a34a;
-}
-
-.chat-box{
-    background:#f8f8f8;
-    border-radius:20px;
-    padding:20px;
-    min-height:220px;
-}
-
-.bubble{
-    max-width:80%;
-    padding:14px 18px;
-    border-radius:18px;
-    margin-bottom:14px;
-    line-height:1.5;
-}
-
-.left{
-    background:white;
-}
-
-.right{
-    background:#ffedd5;
-    margin-left:auto;
-}
-
-.chat-input{
-    display:flex;
-    gap:12px;
-    margin-top:16px;
-}
-
-.chat-input input{
-    flex:1;
-    padding:14px;
-    border:none;
-    border-radius:14px;
-    background:#f5f5f5;
-}
-
-.chat-input button{
-    width:50px;
-    border:none;
-    border-radius:14px;
-    background:#ffb547;
-    cursor:pointer;
-}
-
-.calendar-event{
-    display:flex;
-    align-items:center;
-    gap:16px;
-
-    padding:18px;
-    border-radius:18px;
-
-    background:#f8f8f8;
-    margin-bottom:16px;
-}
-
-.calendar-event span{
-    font-size:28px;
-    font-weight:700;
-}
-
-.calendar-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:30px;
-}
-
-.calendar-top button{
-    padding:14px 22px;
-    border:none;
-    border-radius:14px;
-    background:#ffb547;
-    cursor:pointer;
-    font-weight:600;
-}
-
-.calendar-wrapper{
-    background:white;
-    padding:24px;
-    border-radius:24px;
-    box-shadow:0 4px 14px rgba(0,0,0,0.05);
-}
-
-#calendar{
-    width:100%;
-}
-
-.modal{
-    position:fixed;
-    inset:0;
-
-    background:rgba(0,0,0,0.4);
-
-    display:none;
-
-    align-items:center;
-    justify-content:center;
-
-    z-index:1000;
-}
-
-.modal-content{
-    width:420px;
-
-    background:white;
-
-    padding:30px;
-
-    border-radius:24px;
-
-    display:flex;
-    flex-direction:column;
-
-    gap:16px;
-}
-
-.modal-content input,
-.modal-content textarea,
-.modal-content select{
-    padding:14px;
-    border-radius:14px;
-    border:1px solid #ddd;
-}
-
-.modal-content textarea{
-    min-height:120px;
-    resize:none;
-}
-
-.modal-content button{
-    padding:16px;
-    border:none;
-    border-radius:14px;
-    background:#ffb547;
-    cursor:pointer;
-    font-weight:600;
-}
-
-.messages-page{
-    display:flex;
-    width:100%;
-    height:100vh;
-}
-
-.chat-sidebar{
-    width:340px;
-    background:white;
-    border-right:1px solid #eee;
-
-    display:flex;
-    flex-direction:column;
-}
-
-.chat-search{
-    padding:20px;
-}
-
-.chat-search input{
-    width:100%;
-    padding:14px;
-
-    border:none;
-    border-radius:14px;
-
-    background:#f5f5f5;
-}
-
-.chat-list{
-    padding:10px;
-    overflow-y:auto;
-}
-
-.chat-contact{
-    display:flex;
-    align-items:center;
-    gap:14px;
-
-    padding:16px;
-    border-radius:18px;
-
-    cursor:pointer;
-    transition:0.3s;
-
-    margin-bottom:10px;
-}
-
-.chat-contact:hover{
-    background:#f7f7f7;
-}
-
-.active-chat{
-    background:#ffedd5;
-}
-
-.chat-avatar{
-    width:54px;
-    height:54px;
-
-    border-radius:50%;
-    background:#d9d9d9;
-}
-
-.chat-window{
-    flex:1;
-
-    display:flex;
-    flex-direction:column;
-
-    background:#f5f6fa;
-}
-
-.chat-header{
-    padding:20px 30px;
-    background:white;
-    border-bottom:1px solid #eee;
-}
-
-.messages-container{
-    flex:1;
-
-    padding:30px;
-
-    overflow-y:auto;
-
-    display:flex;
-    flex-direction:column;
-
-    gap:14px;
-}
-
-.message{
-    max-width:420px;
-
-    padding:16px 20px;
-
-    border-radius:18px;
-
-    line-height:1.5;
-}
-
-.left-message{
-    background:white;
-    align-self:flex-start;
-}
-
-.right-message{
-    background:#ffb547;
-    align-self:flex-end;
-}
-
-.message-input-area{
-    padding:20px;
-
-    background:white;
-
-    display:flex;
-    gap:14px;
-}
-
-.message-input-area input[type="text"]{
-    flex:1;
-
-    padding:16px;
-
-    border:none;
-    border-radius:16px;
-
-    background:#f5f5f5;
-}
-
-.message-input-area button{
-    width:60px;
-
-    border:none;
-    border-radius:16px;
-
-    background:#ffb547;
-
-    cursor:pointer;
-}
-
-.file-btn{
-    width:60px;
-    height:56px;
-
-    border-radius:16px;
-
-    background:#f5f5f5;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    cursor:pointer;
-}
-
-.file-btn input{
-    display:none;
-}
-
 /* =========================
-   ОБЩИЙ СТИЛЬ ФОРМ
-========================= */
-
-.big-card{
-    margin-top:24px;
-
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-}
-
-.big-card input,
-.big-card select,
-.big-card textarea{
-    width:100%;
-
-    padding:16px 18px;
-
-    border:none;
-    border-radius:16px;
-
-    background:#f5f5f5;
-
-    font-size:15px;
-    font-family:'Inter',sans-serif;
-
-    transition:0.3s;
-}
-
-.big-card input:focus,
-.big-card select:focus,
-.big-card textarea:focus{
-    outline:none;
-
-    background:white;
-
-    box-shadow:
-    0 0 0 3px rgba(255,181,71,0.2);
-}
-
-/* DATE */
-
-.big-card input[type="date"]{
-    color:#555;
-}
-
-/* FILE */
-
-.big-card input[type="file"]{
-    padding:14px;
-    background:#f8f8f8;
-    cursor:pointer;
-}
-
-/* BUTTONS */
-
-.big-card button,
-#logoutBtn{
-    padding:16px 20px;
-
-    border:none;
-    border-radius:16px;
-
-    background:#ffb547;
-
-    color:#111;
-
-    font-weight:600;
-    font-size:15px;
-
-    cursor:pointer;
-
-    transition:0.3s;
-}
-
-.big-card button:hover,
-#logoutBtn:hover{
-    background:#ffa51f;
-    transform:translateY(-2px);
-}
-
-/* PROJECT LIST */
-
-#projectsList{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-}
-
-.project-item{
-    background:#f8f8f8;
-
-    padding:20px;
-
-    border-radius:18px;
-
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.project-item h3{
-    font-size:18px;
-}
-
-.project-item p{
-    opacity:0.7;
-    line-height:1.5;
-}
-
-/* TOPBAR */
-
-.topbar p{
-    margin-top:6px;
-    opacity:0.6;
-}
-
-/* LOGOUT */
-
-#logoutBtn{
-    margin-top:20px;
-    width:100%;
-}
-
-/* MOBILE */
-
-@media(max-width:1100px){
-
-    .stats{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .sidebar{
-        width:220px;
-    }
-}
-
-@media(max-width:768px){
-
-    .dashboard{
-        flex-direction:column;
-        display:flex;
-        min-height:100vh;
-        align-items: flex-start;
-    }
-
-    .sidebar{
-        width:100%;
-    }
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-
-    .main-content{
-        padding:20px;
-    }
-}
-
-/* =========================
-   MANAGER PANEL
+   ANALYTICS
 ========================= */
 
 .analytics-grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:20px;
-    margin-top:30px;
+
+    margin-top:24px;
 }
 
-.money-box{
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.big-card{
+    background:white;
 
-    min-height:120px;
+    border-radius:24px;
 
-    background:#f8f8f8;
-    border-radius:18px;
+    padding:24px;
+
+    margin-top:24px;
+
+    box-shadow:
+    0 4px 14px rgba(0,0,0,.04);
 }
 
-.money-box span{
-    font-size:38px;
-    font-weight:700;
+.big-card h2{
+    margin-bottom:20px;
 }
 
 .card-top{
@@ -751,21 +185,42 @@ body{
     margin-bottom:20px;
 }
 
-.card-top a{
-    text-decoration:none;
-    color:#ffb547;
-    font-weight:600;
+/* =========================
+   MONEY
+========================= */
+
+.money-box{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    min-height:140px;
+
+    background:#f8f8f8;
+
+    border-radius:18px;
 }
+
+.money-box span{
+    font-size:40px;
+    font-weight:700;
+}
+
+/* =========================
+   LISTS
+========================= */
 
 .list-box{
     display:flex;
     flex-direction:column;
-    gap:14px;
+    gap:12px;
 }
 
 .list-item{
     background:#f8f8f8;
+
     padding:16px;
+
     border-radius:16px;
 
     display:flex;
@@ -782,6 +237,10 @@ body{
     font-size:14px;
 }
 
+/* =========================
+   PROJECTS
+========================= */
+
 .projects-list{
     display:flex;
     flex-direction:column;
@@ -790,7 +249,9 @@ body{
 
 .project-item{
     background:#f8f8f8;
+
     border-radius:18px;
+
     padding:20px;
 }
 
@@ -806,11 +267,11 @@ body{
 .project-status{
     display:inline-block;
 
+    margin-top:10px;
+
     padding:8px 12px;
 
     border-radius:12px;
-
-    margin-top:10px;
 
     font-size:13px;
     font-weight:600;
@@ -831,29 +292,77 @@ body{
     color:#dc2626;
 }
 
+/* =========================
+   CHART
+========================= */
+
 #profitChart{
     width:100% !important;
     max-height:350px;
 }
 
 /* =========================
-   TABLE STYLE
+   BUTTONS
 ========================= */
 
-.table{
+button,
+#logoutBtn{
+    padding:14px 20px;
+
+    border:none;
+    border-radius:14px;
+
+    background:#ffb547;
+
+    color:#111;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+button:hover,
+#logoutBtn:hover{
+    background:#ffa51f;
+    transform:translateY(-2px);
+}
+
+#logoutBtn{
     width:100%;
-    border-collapse:collapse;
+    margin-top:20px;
 }
 
-.table th{
-    text-align:left;
-    padding:14px;
-    background:#f8f8f8;
+/* =========================
+   FORMS
+========================= */
+
+input,
+select,
+textarea{
+    width:100%;
+
+    padding:14px 16px;
+
+    border:none;
+    border-radius:14px;
+
+    background:#f5f5f5;
+
+    font-family:'Inter',sans-serif;
+    font-size:15px;
 }
 
-.table td{
-    padding:14px;
-    border-bottom:1px solid #eee;
+input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+
+    background:white;
+
+    box-shadow:
+    0 0 0 3px rgba(255,181,71,.2);
 }
 
 /* =========================
@@ -861,6 +370,10 @@ body{
 ========================= */
 
 @media(max-width:1100px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
 
     .analytics-grid{
         grid-template-columns:1fr;
@@ -870,11 +383,16 @@ body{
 
 @media(max-width:768px){
 
-    .main-content{
-        margin-left:0;
+    .sidebar{
+        display:none;
     }
 
-    .analytics-grid{
+    .main-content{
+        margin-left:0;
+        padding:20px;
+    }
+
+    .stats{
         grid-template-columns:1fr;
     }
 
