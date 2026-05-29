@@ -19,13 +19,19 @@ href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 rel="stylesheet">
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
 
 <div class="dashboard">
 
+<!-- SIDEBAR -->
+
 <aside class="sidebar">
+
+<div>
 
 <div class="logo">
 
@@ -45,10 +51,6 @@ rel="stylesheet">
 Проекты
 </a>
 
-<a href="#">
-Клиенты
-</a>
-
 <a href="messages.html">
 Сообщения
 </a>
@@ -62,6 +64,8 @@ rel="stylesheet">
 </button>
 
 </nav>
+
+</div>
 
 <div class="profile">
 
@@ -83,26 +87,29 @@ rel="stylesheet">
 
 </aside>
 
+<!-- MAIN -->
+
 <main class="main-content">
 
 <header class="topbar">
 
+<div>
+
 <h1>
-Панель менеджера
+Панель аналитики
 </h1>
 
 <p>
-Управление проектами и клиентами
+Контроль проектов, клиентов и прибыли
 </p>
+
+</div>
 
 </header>
 
-<section class="stats">
+<!-- KPI -->
 
-<div class="card">
-<h3>Всего проектов</h3>
-<span id="totalProjects">0</span>
-</div>
+<section class="stats">
 
 <div class="card">
 <h3>Активные проекты</h3>
@@ -110,178 +117,139 @@ rel="stylesheet">
 </div>
 
 <div class="card">
-<h3>Завершённые проекты</h3>
+<h3>Завершённые</h3>
 <span id="completedProjects">0</span>
 </div>
 
 <div class="card">
-<h3>Клиенты</h3>
-<span id="clientsCount">0</span>
+<h3>Просроченные</h3>
+<span id="lateProjects">0</span>
+</div>
+
+<div class="card">
+<h3>Повторные клиенты</h3>
+<span id="repeatClients">0</span>
 </div>
 
 </section>
 
-<section class="big-card">
+<!-- FINANCE -->
+
+<section class="analytics-grid">
+
+<div class="big-card">
 
 <h2>
-Создание проекта
+Прибыль за месяц
 </h2>
 
-<input
-type="text"
-id="projectTitle"
-placeholder="Название проекта">
+<div class="money-box">
 
-<input
-type="text"
-id="projectAddress"
-placeholder="Адрес объекта">
+<span id="monthProfit">
+0 ₽
+</span>
 
-<input
-type="email"
-id="clientEmail"
-placeholder="Email клиента">
+</div>
 
-<input
-type="number"
-id="projectBudget"
-placeholder="Стоимость">
+</div>
 
-<input
-type="date"
-id="projectDeadline">
+<div class="big-card">
 
-<button
-id="createProjectBtn">
+<h2>
+Прибыль за год
+</h2>
 
-Создать проект
+<div class="money-box">
 
-</button>
+<span id="yearProfit">
+0 ₽
+</span>
+
+</div>
+
+</div>
 
 </section>
 
+<!-- CHART -->
+
 <section class="big-card">
 
+<div class="card-top">
+
 <h2>
-Редактирование проекта
+Динамика прибыли
 </h2>
 
-<select id="projectSelect">
+</div>
 
-<option value="">
-Выберите проект
-</option>
-
-</select>
-
-<select id="statusSelect">
-
-<option value="Замеры">
-Замеры
-</option>
-
-<option value="Смета">
-Смета
-</option>
-
-<option value="Закупка материалов">
-Закупка материалов
-</option>
-
-<option value="Черновые работы">
-Черновые работы
-</option>
-
-<option value="Отделочные работы">
-Отделочные работы
-</option>
-
-<option value="Завершён">
-Завершён
-</option>
-
-</select>
-
-<input
-type="number"
-id="progressInput"
-min="0"
-max="100"
-placeholder="Готовность (%)">
-
-<button
-id="updateProjectBtn">
-
-Обновить проект
-
-</button>
+<canvas id="profitChart"></canvas>
 
 </section>
 
-<section class="big-card">
-
-<h2>
-Загрузка фотографий
-</h2>
-
-<select id="photoProjectSelect">
-
-<option value="">
-Выберите проект
-</option>
-
-</select>
-
-<input
-type="file"
-id="photoInput">
-
-<button
-id="uploadPhotoBtn">
-
-Загрузить фото
-
-</button>
-
-</section>
+<!-- UNPAID -->
 
 <section class="big-card">
 
-<h2>
-Загрузка документов
-</h2>
-
-<select id="documentProjectSelect">
-
-<option value="">
-Выберите проект
-</option>
-
-</select>
-
-<input
-type="file"
-id="documentInput">
-
-<button
-id="uploadDocumentBtn">
-
-Загрузить документ
-
-</button>
-
-</section>
-
-<section class="big-card">
+<div class="card-top">
 
 <h2>
-Проекты
+Неоплаченные проекты
 </h2>
 
-<div id="projectsList">
+</div>
+
+<div id="unpaidList"
+class="list-box">
 
 <p>
-Проекты пока отсутствуют
+Нет данных
+</p>
+
+</div>
+
+</section>
+
+<!-- FORECAST -->
+
+<section class="big-card">
+
+<div class="card-top">
+
+<h2>
+Прогноз сроков ремонта
+</h2>
+
+</div>
+
+<div id="forecastList"
+class="list-box">
+
+<p>
+Нет проектов
+</p>
+
+</div>
+
+</section>
+
+<!-- PROJECTS -->
+
+<section class="big-card">
+
+<div class="card-top">
+
+<h2>
+Все проекты
+</h2>
+
+</div>
+
+<div id="projectsList"
+class="projects-list">
+
+<p>
+Проекты отсутствуют
 </p>
 
 </div>
@@ -292,13 +260,7 @@ id="uploadDocumentBtn">
 
 </div>
 
-<script
-type="module"
-src="../js/logout.js">
-</script>
-
-<script
-type="module"
+<script type="module"
 src="js/manager.js">
 </script>
 
