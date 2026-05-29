@@ -1,28 +1,31 @@
 import { auth, db, storage } from "./firebase.js";
 
 import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  addDoc,
-  serverTimestamp,
-  updateDoc,
-  doc,
-  deleteDoc,
-  getDoc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    collection,
+    query,
+    orderBy,
+    onSnapshot,
+    addDoc,
+    serverTimestamp,
+    doc,
+    setDoc,
+    updateDoc,
+    deleteDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    ref,
+    uploadBytes,
+    getDownloadURL
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    signOut,
+    onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
 // ======================================
@@ -36,27 +39,26 @@ const sendBtn = document.getElementById("sendBtn");
 const messageInput = document.getElementById("messageInput");
 
 const fileInput = document.getElementById("fileInput");
-
-const chatUsername = document.getElementById("chatUsername");
-const chatStatus = document.getElementById("chatStatus");
-
-const profileBtn = document.getElementById("profileBtn");
-const profileModal = document.getElementById("profileModal");
-
-const closeModal = document.getElementById("closeModal");
+const filePreview = document.getElementById("filePreview");
 
 const searchInput = document.getElementById("searchInput");
 
+const profileBtn = document.getElementById("profileBtn");
+
+const profileModal = document.getElementById("profileModal");
+const closeModal = document.getElementById("closeModal");
+
 const voiceBtn = document.getElementById("voiceBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
 
 // ======================================
 // GLOBAL
 // ======================================
 
+let currentClient = null;
 let currentChat = null;
-let currentUser = null;
-let currentManager = null;
+let selectedFile = null;
 
 let mediaRecorder;
 let audioChunks = [];
@@ -66,79 +68,100 @@ let audioChunks = [];
 // AUTH
 // ======================================
 
-onAuthStateChanged(auth, async(user)=>{
+onAuthStateChanged(auth, async(user) => {
 
-  if(!user){
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    await setDoc(
+        doc(db, "users", user.uid),
+        {
+            online: true
+        },
+        { merge: true }
+    );
+
+    loadClients();
+});
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+logoutBtn?.addEventListener("click", async() => {
+
+    await signOut(auth);
+
     window.location.href = "login.html";
-    return;
-  }
-
-  currentManager = user;
-
-  loadClients();
 
 });
 
 
 // ======================================
-// LOAD CLIENTS
+// CLIENTS
 // ======================================
 
-function loadClients(){
+function loadClients() {
 
-  const usersRef = query(
-    collection(db,"users"),
-    orderBy("lastTime","desc")
-  );
+    const usersRef = collection(db, "users");
 
-  onSnapshot(usersRef,(snapshot)=>{
+    onSnapshot(usersRef, (snapshot) => {
 
-    clientsList.innerHTML = "";
+        clientsList.innerHTML = "";
 
-    snapshot.forEach((docSnap)=>{
+        snapshot.forEach((docSnap) => {
 
-      const user = docSnap.data();
+            const user = {
+                id: docSnap.id,
+                ...docSnap.data()
+            };
 
-      if(user.role === "manager") return;
+            if (user.role === "manager") return;
 
-      const div = document.createElement("div");
+            const item =
+            document.createElement("div");
 
-      div.className = "client-item";
+            item.className = "client-item";
 
-      div.innerHTML = `
-        <div class="client-top">
+            item.innerHTML = `
+                <div class="client-top">
+                    <div class="client-name">
+                        ${user.name || "Клиент"}
+                    </div>
 
-          <div class="client-name">
-            ${user.name || "Клиент"}
-          </div>
+                    <div class="client-time">
+                        ${user.online ? "🟢" : ""}
+                    </div>
+                </div>
 
-          <div>
-            ${user.online ? "🟢" : ""}
-          </div>
+                <div class="client-last">
+                    ${user.email || ""}
+                </div>
+            `;
 
-        </div>
+            item.addEventListener("click", () => {
 
-        <div class="client-last">
-          ${user.lastMessage || "Сообщений нет"}
-        </div>
-      `;
+                currentClient = user;
+                currentChat = user.id;
 
-      div.addEventListener("click",()=>{
+                document.getElementById("chatUsername").textContent =
+                user.name || "Клиент";
 
-        currentUser = {
-          id:docSnap.id,
-          ...user
-        };
+                document.getElementById("chatStatus").textContent =
+                user.email || "";
 
-        openChat(docSnap.id,user.name);
+                loadMessages(user.id);
 
-      });
+            });
 
-      clientsList.appendChild(div);
+            clientsList.appendChild(item);
+
+        });
 
     });
-
-  });
 
 }
 
@@ -147,445 +170,448 @@ function loadClients(){
 // SEARCH
 // ======================================
 
-searchInput.addEventListener("input",()=>{
+searchInput?.addEventListener("input", () => {
 
-  const value =
+    const value =
     searchInput.value.toLowerCase();
 
-  const items =
-    document.querySelectorAll(".client-item");
+    document
+    .querySelectorAll(".client-item")
+    .forEach(item => {
 
-  items.forEach(item=>{
+        item.style.display =
+        item.textContent
+        .toLowerCase()
+        .includes(value)
+        ? "block"
+        : "none";
 
-    const text =
-      item.textContent.toLowerCase();
-
-    item.style.display =
-      text.includes(value)
-      ? "block"
-      : "none";
-
-  });
+    });
 
 });
 
 
 // ======================================
-// OPEN CHAT
+// LOAD MESSAGES
 // ======================================
 
-function openChat(uid,name){
-
-  currentChat = uid;
-
-  chatUsername.textContent =
-    name || "Клиент";
-
-  const messagesRef = query(
-    collection(db,"messages",uid,"items"),
-    orderBy("time")
-  );
-
-  onSnapshot(messagesRef,(snapshot)=>{
+function loadMessages(clientId) {
 
     messagesContainer.innerHTML = "";
 
-    snapshot.forEach(async(docSnap)=>{
+    const messagesRef = query(
+        collection(
+            db,
+            "messages",
+            clientId,
+            "items"
+        ),
+        orderBy("time")
+    );
 
-      const msg = docSnap.data();
+    onSnapshot(messagesRef, (snapshot) => {
 
-      const div =
-        document.createElement("div");
+        messagesContainer.innerHTML = "";
 
-      div.className = `
-        message
-        ${msg.sender === "manager"
-          ? "manager"
-          : "client"}
-      `;
+        snapshot.forEach((docSnap) => {
 
-      let content = "";
+            const msg = docSnap.data();
 
-      // TEXT
-      if(msg.text){
+            const div =
+            document.createElement("div");
 
-        content += `
-          <p>${msg.text}</p>
-        `;
+            div.className =
+            `message ${
+                msg.sender === "manager"
+                ? "manager"
+                : "client"
+            }`;
 
-      }
+            let html = "";
 
-      // IMAGE
-      if(msg.imageUrl){
+            if (msg.text) {
 
-        content += `
-          <img
-            src="${msg.imageUrl}"
-            class="chat-image"
-          >
-        `;
+                html += `
+                    <div>${msg.text}</div>
+                `;
 
-      }
+            }
 
-      // FILE
-      if(msg.fileUrl){
+            if (msg.imageUrl) {
 
-        content += `
-          <a
-            href="${msg.fileUrl}"
-            target="_blank"
-            class="file-link"
-          >
-            📎 ${msg.fileName || "Файл"}
-          </a>
-        `;
+                html += `
+                    <img
+                        src="${msg.imageUrl}"
+                        class="chat-image"
+                    >
+                `;
 
-      }
+            }
 
-      // VOICE
-      if(msg.voiceUrl){
+            if (msg.fileUrl) {
 
-        content += `
-          <audio controls>
-            <source src="${msg.voiceUrl}">
-          </audio>
-        `;
+                html += `
+                    <div class="file-box">
+                        <a
+                            href="${msg.fileUrl}"
+                            target="_blank"
+                        >
+                            📎 ${msg.fileName}
+                        </a>
+                    </div>
+                `;
 
-      }
+            }
 
-      // REPLY
-      if(msg.replyText){
+            if (msg.voiceUrl) {
 
-        content += `
-          <div class="reply-preview">
-            ${msg.replyText}
-          </div>
-        `;
+                html += `
+                    <audio controls>
+                        <source
+                            src="${msg.voiceUrl}">
+                    </audio>
+                `;
 
-      }
+            }
 
-      // TIME
-      content += `
-        <div class="msg-time">
-          ${
+            const time =
             msg.time?.toDate
             ? msg.time.toDate()
-                .toLocaleTimeString()
-            : ""
-          }
-        </div>
-      `;
+            : new Date();
 
-      div.innerHTML = content;
+            html += `
+                <div class="message-time">
+                    ${time.toLocaleString("ru-RU")}
+                </div>
+            `;
 
-      // MARK READ
-      if(
-        msg.sender === "client" &&
-        !msg.read
-      ){
+            div.innerHTML = html;
 
-        await updateDoc(docSnap.ref,{
-          read:true
+            div.addEventListener(
+                "contextmenu",
+                async(e) => {
+
+                    e.preventDefault();
+
+                    if (
+                        confirm(
+                            "Удалить сообщение?"
+                        )
+                    ) {
+
+                        await deleteDoc(
+                            docSnap.ref
+                        );
+
+                    }
+
+                }
+            );
+
+            messagesContainer.appendChild(div);
+
         });
 
-      }
-
-      // DELETE
-      div.addEventListener("contextmenu",
-      async(e)=>{
-
-        e.preventDefault();
-
-        const confirmDelete =
-          confirm("Удалить сообщение?");
-
-        if(confirmDelete){
-
-          await deleteDoc(docSnap.ref);
-
-        }
-
-      });
-
-      messagesContainer.appendChild(div);
+        messagesContainer.scrollTop =
+        messagesContainer.scrollHeight;
 
     });
-
-    messagesContainer.scrollTop =
-      messagesContainer.scrollHeight;
-
-  });
 
 }
 
 
 // ======================================
-// SEND TEXT
+// FILE
 // ======================================
 
-sendBtn.addEventListener("click",
-async()=>{
+fileInput?.addEventListener(
+    "change",
+    () => {
 
-  if(!currentChat) return;
+        selectedFile =
+        fileInput.files[0];
 
-  const text =
-    messageInput.value.trim();
+        if (!selectedFile) return;
 
-  if(!text) return;
+        filePreview.innerHTML = `
+            <p>
+                📎 ${selectedFile.name}
+            </p>
+        `;
 
-  await addDoc(
-    collection(
-      db,
-      "messages",
-      currentChat,
-      "items"
-    ),
-    {
-      text,
-      sender:"manager",
-      read:false,
-      time:serverTimestamp()
     }
-  );
-
-  // UPDATE LAST MESSAGE
-  await setDoc(
-    doc(db,"users",currentChat),
-    {
-      lastMessage:text,
-      lastTime:serverTimestamp()
-    },
-    { merge:true }
-  );
-
-  messageInput.value = "";
-
-});
+);
 
 
 // ======================================
-// SEND FILE
+// SEND MESSAGE
 // ======================================
 
-fileInput.addEventListener("change",
-async(e)=>{
+sendBtn?.addEventListener(
+    "click",
+    async() => {
 
-  if(!currentChat) return;
-
-  const file = e.target.files[0];
-
-  if(!file) return;
-
-  const storageRef = ref(
-    storage,
-    `chatFiles/${Date.now()}_${file.name}`
-  );
-
-  await uploadBytes(storageRef,file);
-
-  const url =
-    await getDownloadURL(storageRef);
-
-  const isImage =
-    file.type.startsWith("image");
-
-  await addDoc(
-    collection(
-      db,
-      "messages",
-      currentChat,
-      "items"
-    ),
-    {
-      sender:"manager",
-      fileUrl:url,
-      fileName:file.name,
-      imageUrl:isImage ? url : "",
-      time:serverTimestamp()
-    }
-  );
-
-});
-
-
-// ======================================
-// VOICE MESSAGE
-// ======================================
-
-voiceBtn.addEventListener("click",
-async()=>{
-
-  if(!currentChat) return;
-
-  const stream =
-    await navigator.mediaDevices
-      .getUserMedia({audio:true});
-
-  mediaRecorder =
-    new MediaRecorder(stream);
-
-  mediaRecorder.start();
-
-  audioChunks = [];
-
-  mediaRecorder.ondataavailable =
-    (e)=>{
-
-      audioChunks.push(e.data);
-
-    };
-
-  mediaRecorder.onstop =
-  async()=>{
-
-    const audioBlob =
-      new Blob(audioChunks,{
-        type:"audio/mp3"
-      });
-
-    const storageRef = ref(
-      storage,
-      `voices/${Date.now()}.mp3`
-    );
-
-    await uploadBytes(
-      storageRef,
-      audioBlob
-    );
-
-    const url =
-      await getDownloadURL(storageRef);
-
-    await addDoc(
-      collection(
-        db,
-        "messages",
-        currentChat,
-        "items"
-      ),
-      {
-        sender:"manager",
-        voiceUrl:url,
-        time:serverTimestamp()
-      }
-    );
-
-  };
-
-  setTimeout(()=>{
-
-    mediaRecorder.stop();
-
-  },5000);
-
-});
-
-
-// ======================================
-// TYPING STATUS
-// ======================================
-
-messageInput.addEventListener("input",
-async()=>{
-
-  if(!currentChat) return;
-
-  await setDoc(
-    doc(db,"typing",currentChat),
-    {
-      typing:true,
-      user:"manager"
-    }
-  );
-
-  clearTimeout(window.typingTimeout);
-
-  window.typingTimeout =
-    setTimeout(async()=>{
-
-      await setDoc(
-        doc(db,"typing",currentChat),
-        {
-          typing:false
+        if (!currentChat) {
+            alert(
+                "Выберите клиента"
+            );
+            return;
         }
-      );
 
-    },1500);
+        const text =
+        messageInput.value.trim();
 
-});
+        let fileUrl = "";
+        let imageUrl = "";
+        let fileName = "";
+
+        if (selectedFile) {
+
+            const storageRef = ref(
+                storage,
+                `chatFiles/${
+                    Date.now()
+                }_${
+                    selectedFile.name
+                }`
+            );
+
+            await uploadBytes(
+                storageRef,
+                selectedFile
+            );
+
+            fileUrl =
+            await getDownloadURL(
+                storageRef
+            );
+
+            fileName =
+            selectedFile.name;
+
+            if (
+                selectedFile.type.startsWith(
+                    "image"
+                )
+            ) {
+                imageUrl = fileUrl;
+            }
+
+        }
+
+        if (
+            !text &&
+            !selectedFile
+        ) return;
+
+        await addDoc(
+            collection(
+                db,
+                "messages",
+                currentChat,
+                "items"
+            ),
+            {
+                text,
+                sender: "manager",
+                fileUrl,
+                fileName,
+                imageUrl,
+                time: serverTimestamp(),
+                read: false
+            }
+        );
+
+        await setDoc(
+            doc(
+                db,
+                "users",
+                currentChat
+            ),
+            {
+                lastMessage:
+                text || "📎 Файл",
+
+                lastTime:
+                serverTimestamp()
+            },
+            {
+                merge: true
+            }
+        );
+
+        messageInput.value = "";
+        fileInput.value = "";
+        filePreview.innerHTML = "";
+
+        selectedFile = null;
+
+    }
+);
+
+
+// ======================================
+// ENTER SEND
+// ======================================
+
+messageInput?.addEventListener(
+    "keydown",
+    (e) => {
+
+        if (e.key === "Enter") {
+
+            e.preventDefault();
+
+            sendBtn.click();
+
+        }
+
+    }
+);
+
+
+// ======================================
+// VOICE
+// ======================================
+
+voiceBtn?.addEventListener(
+    "click",
+    async() => {
+
+        if (!currentChat) return;
+
+        const stream =
+        await navigator
+        .mediaDevices
+        .getUserMedia({
+            audio: true
+        });
+
+        mediaRecorder =
+        new MediaRecorder(stream);
+
+        audioChunks = [];
+
+        mediaRecorder.start();
+
+        mediaRecorder.ondataavailable =
+        e => {
+
+            audioChunks.push(e.data);
+
+        };
+
+        mediaRecorder.onstop =
+        async() => {
+
+            const blob =
+            new Blob(
+                audioChunks,
+                {
+                    type: "audio/webm"
+                }
+            );
+
+            const storageRef = ref(
+                storage,
+                `voices/${
+                    Date.now()
+                }.webm`
+            );
+
+            await uploadBytes(
+                storageRef,
+                blob
+            );
+
+            const url =
+            await getDownloadURL(
+                storageRef
+            );
+
+            await addDoc(
+                collection(
+                    db,
+                    "messages",
+                    currentChat,
+                    "items"
+                ),
+                {
+                    sender: "manager",
+                    voiceUrl: url,
+                    time:
+                    serverTimestamp()
+                }
+            );
+
+        };
+
+        setTimeout(() => {
+
+            mediaRecorder.stop();
+
+        }, 5000);
+
+    }
+);
 
 
 // ======================================
 // PROFILE MODAL
 // ======================================
 
-profileBtn.addEventListener("click",
-()=>{
+profileBtn?.addEventListener(
+    "click",
+    () => {
 
-  if(!currentUser) return;
+        if (!currentClient) return;
 
-  profileModal.style.display =
-    "flex";
+        document.getElementById(
+            "modalName"
+        ).textContent =
+        currentClient.name ||
+        "Клиент";
 
-  document.getElementById("modalName")
-    .textContent =
-      currentUser.name || "Клиент";
+        document.getElementById(
+            "modalPhone"
+        ).textContent =
+        currentClient.phone ||
+        "Не указан";
 
-  document.getElementById("modalPhone")
-    .textContent =
-      currentUser.phone || "—";
+        document.getElementById(
+            "modalEmail"
+        ).textContent =
+        currentClient.email ||
+        "Не указан";
 
-  document.getElementById("modalEmail")
-    .textContent =
-      currentUser.email || "—";
+        profileModal.style.display =
+        "flex";
 
-});
+    }
+);
 
-closeModal.addEventListener("click",
-()=>{
+closeModal?.addEventListener(
+    "click",
+    () => {
 
-  profileModal.style.display =
-    "none";
+        profileModal.style.display =
+        "none";
 
-});
+    }
+);
 
+window.addEventListener(
+    "click",
+    (e) => {
 
-// ======================================
-// ONLINE STATUS
-// ======================================
+        if (
+            e.target === profileModal
+        ) {
 
-window.addEventListener("beforeunload",
-async()=>{
+            profileModal.style.display =
+            "none";
 
-  if(!currentManager) return;
+        }
 
-  await setDoc(
-    doc(db,"users",currentManager.uid),
-    {
-      online:false,
-      lastSeen:serverTimestamp()
-    },
-    { merge:true }
-  );
-
-});
-
-
-// ======================================
-// SET ONLINE
-// ======================================
-
-onAuthStateChanged(auth,
-async(user)=>{
-
-  if(!user) return;
-
-  await setDoc(
-    doc(db,"users",user.uid),
-    {
-      online:true
-    },
-    { merge:true }
-  );
-
-});
+    }
+);
