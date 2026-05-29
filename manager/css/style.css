@@ -533,7 +533,79 @@ tbody tr:hover{
 /* ==========================================
    CALENDAR
 ========================================== */
+.modal{
 
+    position:fixed;
+
+    inset:0;
+
+    background:
+    rgba(11,18,32,.75);
+
+    backdrop-filter:
+    blur(10px);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+}
+
+.modal-content{
+
+    width:100%;
+    max-width:700px;
+
+    background:white;
+
+    border-radius:28px;
+
+    padding:30px;
+
+    box-shadow:
+    0 30px 60px rgba(0,0,0,.2);
+}
+
+.modal-header{
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:25px;
+}
+
+.modal-grid{
+
+    display:grid;
+
+    gap:16px;
+}
+
+.modal-grid input,
+.modal-grid select,
+.modal-grid textarea{
+
+    width:100%;
+
+    padding:14px 16px;
+
+    border:1px solid #dbe2ea;
+
+    border-radius:16px;
+
+    font-size:15px;
+}
+
+#saveTaskBtn{
+
+    margin-top:20px;
+
+    width:100%;
+}
 .calendar-section{
 
     display:grid;
