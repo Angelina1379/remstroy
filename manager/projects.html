@@ -29,67 +29,99 @@ display:flex;
 
 /* SIDEBAR */
 
+/* ==========================================
+   SIDEBAR
+   НЕ МЕНЯЕМ ДИЗАЙН
+========================================== */
+
 .sidebar{
-width:260px;
-background:#0b1220;
-min-height:100vh;
-padding:30px 20px;
-position:fixed;
-left:0;
-top:0;
+
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    width:260px;
+    height:100vh;
+
+    background:var(--navy);
+
+    color:white;
+
+    padding:30px 20px;
+
+    display:flex;
+    flex-direction:column;
+
+    z-index:999;
+}
+
+.logo{
+    margin-bottom:20px;
 }
 
 .logo h2{
-color:#ffb547;
-font-size:28px;
+
+    color:var(--primary);
+
+    font-size:30px;
+    font-weight:700;
 }
 
 .logo p{
-color:#999;
-margin-top:6px;
+
+    opacity:.7;
+
+    margin-top:6px;
 }
 
 .menu{
-display:flex;
-flex-direction:column;
-gap:12px;
-margin-top:30px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:10px;
+
+    flex:1;
 }
 
 .menu a{
-text-decoration:none;
-color:#ffb547;
-padding:14px 18px;
-border-radius:14px;
-transition:0.3s;
-cursor:pointer;
+
+    text-decoration:none;
+
+    color:var(--primary);
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    transition:.3s;
 }
 
 .menu a:hover{
-background:#1d2638;
-color:white;
+
+    background:#1d2638;
+
+    color:white;
 }
 
 .menu .active{
-background:#ffb547;
-color:#111;
-font-weight:600;
+
+    background:var(--primary);
+
+    color:#111;
+
+    font-weight:600;
 }
 
-button{
-border:none;
-background:#ffb547;
-padding:14px 18px;
-border-radius:14px;
-cursor:pointer;
-font-weight:600;
-transition:0.3s;
-}
+#logoutBtn{
 
-button:hover{
-transform:translateY(-2px);
-}
+    width:100%;
 
+    margin-top:20px;
+}
 /* MAIN */
 
 .main{
