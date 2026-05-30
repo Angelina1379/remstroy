@@ -1,21 +1,17 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 
 <head>
-
 
 <meta charset="UTF-8">
 
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0">
 
-<title>Календарь замеров | BuildHouse</title>
+<title>Сообщения | BuildHouse</title>
 
 <link rel="stylesheet"
       href="css/style.css">
-
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
 <link rel="preconnect"
       href="https://fonts.googleapis.com">
@@ -27,14 +23,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet">
 
-
 </head>
 
 <body>
 
 <div class="dashboard">
 
-    <!-- БОКОВОЕ МЕНЮ -->
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
@@ -104,11 +99,11 @@
 
     </aside>
 
-    <!-- МЕССЕНДЖЕР -->
+    <!-- MESSENGER -->
 
     <div class="messenger">
 
-        <!-- СПИСОК ЧАТОВ -->
+        <!-- СПИСОК КЛИЕНТОВ -->
 
         <aside class="chat-sidebar">
 
@@ -216,125 +211,70 @@
 
         </main>
 
-        <!-- ПРОФИЛЬ КЛИЕНТА -->
+    </div>
 
-        <aside
-            id="clientProfile"
-            class="client-profile"
-        >
+</div>
 
-            <div class="profile-header">
+<!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ КЛИЕНТА -->
 
-                <div
-                    id="profileAvatar"
-                    class="profile-avatar"
-                >
-                    👤
-                </div>
+<div
+    id="profileModal"
+    class="modal"
+>
 
-                <h2 id="profileName">
-                    Клиент
-                </h2>
+    <div class="modal-content">
 
-            </div>
+        <div class="modal-top">
 
-            <div class="profile-section">
+            <h2>
+                Профиль клиента
+            </h2>
 
-                <h4>
-                    Контактная информация
-                </h4>
+            <button id="closeModal">
+                ✕
+            </button>
 
-                <p>
-                    📞
-                    <span id="profilePhone">
-                        Не указан
-                    </span>
-                </p>
+        </div>
 
-                <p>
-                    ✉
-                    <span id="profileEmail">
-                        Не указан
-                    </span>
-                </p>
+        <div class="profile-info">
 
-                <p>
-                    📍
-                    <span id="profileAddress">
-                        Не указан
-                    </span>
-                </p>
+            <div class="big-avatar"></div>
 
-            </div>
+            <h3 id="modalName">
+                Клиент
+            </h3>
 
-            <div class="profile-section">
+            <p>
+                📞
+                <span id="modalPhone">
+                    Не указан
+                </span>
+            </p>
 
-                <h4>
-                    Информация из системы
-                </h4>
+            <p>
+                ✉
+                <span id="modalEmail">
+                    Не указан
+                </span>
+            </p>
 
-                <div class="stats-grid">
+        </div>
 
-                    <div class="stat-card">
+        <div class="media-list">
 
-                        <strong id="ordersCount">
-                            0
-                        </strong>
+            <h4>
+                Медиа и файлы
+            </h4>
 
-                        <span>
-                            Заказов
-                        </span>
+            <div id="modalMediaList">
 
-                    </div>
-
-                    <div class="stat-card">
-
-                        <strong id="messagesCount">
-                            0
-                        </strong>
-
-                        <span>
-                            Сообщений
-                        </span>
-
-                    </div>
-
+                <div class="media-item">
+                    Пока нет файлов
                 </div>
 
             </div>
 
-            <div class="profile-section">
-
-                <h4>
-                    Последняя активность
-                </h4>
-
-                <p id="lastSeen">
-                    Нет данных
-                </p>
-
-            </div>
-
-            <div class="profile-section">
-
-                <h4>
-                    Вложения
-                </h4>
-
-                <div
-                    id="attachmentsList"
-                    class="attachments-list"
-                >
-
-                    <p class="empty-text">
-                        Пока нет вложений
-                    </p>
-
-                </div>
-
-            </div>
-
-        </aside>
+        </div>
 
     </div>
 
@@ -343,6 +283,5 @@
 <script type="module" src="js/messages.js"></script>
 
 </body>
-
 
 </html>
