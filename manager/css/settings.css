@@ -1,0 +1,368 @@
+/* ==========================================
+   BUILDHOUSE SETTINGS
+========================================== */
+
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --sidebar:#0b1220;
+    --bg:#f4f7fb;
+    --white:#ffffff;
+    --border:#e7edf5;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --shadow:0 10px 35px rgba(0,0,0,.08);
+}
+
+/* ==========================================
+   RESET
+========================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+a{
+    text-decoration:none;
+}
+
+/* ==========================================
+   LAYOUT
+========================================== */
+
+.dashboard{
+    display:flex;
+    min-height:100vh;
+}
+
+/* ==========================================
+   SIDEBAR
+========================================== */
+
+.sidebar{
+    width:270px;
+    background:var(--sidebar);
+    padding:30px 20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.logo h2{
+    color:var(--primary);
+    font-size:30px;
+    margin-bottom:5px;
+}
+
+.logo p{
+    color:#8c98aa;
+}
+
+.menu{
+    margin-top:40px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.menu a{
+    color:#dce3ec;
+    padding:14px 18px;
+    border-radius:16px;
+    transition:.3s;
+    font-weight:500;
+}
+
+.menu a:hover{
+    background:#182234;
+}
+
+.menu a.active{
+    background:var(--primary);
+    color:#111;
+    font-weight:600;
+}
+
+#logoutBtn{
+    width:100%;
+    border:none;
+    background:var(--primary);
+    padding:16px;
+    border-radius:16px;
+    cursor:pointer;
+    font-weight:600;
+    font-family:'Inter';
+    transition:.3s;
+}
+
+#logoutBtn:hover{
+    background:var(--primary-dark);
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:20px;
+}
+
+.avatar-small{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        #ffe1a2
+    );
+}
+
+.profile h4{
+    color:white;
+}
+
+.profile p{
+    color:#8794a8;
+    font-size:13px;
+}
+
+/* ==========================================
+   SETTINGS PAGE
+========================================== */
+
+.settings-page{
+    flex:1;
+    padding:40px;
+    overflow-y:auto;
+}
+
+.page-top{
+    margin-bottom:30px;
+}
+
+.page-top h1{
+    font-size:34px;
+    margin-bottom:8px;
+}
+
+.page-top p{
+    color:var(--muted);
+    font-size:15px;
+}
+
+/* ==========================================
+   GRID
+========================================== */
+
+.settings-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+}
+
+/* ==========================================
+   CARDS
+========================================== */
+
+.settings-card{
+    background:var(--white);
+    border-radius:24px;
+    padding:30px;
+    box-shadow:var(--shadow);
+}
+
+.settings-card h2{
+    margin-bottom:24px;
+    font-size:22px;
+}
+
+/* ==========================================
+   AVATAR
+========================================== */
+
+.avatar-section{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+#profilePhoto{
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    object-fit:cover;
+    border:5px solid #eef3fa;
+    margin-bottom:18px;
+}
+
+#avatarUpload{
+    width:100%;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:#fafcff;
+    cursor:pointer;
+}
+
+/* ==========================================
+   FORM
+========================================== */
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:18px;
+}
+
+.form-group label{
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+.form-group input{
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    font-family:'Inter';
+    background:white;
+    transition:.25s;
+}
+
+.form-group input:focus{
+    outline:none;
+    border-color:var(--primary);
+}
+
+.form-group input[readonly]{
+    background:#f7f9fc;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+#saveProfileBtn,
+#savePasswordBtn{
+    width:100%;
+    border:none;
+    padding:16px;
+    border-radius:16px;
+    background:var(--primary);
+    cursor:pointer;
+    font-weight:600;
+    font-family:'Inter';
+    transition:.3s;
+}
+
+#saveProfileBtn:hover,
+#savePasswordBtn:hover{
+    background:var(--primary-dark);
+}
+
+/* ==========================================
+   SECURITY
+========================================== */
+
+.security-info{
+    background:#fff8eb;
+    border-left:4px solid var(--primary);
+    padding:15px;
+    border-radius:14px;
+    margin-bottom:20px;
+}
+
+.security-info p{
+    color:#6d7280;
+    line-height:1.5;
+}
+
+/* ==========================================
+   DIVIDER
+========================================== */
+
+.divider{
+    height:1px;
+    background:var(--border);
+    margin:30px 0;
+}
+
+/* ==========================================
+   ACCOUNT INFO
+========================================== */
+
+.account-info{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 16px;
+    background:#f8fafc;
+    border-radius:14px;
+}
+
+.info-row span{
+    color:var(--muted);
+}
+
+.info-row strong{
+    color:var(--text);
+}
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#d6dde6;
+    border-radius:20px;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:1100px){
+
+    .settings-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .settings-page{
+        padding:20px;
+    }
+
+    .page-top h1{
+        font-size:28px;
+    }
+
+    .settings-card{
+        padding:22px;
+    }
+
+}
