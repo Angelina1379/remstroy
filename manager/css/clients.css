@@ -1,0 +1,155 @@
+.clients-page{
+    flex:1;
+    padding:35px;
+    overflow:auto;
+}
+
+.page-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.page-top h1{
+    font-size:34px;
+    margin-bottom:6px;
+}
+
+.page-top p{
+    color:var(--muted);
+}
+
+.add-client-btn{
+    border:none;
+    background:var(--primary);
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.stat-card{
+    background:white;
+    border-radius:20px;
+    padding:24px;
+    box-shadow:var(--shadow);
+}
+
+.stat-card h3{
+    font-size:28px;
+    margin-bottom:8px;
+}
+
+.stat-card p{
+    color:var(--muted);
+}
+
+.clients-toolbar{
+    margin-bottom:25px;
+}
+
+.clients-toolbar input{
+    width:100%;
+    max-width:420px;
+    padding:16px;
+    border:none;
+    border-radius:16px;
+    background:white;
+    box-shadow:var(--shadow);
+}
+
+.clients-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    gap:24px;
+}
+
+.client-card{
+    background:white;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+}
+
+.client-header{
+    display:flex;
+    gap:16px;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.client-avatar{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#ffb547,#ffe5b1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+}
+
+.client-info{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:20px;
+    color:#55606f;
+}
+
+.client-stats{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.client-stats div{
+    display:flex;
+    flex-direction:column;
+}
+
+.client-stats strong{
+    font-size:18px;
+}
+
+.client-stats span{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.status{
+    display:inline-block;
+    margin-top:4px;
+    padding:6px 12px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.status.work{
+    background:#fff5dd;
+    color:#d48a00;
+}
+
+.status.done{
+    background:#e8fff0;
+    color:#17944a;
+}
+
+.details-btn{
+    width:100%;
+    border:none;
+    padding:14px;
+    border-radius:14px;
+    background:#eef4ff;
+    cursor:pointer;
+    font-weight:600;
+}
