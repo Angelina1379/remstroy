@@ -9,8 +9,6 @@
 <title>Клиенты | BuildHouse</title>
 
 <link rel="stylesheet" href="css/clients.css">
-    
-<script src="js/clients.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -76,7 +74,9 @@
 
             <div>
 
-                <h1>База клиентов</h1>
+                <h1>
+                    База клиентов
+                </h1>
 
                 <p>
                     Управление клиентами и заказами
@@ -96,33 +96,49 @@
 
             <div class="stat-card">
 
-                <h3>148</h3>
+                <h3 id="totalClients">
+                    0
+                </h3>
 
-                <p>Всего клиентов</p>
-
-            </div>
-
-            <div class="stat-card">
-
-                <h3>23</h3>
-
-                <p>Новых за месяц</p>
+                <p>
+                    Всего клиентов
+                </p>
 
             </div>
 
             <div class="stat-card">
 
-                <h3>58</h3>
+                <h3 id="newClients">
+                    0
+                </h3>
 
-                <p>Активных заказов</p>
+                <p>
+                    Новых за месяц
+                </p>
 
             </div>
 
             <div class="stat-card">
 
-                <h3>12.4 млн ₽</h3>
+                <h3 id="activeOrders">
+                    0
+                </h3>
 
-                <p>Общая выручка</p>
+                <p>
+                    Активных заказов
+                </p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3 id="totalRevenue">
+                    0 ₽
+                </h3>
+
+                <p>
+                    Общая выручка
+                </p>
 
             </div>
 
@@ -140,159 +156,120 @@
 
         </div>
 
-        <!-- КЛИЕНТЫ -->
+        <!-- СПИСОК КЛИЕНТОВ -->
 
-        <div id="clientsGrid" class="clients-grid">
-
-            <div class="client-card">
-
-                <div class="client-header">
-
-                    <div class="client-avatar">
-                        ИП
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Иван Петров
-                        </h3>
-
-                        <span class="status work">
-                            В работе
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="client-info">
-
-                    <p>📞 +7 (999) 111-22-33</p>
-
-                    <p>✉ ivan@mail.ru</p>
-
-                    <p>📍 ул. Центральная, 15</p>
-
-                </div>
-
-                <div class="client-stats">
-
-                    <div>
-
-                        <strong>5</strong>
-
-                        <span>Заказов</span>
-
-                    </div>
-
-                    <div>
-
-                        <strong>890 000 ₽</strong>
-
-                        <span>Сумма</span>
-
-                    </div>
-
-                </div>
-
-                <button class="details-btn">
-                    Подробнее
-                </button>
-
-            </div>
-
-            <div class="client-card">
-
-                <div class="client-header">
-
-                    <div class="client-avatar">
-                        АС
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Анна Смирнова
-                        </h3>
-
-                        <span class="status done">
-                            Завершён
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="client-info">
-
-                    <p>📞 +7 (999) 555-77-88</p>
-
-                    <p>✉ anna@mail.ru</p>
-
-                    <p>📍 ул. Лесная, 7</p>
-
-                </div>
-
-                <div class="client-stats">
-
-                    <div>
-
-                        <strong>2</strong>
-
-                        <span>Заказа</span>
-
-                    </div>
-
-                    <div>
-
-                        <strong>420 000 ₽</strong>
-
-                        <span>Сумма</span>
-
-                    </div>
-
-                </div>
-
-                <button class="details-btn">
-                    Подробнее
-                </button>
-
-            </div>
-
-        </div>
+        <div
+            id="clientsGrid"
+            class="clients-grid"
+        ></div>
 
     </main>
 
 </div>
 
-<script>
+<!-- МОДАЛЬНОЕ ОКНО КЛИЕНТА -->
 
-const searchInput =
-document.getElementById("clientSearch");
+<div
+    id="profileModal"
+    class="modal"
+>
 
-searchInput.addEventListener("input", () => {
+    <div class="modal-content">
 
-    const value =
-    searchInput.value.toLowerCase();
+        <button
+            id="closeModal"
+            class="close-btn"
+        >
+            ✕
+        </button>
 
-    document
-    .querySelectorAll(".client-card")
-    .forEach(card => {
+        <div class="modal-header">
 
-        card.style.display =
-        card.innerText
-        .toLowerCase()
-        .includes(value)
-        ? "block"
-        : "none";
+            <div
+                id="modalAvatar"
+                class="modal-avatar"
+            >
+                К
+            </div>
 
-    });
+            <h2 id="modalName">
+                Клиент
+            </h2>
 
-});
+        </div>
 
-</script>
+        <div class="modal-body">
+
+            <div class="info-row">
+
+                <strong>
+                    Email:
+                </strong>
+
+                <span id="modalEmail">
+                    Не указан
+                </span>
+
+            </div>
+
+            <div class="info-row">
+
+                <strong>
+                    Телефон:
+                </strong>
+
+                <span id="modalPhone">
+                    Не указан
+                </span>
+
+            </div>
+
+            <div class="info-row">
+
+                <strong>
+                    Адрес:
+                </strong>
+
+                <span id="modalAddress">
+                    Не указан
+                </span>
+
+            </div>
+
+            <div class="info-row">
+
+                <strong>
+                    Заказов:
+                </strong>
+
+                <span id="modalOrders">
+                    0
+                </span>
+
+            </div>
+
+            <div class="info-row">
+
+                <strong>
+                    Сообщений:
+                </strong>
+
+                <span id="modalMessages">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script
+    type="module"
+    src="js/clients.js"
+></script>
 
 </body>
-
 </html>
