@@ -1,0 +1,180 @@
+:root{
+    --primary:#ffb547;
+    --navy:#0b1220;
+    --bg:#f5f7fb;
+    --shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+}
+
+.dashboard{
+    display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:260px;
+    height:100vh;
+    background:var(--navy);
+    padding:30px 20px;
+}
+
+.logo h2{
+    color:var(--primary);
+}
+
+.logo p{
+    color:#999;
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:30px;
+}
+
+.menu a{
+    color:var(--primary);
+    text-decoration:none;
+    padding:14px 18px;
+    border-radius:14px;
+}
+
+.menu a:hover{
+    background:#1d2638;
+    color:white;
+}
+
+.menu .active{
+    background:var(--primary);
+    color:#111;
+}
+
+#logoutBtn{
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:var(--primary);
+    cursor:pointer;
+}
+
+/* PAGE */
+
+.orders-page{
+    flex:1;
+    margin-left:260px;
+    padding:35px;
+}
+
+.page-top{
+    margin-bottom:30px;
+}
+
+.page-top h1{
+    font-size:34px;
+}
+
+.page-top p{
+    color:#777;
+    margin-top:8px;
+}
+
+/* CARDS */
+
+.orders-grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fill,minmax(420px,1fr));
+    gap:24px;
+}
+
+.order-card{
+    background:white;
+    border-radius:24px;
+    padding:25px;
+    box-shadow:var(--shadow);
+}
+
+.order-header{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.order-number{
+    font-weight:700;
+    font-size:18px;
+}
+
+.order-status{
+    padding:6px 12px;
+    border-radius:30px;
+    font-size:12px;
+}
+
+.active{
+    background:#fff3d8;
+    color:#c17d00;
+}
+
+.completed{
+    background:#e6fff0;
+    color:#0f8c48;
+}
+
+.order-info{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.order-price{
+    background:#f8f9fc;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:20px;
+}
+
+.order-price h3{
+    margin-bottom:10px;
+}
+
+.order-actions{
+    display:flex;
+    gap:12px;
+}
+
+.details-btn,
+.pay-btn{
+    flex:1;
+    border:none;
+    padding:14px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.details-btn{
+    background:#eef4ff;
+}
+
+.pay-btn{
+    background:var(--primary);
+}
