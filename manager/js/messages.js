@@ -9,7 +9,6 @@ import {
     serverTimestamp,
     doc,
     setDoc,
-    updateDoc,
     deleteDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -121,8 +120,7 @@ function loadClients() {
 
             if (user.role === "manager") return;
 
-            const item =
-            document.createElement("div");
+            const item = document.createElement("div");
 
             item.className = "client-item";
 
@@ -144,14 +142,22 @@ function loadClients() {
 
             item.addEventListener("click", () => {
 
+                document
+                    .querySelectorAll(".client-item")
+                    .forEach(el =>
+                        el.classList.remove("active")
+                    );
+
+                item.classList.add("active");
+
                 currentClient = user;
                 currentChat = user.id;
 
                 document.getElementById("chatUsername").textContent =
-                user.name || "Клиент";
+                    user.name || "Клиент";
 
                 document.getElementById("chatStatus").textContent =
-                user.email || "";
+                    user.email || "";
 
                 loadMessages(user.id);
 
@@ -173,20 +179,20 @@ function loadClients() {
 searchInput?.addEventListener("input", () => {
 
     const value =
-    searchInput.value.toLowerCase();
+        searchInput.value.toLowerCase();
 
     document
-    .querySelectorAll(".client-item")
-    .forEach(item => {
+        .querySelectorAll(".client-item")
+        .forEach(item => {
 
-        item.style.display =
-        item.textContent
-        .toLowerCase()
-        .includes(value)
-        ? "block"
-        : "none";
+            item.style.display =
+                item.textContent
+                    .toLowerCase()
+                    .includes(value)
+                    ? "block"
+                    : "none";
 
-    });
+        });
 
 });
 
@@ -196,8 +202,6 @@ searchInput?.addEventListener("input", () => {
 // ======================================
 
 function loadMessages(clientId) {
-
-    messagesContainer.innerHTML = "";
 
     const messagesRef = query(
         collection(
@@ -213,19 +217,30 @@ function loadMessages(clientId) {
 
         messagesContainer.innerHTML = "";
 
+        if (snapshot.empty) {
+
+            messagesContainer.innerHTML = `
+                <div class="empty-chat">
+                    Сообщений пока нет
+                </div>
+            `;
+
+            return;
+        }
+
         snapshot.forEach((docSnap) => {
 
             const msg = docSnap.data();
 
             const div =
-            document.createElement("div");
+                document.createElement("div");
 
             div.className =
-            `message ${
-                msg.sender === "manager"
-                ? "manager"
-                : "client"
-            }`;
+                `message ${
+                    msg.sender === "manager"
+                    ? "manager"
+                    : "client"
+                }`;
 
             let html = "";
 
@@ -248,7 +263,7 @@ function loadMessages(clientId) {
 
             }
 
-            if (msg.fileUrl) {
+            if (msg.fileUrl && !msg.imageUrl) {
 
                 html += `
                     <div class="file-box">
@@ -275,9 +290,9 @@ function loadMessages(clientId) {
             }
 
             const time =
-            msg.time?.toDate
-            ? msg.time.toDate()
-            : new Date();
+                msg.time?.toDate
+                    ? msg.time.toDate()
+                    : new Date();
 
             html += `
                 <div class="message-time">
@@ -313,7 +328,7 @@ function loadMessages(clientId) {
         });
 
         messagesContainer.scrollTop =
-        messagesContainer.scrollHeight;
+            messagesContainer.scrollHeight;
 
     });
 
@@ -321,7 +336,7 @@ function loadMessages(clientId) {
 
 
 // ======================================
-// FILE
+// FILE SELECT
 // ======================================
 
 fileInput?.addEventListener(
@@ -329,7 +344,7 @@ fileInput?.addEventListener(
     () => {
 
         selectedFile =
-        fileInput.files[0];
+            fileInput.files[0];
 
         if (!selectedFile) return;
 
@@ -352,14 +367,16 @@ sendBtn?.addEventListener(
     async() => {
 
         if (!currentChat) {
+
             alert(
                 "Выберите клиента"
             );
+
             return;
         }
 
         const text =
-        messageInput.value.trim();
+            messageInput.value.trim();
 
         let fileUrl = "";
         let imageUrl = "";
@@ -369,11 +386,7 @@ sendBtn?.addEventListener(
 
             const storageRef = ref(
                 storage,
-                `chatFiles/${
-                    Date.now()
-                }_${
-                    selectedFile.name
-                }`
+                `chatFiles/${Date.now()}_${selectedFile.name}`
             );
 
             await uploadBytes(
@@ -382,27 +395,24 @@ sendBtn?.addEventListener(
             );
 
             fileUrl =
-            await getDownloadURL(
-                storageRef
-            );
+                await getDownloadURL(
+                    storageRef
+                );
 
             fileName =
-            selectedFile.name;
+                selectedFile.name;
 
             if (
-                selectedFile.type.startsWith(
-                    "image"
-                )
+                selectedFile.type.startsWith("image/")
             ) {
+
                 imageUrl = fileUrl;
+
             }
 
         }
 
-        if (
-            !text &&
-            !selectedFile
-        ) return;
+        if (!text && !selectedFile) return;
 
         await addDoc(
             collection(
@@ -419,24 +429,6 @@ sendBtn?.addEventListener(
                 imageUrl,
                 time: serverTimestamp(),
                 read: false
-            }
-        );
-
-        await setDoc(
-            doc(
-                db,
-                "users",
-                currentChat
-            ),
-            {
-                lastMessage:
-                text || "📎 Файл",
-
-                lastTime:
-                serverTimestamp()
-            },
-            {
-                merge: true
             }
         );
 
@@ -471,80 +463,80 @@ messageInput?.addEventListener(
 
 
 // ======================================
-// VOICE
+// VOICE MESSAGE
 // ======================================
 
 voiceBtn?.addEventListener(
     "click",
     async() => {
 
-        if (!currentChat) return;
+        if (!currentChat) {
+
+            alert("Выберите клиента");
+            return;
+
+        }
 
         const stream =
-        await navigator
-        .mediaDevices
-        .getUserMedia({
-            audio: true
-        });
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
 
         mediaRecorder =
-        new MediaRecorder(stream);
+            new MediaRecorder(stream);
 
         audioChunks = [];
 
         mediaRecorder.start();
 
         mediaRecorder.ondataavailable =
-        e => {
+            e => {
 
-            audioChunks.push(e.data);
+                audioChunks.push(e.data);
 
-        };
+            };
 
         mediaRecorder.onstop =
-        async() => {
+            async() => {
 
-            const blob =
-            new Blob(
-                audioChunks,
-                {
-                    type: "audio/webm"
-                }
-            );
+                const blob =
+                    new Blob(
+                        audioChunks,
+                        {
+                            type: "audio/webm"
+                        }
+                    );
 
-            const storageRef = ref(
-                storage,
-                `voices/${
-                    Date.now()
-                }.webm`
-            );
+                const storageRef = ref(
+                    storage,
+                    `voices/${Date.now()}.webm`
+                );
 
-            await uploadBytes(
-                storageRef,
-                blob
-            );
+                await uploadBytes(
+                    storageRef,
+                    blob
+                );
 
-            const url =
-            await getDownloadURL(
-                storageRef
-            );
+                const url =
+                    await getDownloadURL(
+                        storageRef
+                    );
 
-            await addDoc(
-                collection(
-                    db,
-                    "messages",
-                    currentChat,
-                    "items"
-                ),
-                {
-                    sender: "manager",
-                    voiceUrl: url,
-                    time:
-                    serverTimestamp()
-                }
-            );
+                await addDoc(
+                    collection(
+                        db,
+                        "messages",
+                        currentChat,
+                        "items"
+                    ),
+                    {
+                        sender: "manager",
+                        voiceUrl: url,
+                        time: serverTimestamp()
+                    }
+                );
 
-        };
+            };
 
         setTimeout(() => {
 
@@ -564,28 +556,23 @@ profileBtn?.addEventListener(
     "click",
     () => {
 
-        if (!currentClient) return;
+        if (!currentClient) {
 
-        document.getElementById(
-            "modalName"
-        ).textContent =
-        currentClient.name ||
-        "Клиент";
+            alert("Выберите клиента");
+            return;
 
-        document.getElementById(
-            "modalPhone"
-        ).textContent =
-        currentClient.phone ||
-        "Не указан";
+        }
 
-        document.getElementById(
-            "modalEmail"
-        ).textContent =
-        currentClient.email ||
-        "Не указан";
+        document.getElementById("modalName").textContent =
+            currentClient.name || "Клиент";
 
-        profileModal.style.display =
-        "flex";
+        document.getElementById("modalPhone").textContent =
+            currentClient.phone || "Не указан";
+
+        document.getElementById("modalEmail").textContent =
+            currentClient.email || "Не указан";
+
+        profileModal.style.display = "flex";
 
     }
 );
@@ -594,8 +581,7 @@ closeModal?.addEventListener(
     "click",
     () => {
 
-        profileModal.style.display =
-        "none";
+        profileModal.style.display = "none";
 
     }
 );
@@ -604,12 +590,9 @@ window.addEventListener(
     "click",
     (e) => {
 
-        if (
-            e.target === profileModal
-        ) {
+        if (e.target === profileModal) {
 
-            profileModal.style.display =
-            "none";
+            profileModal.style.display = "none";
 
         }
 
