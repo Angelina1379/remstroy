@@ -49,126 +49,97 @@ body{
 }
 
 /* ==========================================
-   SIDEBAR (ЕДИНЫЙ СТИЛЬ)
+   SIDEBAR
+   НЕ МЕНЯЕМ ДИЗАЙН
 ========================================== */
 
 .sidebar{
 
-  position:fixed;
+    position:fixed;
 
-  left:0;
-  top:0;
+    left:0;
+    top:0;
 
-  width:260px;
-  height:100vh;
+    width:260px;
+    height:100vh;
 
-  background:var(--navy);
+    background:var(--navy);
 
-  color:white;
+    color:white;
 
-  padding:30px 20px;
+    padding:30px 20px;
 
-  display:flex;
-  flex-direction:column;
+    display:flex;
+    flex-direction:column;
 
-  z-index:999;
+    z-index:999;
 }
 
 .logo{
-  margin-bottom:20px;
+    margin-bottom:20px;
 }
 
 .logo h2{
 
-  color:var(--primary);
+    color:var(--primary);
 
-  font-size:30px;
-  font-weight:700;
+    font-size:30px;
+    font-weight:700;
 }
 
 .logo p{
 
-  opacity:.7;
+    opacity:.7;
 
-  margin-top:6px;
+    margin-top:6px;
 }
 
 .menu{
 
-  display:flex;
-  flex-direction:column;
+    display:flex;
+    flex-direction:column;
 
-  gap:10px;
+    gap:10px;
 
-  flex:1;
-
-  margin-top:20px;
+    flex:1;
 }
 
 .menu a{
 
-  text-decoration:none;
+    text-decoration:none;
 
-  color:var(--primary);
+    color:var(--primary);
 
-  padding:14px 18px;
+    padding:14px 18px;
 
-  border-radius:14px;
+    border-radius:14px;
 
-  cursor:pointer;
+    cursor:pointer;
 
-  transition:.3s;
+    transition:.3s;
 }
 
 .menu a:hover{
 
-  background:#1d2638;
+    background:#1d2638;
 
-  color:white;
+    color:white;
 }
 
 .menu .active{
 
-  background:var(--primary);
+    background:var(--primary);
 
-  color:#111;
+    color:#111;
 
-  font-weight:600;
+    font-weight:600;
 }
 
 #logoutBtn{
 
-  width:100%;
+    width:100%;
 
-  margin-top:20px;
-
-  padding:14px 20px;
-
-  border:none;
-
-  border-radius:16px;
-
-  background:
-  linear-gradient(
-    135deg,
-    var(--primary),
-    #ff9800
-  );
-
-  color:#111;
-
-  font-weight:600;
-
-  cursor:pointer;
-
-  transition:.3s;
-}
-
-#logoutBtn:hover{
-
-  transform:translateY(-2px);
-
-  filter:brightness(1.03);
+    margin-top:20px;
 }
 
 /* ==========================================
