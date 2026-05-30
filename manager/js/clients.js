@@ -26,13 +26,19 @@ const clientsGrid =
 document.getElementById("clientsGrid");
 
 const searchInput =
-document.getElementById("searchInput");
+document.getElementById("clientSearch");
 
 const totalClients =
 document.getElementById("totalClients");
 
-const activeClients =
-document.getElementById("activeClients");
+const newClients =
+document.getElementById("newClients");
+
+const activeOrders =
+document.getElementById("activeOrders");
+
+const totalRevenue =
+document.getElementById("totalRevenue");
 
 const logoutBtn =
 document.getElementById("logoutBtn");
@@ -76,7 +82,7 @@ onAuthStateChanged(auth, (user) => {
 
 logoutBtn?.addEventListener(
     "click",
-    async() => {
+    async () => {
 
         await signOut(auth);
 
@@ -96,11 +102,9 @@ function loadClients() {
     const usersRef =
     collection(db, "users");
 
-    onSnapshot(usersRef, async(snapshot) => {
+    onSnapshot(usersRef, async (snapshot) => {
 
         clients = [];
-
-        let active = 0;
 
         snapshot.forEach((docSnap) => {
 
@@ -112,22 +116,52 @@ function loadClients() {
 
             };
 
-            if (
-                user.role === "manager"
-            ) return;
+            if (user.role === "manager")
+                return;
 
             clients.push(user);
-
-            if (user.online)
-                active++;
 
         });
 
         totalClients.textContent =
         clients.length;
 
-        activeClients.textContent =
-        active;
+        newClients.textContent =
+        clients.length;
+
+        let ordersSum = 0;
+
+        try {
+
+            const ordersSnapshot =
+            await getDocs(
+                collection(db, "orders")
+            );
+
+            activeOrders.textContent =
+            ordersSnapshot.size;
+
+            ordersSnapshot.forEach(doc => {
+
+                const order =
+                doc.data();
+
+                ordersSum +=
+                Number(order.price || 0);
+
+            });
+
+        }
+
+        catch {
+
+            activeOrders.textContent = 0;
+
+        }
+
+        totalRevenue.textContent =
+        ordersSum.toLocaleString("ru-RU")
+        + " ₽";
 
         renderClients(clients);
 
@@ -530,7 +564,7 @@ async function removeClient(id) {
 
     }
 
-    catch(error) {
+    catch (error) {
 
         console.error(error);
 
