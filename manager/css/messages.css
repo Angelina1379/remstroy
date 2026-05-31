@@ -166,7 +166,9 @@ a{
 ========================================== */
 
 .messenger{
-    flex:1;
+    margin-left:260px;
+    width:calc(100% - 260px);
+
     display:flex;
     height:100vh;
 }
@@ -246,11 +248,24 @@ a{
 /* ==========================================
    CHAT
 ========================================== */
+.chat-sidebar{
+    width:360px;
+    background:white;
+    border-right:1px solid var(--border);
+
+    display:flex;
+    flex-direction:column;
+
+    height:100vh;
+} 
 
 .chat-main{
     flex:1;
     display:flex;
     flex-direction:column;
+
+    min-width:0;
+
     background:url("https://www.transparenttextures.com/patterns/cubes.png");
 }
 
@@ -566,6 +581,11 @@ a{
 
     .sidebar{
         display:none;
+    }
+
+    .messenger{
+        margin-left:0;
+        width:100%;
     }
 
     .chat-sidebar{
