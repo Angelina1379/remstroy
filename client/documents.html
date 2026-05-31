@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Документы | BuildHouse</title>
+
+<link rel="stylesheet"
+      href="css/documents.css">
+
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="logo">
+
+                <h2>BuildHouse</h2>
+
+                <p>Личный кабинет</p>
+
+            </div>
+
+            <nav class="menu">
+
+                <a href="cabinet.html">
+                    Главная
+                </a>
+
+                <a href="orders.html">
+                    Заказы
+                </a>
+
+                <a href="messages.html">
+                    Сообщения
+                </a>
+
+                <a href="calendar.html">
+                    Календарь
+                </a>
+
+                <a class="active">
+                    Документы
+                </a>
+
+                <a href="settings.html">
+                    Настройки
+                </a>
+
+                <button id="logoutBtn">
+                    Выйти
+                </button>
+
+            </nav>
+
+        </div>
+
+    </aside>
+
+    <!-- CONTENT -->
+
+    <main class="content">
+
+        <div class="page-header">
+
+            <h1>
+                Документы проекта
+            </h1>
+
+            <p>
+                Здесь будут храниться все документы,
+                связанные с вашим ремонтом.
+            </p>
+
+        </div>
+
+        <div
+            id="documentsContainer"
+            class="documents-grid"
+        >
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    📄
+                </div>
+
+                <h3>
+                    Документы пока отсутствуют
+                </h3>
+
+                <p>
+                    После загрузки менеджером
+                    документы появятся здесь.
+                </p>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script
+    type="module"
+    src="js/documents.js">
+</script>
+
+</body>
+</html>
+
