@@ -454,3 +454,30 @@ logoutBtn?.addEventListener(
 
     }
 );
+
+const orderModal =
+    document.getElementById("orderModal");
+
+const calculatorModal =
+    document.getElementById("calculatorModal");
+
+const createOrderBtn =
+    document.getElementById("createOrderBtn");
+
+const orderTitle =
+    document.getElementById("orderTitle");
+
+const orderAddress =
+    document.getElementById("orderAddress");
+
+const calcArea =
+    document.getElementById("calcArea");
+
+const calcType =
+    document.getElementById("calcType");
+
+const calculateBtn =
+    document.getElementById("calculateBtn");
+
+const calcResult =
+    document.getElementById("calcResult");
