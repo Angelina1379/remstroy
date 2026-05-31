@@ -1,0 +1,306 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Календарь | BuildHouse</title>
+
+<link rel="stylesheet" href="css/calendar.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="logo">
+
+                <h2>BuildHouse</h2>
+
+                <p>Личный кабинет</p>
+
+            </div>
+
+            <nav class="menu">
+
+                <a href="cabinet.html">
+                    Главная
+                </a>
+
+                <a href="orders.html">
+                    Заказы
+                </a>
+
+                <a href="messages.html">
+                    Сообщения
+                </a>
+
+                <a class="active">
+                    Календарь
+                </a>
+
+                <a href="documents.html">
+                    Документы
+                </a>
+
+                <a href="settings.html">
+                    Настройки
+                </a>
+
+                <button id="logoutBtn">
+                    Выйти
+                </button>
+
+            </nav>
+
+        </div>
+
+    </aside>
+
+    <!-- CONTENT -->
+
+    <main class="content">
+
+        <div class="page-header">
+
+            <h1>
+                Календарь работ
+            </h1>
+
+            <p>
+                Планирование и контроль этапов ремонта
+            </p>
+
+        </div>
+
+        <!-- СТАТИСТИКА -->
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <h3>
+                    Дата начала работ
+                </h3>
+
+                <div
+                    class="value"
+                    id="startDate"
+                >
+                    —
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>
+                    Плановая сдача
+                </h3>
+
+                <div
+                    class="value"
+                    id="finishDate"
+                >
+                    —
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>
+                    Выполнение проекта
+                </h3>
+
+                <div
+                    class="value"
+                    id="progressValue"
+                >
+                    0%
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- КАЛЕНДАРЬ -->
+
+        <div class="calendar-card">
+
+            <h2>
+                Календарь
+            </h2>
+
+            <div class="calendar-grid">
+
+                <div class="day-name">Пн</div>
+                <div class="day-name">Вт</div>
+                <div class="day-name">Ср</div>
+                <div class="day-name">Чт</div>
+                <div class="day-name">Пт</div>
+                <div class="day-name">Сб</div>
+                <div class="day-name">Вс</div>
+
+                <!-- Пустые ячейки.
+                     Потом JS заполнит их автоматически -->
+
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+
+            </div>
+
+        </div>
+
+        <!-- БЛИЖАЙШИЕ РАБОТЫ -->
+
+        <div class="schedule-grid">
+
+            <div class="schedule-card">
+
+                <h3>
+                    Ближайшие работы
+                </h3>
+
+                <div id="upcomingWorks">
+
+                    <div class="event-item">
+
+                        <div>
+
+                            <div class="event-title">
+                                Работы не назначены
+                            </div>
+
+                            <div class="event-date">
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="schedule-card">
+
+                <h3>
+                    Этапы ремонта
+                </h3>
+
+                <div id="projectStages">
+
+                    <div class="event-item">
+
+                        <div>
+
+                            <div class="event-title">
+                                Этапы отсутствуют
+                            </div>
+
+                            <div class="event-date">
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- СЛЕДУЮЩИЕ ВЫЕЗДЫ -->
+
+        <div class="upcoming">
+
+            <h2>
+                Запланированные выезды
+            </h2>
+
+            <div id="visitsContainer">
+
+                <div class="work-card">
+
+                    <div class="work-info">
+
+                        <h4>
+                            Нет запланированных выездов
+                        </h4>
+
+                        <p>
+                            Информация появится после назначения работ
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script type="module" src="js/calendar.js"></script>
+
+</body>
+</html>
+```
