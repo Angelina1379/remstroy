@@ -649,8 +649,22 @@ a{
 
 }
 /* ==========================================
-   CLIENT CHAT FIX
+   CLIENT PAGE FIX
 ========================================== */
+
+.chat-main{
+    margin-left:260px;
+    width:calc(100% - 260px);
+
+    height:100vh;
+
+    display:flex;
+    flex-direction:column;
+
+    overflow:hidden;
+
+    background:url("https://www.transparenttextures.com/patterns/cubes.png");
+}
 
 .chat-header{
     flex-shrink:0;
@@ -658,13 +672,23 @@ a{
 
 .messages-container{
     flex:1;
+    min-height:0;
     overflow-y:auto;
+}
+
+.file-preview{
+    flex-shrink:0;
 }
 
 .chat-input{
     flex-shrink:0;
 }
 
-.file-preview{
-    flex-shrink:0;
+@media(max-width:1100px){
+
+    .chat-main{
+        margin-left:0;
+        width:100%;
+    }
+
 }
