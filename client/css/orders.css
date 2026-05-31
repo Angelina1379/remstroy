@@ -524,3 +524,116 @@ a{
     box-shadow:
         0 25px 60px rgba(0,0,0,.15);
 }
+/* ==========================================
+   ORDERS PAGE
+========================================== */
+
+.orders-page{
+    margin-left:260px;
+    width:calc(100% - 260px);
+    padding:40px;
+}
+
+.header-actions{
+    display:flex;
+    gap:12px;
+}
+
+.primary-btn{
+    border:none;
+    cursor:pointer;
+
+    padding:14px 22px;
+
+    border-radius:14px;
+
+    background:var(--primary);
+    color:#111;
+
+    font-weight:600;
+    font-size:15px;
+
+    transition:.3s;
+}
+
+.primary-btn:hover{
+    background:var(--primary-dark);
+}
+
+.secondary-btn{
+    border:none;
+    cursor:pointer;
+
+    padding:14px 22px;
+
+    border-radius:14px;
+
+    background:var(--blue);
+    color:white;
+
+    font-weight:600;
+    font-size:15px;
+
+    transition:.3s;
+}
+
+.secondary-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* ==========================================
+   FILTERS
+========================================== */
+
+.filters{
+    display:flex;
+    gap:15px;
+    margin-bottom:30px;
+}
+
+.filters input,
+.filters select{
+    border:1px solid var(--border);
+    background:white;
+
+    border-radius:14px;
+
+    padding:14px 16px;
+
+    font-family:'Inter',sans-serif;
+}
+
+.filters input{
+    flex:1;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:1100px){
+
+    .orders-page{
+        margin-left:0;
+        width:100%;
+        padding:25px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .header-actions{
+        flex-direction:column;
+    }
+
+    .primary-btn,
+    .secondary-btn{
+        width:100%;
+    }
+
+    .filters{
+        flex-direction:column;
+    }
+
+}
