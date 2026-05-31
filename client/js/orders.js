@@ -42,6 +42,38 @@ const calculatorBtn =
 
 
 // ======================================
+// MODALS
+// ======================================
+
+const orderModal =
+    document.getElementById("orderModal");
+
+const calculatorModal =
+    document.getElementById("calculatorModal");
+
+const createOrderBtn =
+    document.getElementById("createOrderBtn");
+
+const orderTitle =
+    document.getElementById("orderTitle");
+
+const orderAddress =
+    document.getElementById("orderAddress");
+
+const calcArea =
+    document.getElementById("calcArea");
+
+const calcType =
+    document.getElementById("calcType");
+
+const calculateBtn =
+    document.getElementById("calculateBtn");
+
+const calcResult =
+    document.getElementById("calcResult");
+
+
+// ======================================
 // GLOBAL
 // ======================================
 
@@ -53,22 +85,25 @@ let allOrders = [];
 // AUTH
 // ======================================
 
-onAuthStateChanged(auth, async(user) => {
+onAuthStateChanged(
+    auth,
+    async(user) => {
 
-    if (!user) {
+        if (!user) {
 
-        window.location.href =
-            "login.html";
+            window.location.href =
+                "login.html";
 
-        return;
+            return;
+
+        }
+
+        currentUser = user;
+
+        await loadOrders();
 
     }
-
-    currentUser = user;
-
-    await loadOrders();
-
-});
+);
 
 
 // ======================================
@@ -80,7 +115,10 @@ async function loadOrders() {
     try {
 
         const ordersRef =
-            collection(db, "orders");
+            collection(
+                db,
+                "orders"
+            );
 
         const q = query(
             ordersRef,
@@ -96,11 +134,11 @@ async function loadOrders() {
 
         allOrders = [];
 
-        snapshot.forEach((doc) => {
+        snapshot.forEach((docSnap) => {
 
             allOrders.push({
-                id: doc.id,
-                ...doc.data()
+                id: docSnap.id,
+                ...docSnap.data()
             });
 
         });
@@ -111,7 +149,10 @@ async function loadOrders() {
 
     catch(error) {
 
-        console.error(error);
+        console.error(
+            "Ошибка загрузки:",
+            error
+        );
 
     }
 
@@ -132,11 +173,11 @@ function renderOrders(orders) {
             <div class="empty-orders">
 
                 <h3>
-                    Заказы отсутствуют
+                    Заказов пока нет
                 </h3>
 
                 <p>
-                    Пока нет созданных заявок
+                    Создайте первую заявку
                 </p>
 
             </div>
@@ -147,12 +188,6 @@ function renderOrders(orders) {
     }
 
     orders.forEach(order => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "order-card";
 
         let statusClass =
             "status-new";
@@ -196,12 +231,18 @@ function renderOrders(orders) {
 
         }
 
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "order-card";
+
         card.innerHTML = `
 
             <div class="order-top">
 
                 <div class="order-number">
-                    ${order.number || order.id}
+                    ${order.title || "Заявка"}
                 </div>
 
                 <div class="order-status ${statusClass}">
@@ -211,18 +252,6 @@ function renderOrders(orders) {
             </div>
 
             <div class="order-info">
-
-                <div class="order-row">
-
-                    <span class="order-label">
-                        Вид работ
-                    </span>
-
-                    <span class="order-value">
-                        ${order.title || "-"}
-                    </span>
-
-                </div>
 
                 <div class="order-row">
 
@@ -239,21 +268,14 @@ function renderOrders(orders) {
                 <div class="order-row">
 
                     <span class="order-label">
-                        Дата начала
+                        Стоимость
                     </span>
 
                     <span class="order-value">
-                        ${order.startDate || "-"}
+                        ${(order.price || 0)
+                            .toLocaleString("ru-RU")} ₽
                     </span>
 
-                </div>
-
-            </div>
-
-            <div class="order-footer">
-
-                <div class="order-price">
-                    ${order.price || 0} ₽
                 </div>
 
             </div>
@@ -268,7 +290,7 @@ function renderOrders(orders) {
 
 
 // ======================================
-// SEARCH
+// FILTER
 // ======================================
 
 searchInput?.addEventListener(
@@ -293,20 +315,19 @@ function filterOrders() {
         allOrders.filter(order => {
 
             const title =
-                (
-                    order.title || ""
-                ).toLowerCase();
+                (order.title || "")
+                .toLowerCase();
 
-            const matchSearch =
+            const searchMatch =
                 title.includes(search);
 
-            const matchStatus =
+            const statusMatch =
                 status === "all"
                 || order.status === status;
 
             return (
-                matchSearch &&
-                matchStatus
+                searchMatch &&
+                statusMatch
             );
 
         });
@@ -317,26 +338,46 @@ function filterOrders() {
 
 
 // ======================================
-// NEW ORDER
+// NEW ORDER MODAL
 // ======================================
 
 newOrderBtn?.addEventListener(
     "click",
+    () => {
+
+        orderModal.style.display =
+            "flex";
+
+    }
+);
+
+
+// ======================================
+// CREATE ORDER
+// ======================================
+
+createOrderBtn?.addEventListener(
+    "click",
     async() => {
 
         const title =
-            prompt(
-                "Введите вид работ:"
-            );
-
-        if (!title) return;
+            orderTitle.value.trim();
 
         const address =
-            prompt(
-                "Введите адрес:"
+            orderAddress.value.trim();
+
+        if (
+            !title ||
+            !address
+        ) {
+
+            alert(
+                "Заполните все поля"
             );
 
-        if (!address) return;
+            return;
+
+        }
 
         try {
 
@@ -350,7 +391,6 @@ newOrderBtn?.addEventListener(
                         currentUser.uid,
 
                     title,
-
                     address,
 
                     status:
@@ -363,9 +403,11 @@ newOrderBtn?.addEventListener(
                 }
             );
 
-            alert(
-                "Заявка отправлена"
-            );
+            orderTitle.value = "";
+            orderAddress.value = "";
+
+            orderModal.style.display =
+                "none";
 
             loadOrders();
 
@@ -389,51 +431,63 @@ calculatorBtn?.addEventListener(
     "click",
     () => {
 
+        calculatorModal.style.display =
+            "flex";
+
+    }
+);
+
+calculateBtn?.addEventListener(
+    "click",
+    () => {
+
         const area =
             Number(
-                prompt(
-                    "Площадь помещения (м²)"
-                )
+                calcArea.value
             );
 
-        if (!area) return;
-
-        const type =
-            prompt(
-                "Тип ремонта:\nэконом\nстандарт\nпремиум"
+        const pricePerMeter =
+            Number(
+                calcType.value
             );
 
-        let price = 0;
+        const total =
+            area *
+            pricePerMeter;
 
-        switch(type) {
+        calcResult.textContent =
+            total.toLocaleString("ru-RU")
+            + " ₽";
 
-            case "эконом":
-                price = area * 5000;
-                break;
+    }
+);
 
-            case "стандарт":
-                price = area * 8000;
-                break;
 
-            case "премиум":
-                price = area * 12000;
-                break;
+// ======================================
+// CLOSE MODALS
+// ======================================
 
-            default:
+window.addEventListener(
+    "click",
+    (e) => {
 
-                alert(
-                    "Неизвестный тип ремонта"
-                );
+        if (
+            e.target === orderModal
+        ) {
 
-                return;
+            orderModal.style.display =
+                "none";
 
         }
 
-        alert(
-            "Примерная стоимость:\n"
-            + price.toLocaleString("ru-RU")
-            + " ₽"
-        );
+        if (
+            e.target === calculatorModal
+        ) {
+
+            calculatorModal.style.display =
+                "none";
+
+        }
 
     }
 );
@@ -454,30 +508,3 @@ logoutBtn?.addEventListener(
 
     }
 );
-
-const orderModal =
-    document.getElementById("orderModal");
-
-const calculatorModal =
-    document.getElementById("calculatorModal");
-
-const createOrderBtn =
-    document.getElementById("createOrderBtn");
-
-const orderTitle =
-    document.getElementById("orderTitle");
-
-const orderAddress =
-    document.getElementById("orderAddress");
-
-const calcArea =
-    document.getElementById("calcArea");
-
-const calcType =
-    document.getElementById("calcType");
-
-const calculateBtn =
-    document.getElementById("calculateBtn");
-
-const calcResult =
-    document.getElementById("calcResult");
