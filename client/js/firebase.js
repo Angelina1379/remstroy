@@ -1,18 +1,4 @@
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import { getAuth }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import { getFirestore }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import { getStorage }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-
-
-const firebaseConfig = {
+import { initializeAconst firebaseConfig = {
 
   apiKey: "AIzaSyBuV2dJLDPxsk6E50e5p0E5Buk_NAc46-E",
 
@@ -20,7 +6,7 @@ const firebaseConfig = {
 
   projectId: "remont-f7644",
 
-  storageBucket: "remont-f7644.firebasestorage.app",
+  storageBucket: "remont-f7644.appspot.com",
 
   messagingSenderId: "404840020044",
 
