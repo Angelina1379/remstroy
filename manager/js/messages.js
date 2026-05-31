@@ -191,14 +191,16 @@ function loadClients() {
         },
 
         (error) => {
-
+        
             console.error(
                 "Ошибка Firestore:",
                 error
+            );
+        
         }
-    );
-
-}
+        );
+        
+        }
 
 
 // ======================================
