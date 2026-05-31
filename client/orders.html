@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Личный кабинет | BuildHouse</title>
+<title>Заказы | BuildHouse</title>
 
-    <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/orders.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+rel="stylesheet">
 
 </head>
 
@@ -17,271 +21,130 @@
 
 <div class="dashboard">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
 
-        <div class="logo">
-            <h2>BuildHouse</h2>
-            <p>Личный кабинет</p>
+        <div>
+
+            <div class="logo">
+
+                <h2>BuildHouse</h2>
+
+                <p>Личный кабинет</p>
+
+            </div>
+
+            <nav class="menu">
+
+                <a href="cabinet.html">
+                    Главная
+                </a>
+
+                <a class="active">
+                    Заказы
+                </a>
+
+                <a href="messages.html">
+                    Сообщения
+                </a>
+
+                <a href="calendar.html">
+                    Календарь
+                </a>
+
+                <a href="documents.html">
+                    Документы
+                </a>
+
+                <a href="settings.html">
+                    Настройки
+                </a>
+
+                <button id="logoutBtn">
+                    Выйти
+                </button>
+
+            </nav>
+
         </div>
-
-        <nav class="menu">
-
-            <a href="client-cabinet.html">
-                Главная
-            </a>
-
-            <a href="orders.html" class="active">
-                Заказы
-            </a>
-
-            <a href="messages.html">
-                Сообщения
-            </a>
-
-            <a href="calendar.html">
-                Календарь
-            </a>
-
-            <a href="documents.html">
-                Документы
-            </a>
-
-            <a href="settings.html">
-                Настройки
-            </a>
-
-        </nav>
-
-        <button id="logoutBtn">
-            Выйти
-        </button>
 
     </aside>
 
-    <!-- MAIN -->
-    <main class="main-content">
+    <main class="orders-page">
 
-        <!-- TOP BAR -->
-        <div class="top-bar">
+        <div class="page-header">
 
             <div>
 
                 <h1>
-                    Добро пожаловать 👋
+                    Мои заказы
                 </h1>
 
                 <p>
-                    Ваш личный кабинет клиента
+                    Управление заявками и ремонтными работами
                 </p>
 
             </div>
 
-            <div class="profile-card">
+            <div class="header-actions">
 
-                <div class="profile-avatar"></div>
-
-                <div>
-
-                    <h4 id="clientName">
-                        Клиент
-                    </h4>
-
-                    <p id="clientPhone">
-                        —
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- NOTIFICATIONS -->
-
-        <div class="notif-wrapper">
-
-            🔔 Уведомления
-
-            <span id="notifBadge" class="badge">
-                0
-            </span>
-
-        </div>
-
-        <div
-            id="notificationsList"
-            class="notifications-list"
-        ></div>
-
-        <!-- PROFILE SETTINGS -->
-
-        <div class="profile-settings">
-
-            <h2>
-                Личные данные
-            </h2>
-
-            <div class="settings-grid">
-
-                <input
-                    type="text"
-                    id="editName"
-                    placeholder="Введите имя"
+                <button
+                    id="newOrderBtn"
+                    class="primary-btn"
                 >
+                    Подать заявку
+                </button>
 
-                <input
-                    type="text"
-                    id="editPhone"
-                    placeholder="+7 (___) ___-__-__"
+                <button
+                    id="calculatorBtn"
+                    class="secondary-btn"
                 >
-
-                <button id="saveProfileBtn">
-                    Сохранить изменения
+                    Рассчитать стоимость
                 </button>
 
             </div>
 
         </div>
 
-        <!-- PROJECT -->
+        <div class="filters">
 
-        <div
-            class="project-card"
-            id="projectCard"
-        >
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Поиск заказа..."
+            >
 
-            <div>
+            <select id="statusFilter">
 
-                <p class="card-label">
-                    Статус проекта
-                </p>
+                <option value="all">
+                    Все статусы
+                </option>
 
-                <h2 id="projectStatus">
-                    —
-                </h2>
+                <option value="new">
+                    Новые
+                </option>
 
-            </div>
+                <option value="progress">
+                    В работе
+                </option>
 
-            <div class="project-info">
+                <option value="completed">
+                    Завершённые
+                </option>
 
-                <div>
+                <option value="cancelled">
+                    Отменённые
+                </option>
 
-                    <p class="card-label">
-                        Адрес объекта
-                    </p>
-
-                    <h3 id="projectAddress">
-                        —
-                    </h3>
-
-                </div>
-
-                <div>
-
-                    <p class="card-label">
-                        Менеджер
-                    </p>
-
-                    <h3 id="projectManager">
-                        —
-                    </h3>
-
-                </div>
-
-                <div>
-
-                    <p class="card-label">
-                        Срок сдачи
-                    </p>
-
-                    <h3 id="projectDeadline">
-                        —
-                    </h3>
-
-                </div>
-
-            </div>
+            </select>
 
         </div>
 
-        <!-- STAGES -->
-
         <div
-            class="status-section"
-            id="statusSection"
+            id="ordersList"
+            class="orders-grid"
         >
 
-            <h2>
-                Этапы ремонта
-            </h2>
-
-            <div
-                class="stages-list"
-                id="stagesList"
-            ></div>
-
-        </div>
-
-        <!-- DASHBOARD CARDS -->
-
-        <div class="cabinet-grid">
-
-            <!-- MESSAGES -->
-
-            <div class="cabinet-card">
-
-                <div class="card-top">
-
-                    <h3>
-                        Сообщения
-                    </h3>
-
-                    <a href="messages.html">
-                        Открыть
-                    </a>
-
-                </div>
-
-                <div id="messagesPreview"></div>
-
-            </div>
-
-            <!-- WORKS -->
-
-            <div class="cabinet-card">
-
-                <div class="card-top">
-
-                    <h3>
-                        Ближайшие работы
-                    </h3>
-
-                </div>
-
-                <div id="worksList"></div>
-
-            </div>
-
-            <!-- DOCUMENTS -->
-
-            <div class="cabinet-card">
-
-                <div class="card-top">
-
-                    <h3>
-                        Документы
-                    </h3>
-
-                    <a href="documents.html">
-                        Открыть
-                    </a>
-
-                </div>
-
-                <div id="documentsList"></div>
-
-            </div>
+            <!-- заказы -->
 
         </div>
 
@@ -290,9 +153,10 @@
 </div>
 
 <script
-    type="module"
-    src="js/cabinet.js"
-></script>
+type="module"
+src="js/orders.js">
+</script>
 
 </body>
 </html>
+
