@@ -197,9 +197,9 @@ function loadClients() {
                 error
             );
 
-        }
-    );
+        });
 
+    });
 }
 
 
