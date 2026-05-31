@@ -1,10 +1,13 @@
-import { auth, db } from "../js/firebase.js";
+import { auth, db }
+from "./firebase.js";
 
 import {
     collection,
     query,
     where,
-    getDocs
+    getDocs,
+    addDoc,
+    serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -14,140 +17,440 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const ordersGrid =
-document.getElementById("ordersGrid");
 
-document
-.getElementById("logoutBtn")
-.addEventListener("click", async()=>{
+// ======================================
+// ELEMENTS
+// ======================================
 
-    await signOut(auth);
+const ordersList =
+    document.getElementById("ordersList");
 
-    window.location.href =
-    "login.html";
+const searchInput =
+    document.getElementById("searchInput");
 
-});
+const statusFilter =
+    document.getElementById("statusFilter");
 
-onAuthStateChanged(auth, async(user)=>{
+const logoutBtn =
+    document.getElementById("logoutBtn");
 
-    if(!user){
+const newOrderBtn =
+    document.getElementById("newOrderBtn");
+
+const calculatorBtn =
+    document.getElementById("calculatorBtn");
+
+
+// ======================================
+// GLOBAL
+// ======================================
+
+let currentUser = null;
+let allOrders = [];
+
+
+// ======================================
+// AUTH
+// ======================================
+
+onAuthStateChanged(auth, async(user) => {
+
+    if (!user) {
 
         window.location.href =
-        "login.html";
+            "login.html";
 
         return;
+
     }
 
-    loadOrders(user.uid);
+    currentUser = user;
+
+    await loadOrders();
 
 });
 
-async function loadOrders(uid){
 
-    const q =
-    query(
-        collection(db,"orders"),
-        where("clientId","==",uid)
-    );
+// ======================================
+// LOAD ORDERS
+// ======================================
 
-    const snapshot =
-    await getDocs(q);
+async function loadOrders() {
 
-    ordersGrid.innerHTML = "";
+    try {
 
-    snapshot.forEach(doc=>{
+        const ordersRef =
+            collection(db, "orders");
 
-        const order = doc.data();
+        const q = query(
+            ordersRef,
+            where(
+                "userId",
+                "==",
+                currentUser.uid
+            )
+        );
 
-        const remain =
-        order.totalPrice - order.paid;
+        const snapshot =
+            await getDocs(q);
 
-        ordersGrid.innerHTML += `
+        allOrders = [];
 
-        <div class="order-card">
+        snapshot.forEach((doc) => {
 
-            <div class="order-header">
+            allOrders.push({
+                id: doc.id,
+                ...doc.data()
+            });
+
+        });
+
+        renderOrders(allOrders);
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+// ======================================
+// RENDER
+// ======================================
+
+function renderOrders(orders) {
+
+    ordersList.innerHTML = "";
+
+    if (!orders.length) {
+
+        ordersList.innerHTML = `
+            <div class="empty-orders">
+
+                <h3>
+                    Заказы отсутствуют
+                </h3>
+
+                <p>
+                    Пока нет созданных заявок
+                </p>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+    orders.forEach(order => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "order-card";
+
+        let statusClass =
+            "status-new";
+
+        let statusText =
+            "Новая";
+
+        if (
+            order.status === "progress"
+        ) {
+
+            statusClass =
+                "status-work";
+
+            statusText =
+                "В работе";
+
+        }
+
+        if (
+            order.status === "completed"
+        ) {
+
+            statusClass =
+                "status-done";
+
+            statusText =
+                "Завершён";
+
+        }
+
+        if (
+            order.status === "cancelled"
+        ) {
+
+            statusClass =
+                "status-cancel";
+
+            statusText =
+                "Отменён";
+
+        }
+
+        card.innerHTML = `
+
+            <div class="order-top">
 
                 <div class="order-number">
-                    ${order.orderNumber}
+                    ${order.number || order.id}
                 </div>
 
-                <div class="order-status ${order.status}">
-                    ${
-                        order.status === "active"
-                        ? "В работе"
-                        : "Завершён"
-                    }
+                <div class="order-status ${statusClass}">
+                    ${statusText}
                 </div>
 
             </div>
 
             <div class="order-info">
 
-                <div>
-                    📍 ${order.address}
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Вид работ
+                    </span>
+
+                    <span class="order-value">
+                        ${order.title || "-"}
+                    </span>
+
                 </div>
 
-                <div>
-                    🏠 ${order.workType}
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Адрес
+                    </span>
+
+                    <span class="order-value">
+                        ${order.address || "-"}
+                    </span>
+
                 </div>
 
-                <div>
-                    👨‍💼 ${order.manager}
-                </div>
+                <div class="order-row">
 
-                <div>
-                    📅 ${order.startDate}
-                </div>
+                    <span class="order-label">
+                        Дата начала
+                    </span>
 
-                <div>
-                    🏁 ${order.endDate}
+                    <span class="order-value">
+                        ${order.startDate || "-"}
+                    </span>
+
                 </div>
 
             </div>
 
-            <div class="order-price">
+            <div class="order-footer">
 
-                <h3>
-                    ${order.totalPrice.toLocaleString()} ₽
-                </h3>
-
-                <p>
-                    Оплачено:
-                    ${order.paid.toLocaleString()} ₽
-                </p>
-
-                <p>
-                    Остаток:
-                    ${remain.toLocaleString()} ₽
-                </p>
+                <div class="order-price">
+                    ${order.price || 0} ₽
+                </div>
 
             </div>
-
-            <div class="order-actions">
-
-                <button class="details-btn">
-                    Подробнее
-                </button>
-
-                ${
-                    order.status === "active"
-                    ? `
-                    <button
-                        class="pay-btn"
-                        data-id="${doc.id}"
-                    >
-                        Оплатить
-                    </button>
-                    `
-                    : ""
-                }
-
-            </div>
-
-        </div>
 
         `;
+
+        ordersList.appendChild(card);
+
     });
 
 }
+
+
+// ======================================
+// SEARCH
+// ======================================
+
+searchInput?.addEventListener(
+    "input",
+    filterOrders
+);
+
+statusFilter?.addEventListener(
+    "change",
+    filterOrders
+);
+
+function filterOrders() {
+
+    const search =
+        searchInput.value.toLowerCase();
+
+    const status =
+        statusFilter.value;
+
+    const filtered =
+        allOrders.filter(order => {
+
+            const title =
+                (
+                    order.title || ""
+                ).toLowerCase();
+
+            const matchSearch =
+                title.includes(search);
+
+            const matchStatus =
+                status === "all"
+                || order.status === status;
+
+            return (
+                matchSearch &&
+                matchStatus
+            );
+
+        });
+
+    renderOrders(filtered);
+
+}
+
+
+// ======================================
+// NEW ORDER
+// ======================================
+
+newOrderBtn?.addEventListener(
+    "click",
+    async() => {
+
+        const title =
+            prompt(
+                "Введите вид работ:"
+            );
+
+        if (!title) return;
+
+        const address =
+            prompt(
+                "Введите адрес:"
+            );
+
+        if (!address) return;
+
+        try {
+
+            await addDoc(
+                collection(
+                    db,
+                    "orders"
+                ),
+                {
+                    userId:
+                        currentUser.uid,
+
+                    title,
+
+                    address,
+
+                    status:
+                        "new",
+
+                    price: 0,
+
+                    createdAt:
+                        serverTimestamp()
+                }
+            );
+
+            alert(
+                "Заявка отправлена"
+            );
+
+            loadOrders();
+
+        }
+
+        catch(error) {
+
+            console.error(error);
+
+        }
+
+    }
+);
+
+
+// ======================================
+// CALCULATOR
+// ======================================
+
+calculatorBtn?.addEventListener(
+    "click",
+    () => {
+
+        const area =
+            Number(
+                prompt(
+                    "Площадь помещения (м²)"
+                )
+            );
+
+        if (!area) return;
+
+        const type =
+            prompt(
+                "Тип ремонта:\nэконом\nстандарт\nпремиум"
+            );
+
+        let price = 0;
+
+        switch(type) {
+
+            case "эконом":
+                price = area * 5000;
+                break;
+
+            case "стандарт":
+                price = area * 8000;
+                break;
+
+            case "премиум":
+                price = area * 12000;
+                break;
+
+            default:
+
+                alert(
+                    "Неизвестный тип ремонта"
+                );
+
+                return;
+
+        }
+
+        alert(
+            "Примерная стоимость:\n"
+            + price.toLocaleString("ru-RU")
+            + " ₽"
+        );
+
+    }
+);
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+logoutBtn?.addEventListener(
+    "click",
+    async() => {
+
+        await signOut(auth);
+
+        window.location.href =
+            "login.html";
+
+    }
+);
