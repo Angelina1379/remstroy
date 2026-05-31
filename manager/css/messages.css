@@ -50,17 +50,19 @@ a{
    НЕ МЕНЯЕМ ДИЗАЙН
 ========================================== */
 
+/* ==========================================
+   SIDEBAR
+========================================== */
+
 .sidebar{
-
     position:fixed;
-
     left:0;
     top:0;
 
     width:260px;
     height:100vh;
 
-    background:var(--navy);
+    background:#0b1220;
 
     color:white;
 
@@ -68,6 +70,7 @@ a{
 
     display:flex;
     flex-direction:column;
+    justify-content:space-between;
 
     z-index:999;
 }
@@ -77,73 +80,65 @@ a{
 }
 
 .logo h2{
-
     color:var(--primary);
-
     font-size:30px;
     font-weight:700;
 }
 
 .logo p{
-
-    opacity:.7;
-
+    color:#8894a8;
     margin-top:6px;
 }
 
 .menu{
-
     display:flex;
     flex-direction:column;
-
     gap:10px;
-
     flex:1;
+    margin-top:25px;
 }
 
 .menu a{
-
-    text-decoration:none;
-
     color:var(--primary);
-
     padding:14px 18px;
-
     border-radius:14px;
-
     cursor:pointer;
-
     transition:.3s;
+    font-weight:500;
 }
 
 .menu a:hover{
-
     background:#1d2638;
-
     color:white;
 }
 
 .menu .active{
-
     background:var(--primary);
-
     color:#111;
-
     font-weight:600;
 }
 
 #logoutBtn{
-
     width:100%;
+    border:none;
+    padding:14px;
+    border-radius:14px;
+    background:var(--primary);
+    color:#111;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
 
-    margin-top:20px;
+#logoutBtn:hover{
+    background:var(--primary-dark);
 }
 
 .profile{
     display:flex;
+    align-items:center;
     gap:12px;
     margin-top:20px;
-    align-items:center;
 }
 
 .avatar-small{
