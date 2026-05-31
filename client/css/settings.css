@@ -1,0 +1,299 @@
+/* ==========================================
+   BUILDHOUSE SETTINGS
+========================================== */
+
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --blue:#1f5eff;
+    --sidebar:#0b1220;
+    --bg:#f4f7fb;
+    --white:#ffffff;
+    --border:#e6ebf2;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --shadow:0 10px 35px rgba(0,0,0,.08);
+}
+
+/* ==========================================
+   RESET
+========================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+a{
+    text-decoration:none;
+}
+
+/* ==========================================
+   DASHBOARD
+========================================== */
+
+.dashboard{
+    display:flex;
+    min-height:100vh;
+}
+
+/* ==========================================
+   SIDEBAR
+========================================== */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+
+    width:260px;
+    height:100vh;
+
+    background:#0b1220;
+
+    padding:30px 20px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.logo h2{
+    color:var(--primary);
+    font-size:30px;
+}
+
+.logo p{
+    color:#8f9aad;
+    margin-top:6px;
+}
+
+.menu{
+    margin-top:25px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:10px;
+}
+
+.menu a{
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    color:var(--primary);
+
+    transition:.3s;
+}
+
+.menu a:hover{
+    background:#1d2638;
+    color:white;
+}
+
+.menu .active{
+    background:var(--primary);
+    color:#111;
+    font-weight:600;
+}
+
+#logoutBtn{
+    margin-top:20px;
+
+    width:100%;
+
+    border:none;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    background:var(--primary);
+
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+#logoutBtn:hover{
+    background:var(--primary-dark);
+}
+
+/* ==========================================
+   SETTINGS PAGE
+========================================== */
+
+.settings-page{
+    margin-left:260px;
+
+    width:calc(100% - 260px);
+
+    padding:40px;
+}
+
+.page-header{
+    margin-bottom:30px;
+}
+
+.page-header h1{
+    font-size:34px;
+    margin-bottom:10px;
+}
+
+.page-header p{
+    color:var(--muted);
+}
+
+/* ==========================================
+   CARD
+========================================== */
+
+.settings-card{
+    background:white;
+
+    border-radius:24px;
+
+    padding:30px;
+
+    margin-bottom:25px;
+
+    box-shadow:var(--shadow);
+}
+
+.settings-card h2{
+    margin-bottom:25px;
+}
+
+/* ==========================================
+   FORM
+========================================== */
+
+.form-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(280px,1fr));
+
+    gap:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group label{
+    margin-bottom:8px;
+
+    font-weight:600;
+}
+
+.form-group input{
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    padding:14px;
+
+    font-size:15px;
+
+    transition:.3s;
+}
+
+.form-group input:focus{
+    outline:none;
+
+    border-color:var(--primary);
+}
+
+/* ==========================================
+   CHECKBOXES
+========================================== */
+
+.checkbox-group{
+    display:flex;
+    flex-direction:column;
+
+    gap:16px;
+}
+
+.checkbox-group label{
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+
+    cursor:pointer;
+}
+
+.checkbox-group input{
+    width:18px;
+    height:18px;
+}
+
+/* ==========================================
+   BUTTON
+========================================== */
+
+.save-btn{
+    border:none;
+
+    background:var(--primary);
+
+    color:#111;
+
+    font-size:16px;
+    font-weight:600;
+
+    padding:16px 30px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.save-btn:hover{
+    background:var(--primary-dark);
+
+    transform:translateY(-2px);
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:1100px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .settings-page{
+        margin-left:0;
+        width:100%;
+        padding:25px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .page-header h1{
+        font-size:28px;
+    }
+
+    .settings-card{
+        padding:20px;
+    }
+
+}
