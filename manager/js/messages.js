@@ -67,12 +67,13 @@ let audioChunks = [];
 // AUTH
 // ======================================
 
-onAuthStateChanged(auth, async(user) => {
+onAuthStateChanged(auth, async (user) => {
 
     console.log("AUTH USER:", user);
 
     if (!user) {
-        console.log("Пользователь не авторизован");
+        console.log("Не авторизован");
+        window.location.href = "login.html";
         return;
     }
 
@@ -86,86 +87,120 @@ onAuthStateChanged(auth, async(user) => {
         { merge: true }
     );
 
-    console.log("Запускаем loadClients");
-
     loadClients();
+
 });
 
-    function loadClients() {
+
+// ======================================
+// CLIENTS
+// ======================================
+
+function loadClients() {
+
+    console.log("loadClients START");
 
     const usersRef = collection(db, "users");
 
-    onSnapshot(usersRef, (snapshot) => {
+    onSnapshot(
+        usersRef,
 
-        console.log("ВСЕ ПОЛЬЗОВАТЕЛИ:");
+        (snapshot) => {
 
-        snapshot.forEach((docSnap) => {
-            console.log(docSnap.id, docSnap.data());
-        });
+            console.log(
+                "Количество пользователей:",
+                snapshot.size
+            );
 
-        clientsList.innerHTML = "";
+            clientsList.innerHTML = "";
 
-        snapshot.forEach((docSnap) => {
+            snapshot.forEach((docSnap) => {
 
-            const user = {
-                id: docSnap.id,
-                ...docSnap.data()
-            };
+                const user = {
+                    id: docSnap.id,
+                    ...docSnap.data()
+                };
 
-            // НЕ показываем менеджеров
-            if (user.role === "manager") return;
+                console.log(
+                    "Пользователь:",
+                    user
+                );
 
-            const item = document.createElement("div");
+                if (user.role === "manager") {
+                    return;
+                }
 
-            item.className = "client-item";
+                const item =
+                    document.createElement("div");
 
-            item.innerHTML = `
-                <div class="client-top">
-                    <div class="client-name">
-                        ${user.name || "Без имени"}
+                item.className =
+                    "client-item";
+
+                item.innerHTML = `
+                    <div class="client-top">
+
+                        <div class="client-name">
+                            ${user.name || "Клиент"}
+                        </div>
+
+                        <div class="client-time">
+                            ${user.online ? "🟢" : ""}
+                        </div>
+
                     </div>
 
-                    <div class="client-time">
-                        ${user.online ? "🟢" : ""}
+                    <div class="client-last">
+                        ${user.email || ""}
                     </div>
-                </div>
+                `;
 
-                <div class="client-last">
-                    ${user.email || ""}
-                </div>
-            `;
+                item.addEventListener(
+                    "click",
+                    () => {
 
-            item.addEventListener("click", () => {
+                        document
+                            .querySelectorAll(".client-item")
+                            .forEach(el =>
+                                el.classList.remove("active")
+                            );
 
-                document
-                    .querySelectorAll(".client-item")
-                    .forEach(el =>
-                        el.classList.remove("active")
-                    );
+                        item.classList.add("active");
 
-                item.classList.add("active");
+                        currentClient = user;
+                        currentChat = user.id;
 
-                currentClient = user;
-                currentChat = user.id;
+                        document.getElementById(
+                            "chatUsername"
+                        ).textContent =
+                            user.name || "Клиент";
 
-                document.getElementById("chatUsername").textContent =
-                    user.name || "Клиент";
+                        document.getElementById(
+                            "chatStatus"
+                        ).textContent =
+                            user.email || "";
 
-                document.getElementById("chatStatus").textContent =
-                    user.email || "";
+                        loadMessages(user.id);
 
-                loadMessages(user.id);
+                    }
+                );
+
+                clientsList.appendChild(item);
 
             });
 
-            clientsList.appendChild(item);
+        },
 
-        });
+        (error) => {
 
-    });
+            console.error(
+                "Ошибка Firestore:",
+                error
+            );
+
+        }
+    );
 
 }
-});
 
 
 // ======================================
@@ -179,80 +214,6 @@ logoutBtn?.addEventListener("click", async() => {
     window.location.href = "login.html";
 
 });
-
-
-// ======================================
-// CLIENTS
-// ======================================
-
-function loadClients() {
-
-    const usersRef = collection(db, "users");
-
-    onSnapshot(usersRef, (snapshot) => {
-
-        clientsList.innerHTML = "";
-
-        snapshot.forEach((docSnap) => {
-
-            const user = {
-                id: docSnap.id,
-                ...docSnap.data()
-            };
-
-            if (user.role === "manager") return;
-
-            const item = document.createElement("div");
-
-            item.className = "client-item";
-
-            item.innerHTML = `
-                <div class="client-top">
-                    <div class="client-name">
-                        ${user.name || "Клиент"}
-                    </div>
-
-                    <div class="client-time">
-                        ${user.online ? "🟢" : ""}
-                    </div>
-                </div>
-
-                <div class="client-last">
-                    ${user.email || ""}
-                </div>
-            `;
-
-            item.addEventListener("click", () => {
-
-                document
-                    .querySelectorAll(".client-item")
-                    .forEach(el =>
-                        el.classList.remove("active")
-                    );
-
-                item.classList.add("active");
-
-                currentClient = user;
-                currentChat = user.id;
-
-                document.getElementById("chatUsername").textContent =
-                    user.name || "Клиент";
-
-                document.getElementById("chatStatus").textContent =
-                    user.email || "";
-
-                loadMessages(user.id);
-
-            });
-
-            clientsList.appendChild(item);
-
-        });
-
-    });
-
-}
-
 
 // ======================================
 // SEARCH
