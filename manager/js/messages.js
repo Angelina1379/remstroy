@@ -82,7 +82,80 @@ onAuthStateChanged(auth, async(user) => {
         { merge: true }
     );
 
-    loadClients();
+    function loadClients() {
+
+    const usersRef = collection(db, "users");
+
+    onSnapshot(usersRef, (snapshot) => {
+
+        console.log("ВСЕ ПОЛЬЗОВАТЕЛИ:");
+
+        snapshot.forEach((docSnap) => {
+            console.log(docSnap.id, docSnap.data());
+        });
+
+        clientsList.innerHTML = "";
+
+        snapshot.forEach((docSnap) => {
+
+            const user = {
+                id: docSnap.id,
+                ...docSnap.data()
+            };
+
+            // НЕ показываем менеджеров
+            if (user.role === "manager") return;
+
+            const item = document.createElement("div");
+
+            item.className = "client-item";
+
+            item.innerHTML = `
+                <div class="client-top">
+                    <div class="client-name">
+                        ${user.name || "Без имени"}
+                    </div>
+
+                    <div class="client-time">
+                        ${user.online ? "🟢" : ""}
+                    </div>
+                </div>
+
+                <div class="client-last">
+                    ${user.email || ""}
+                </div>
+            `;
+
+            item.addEventListener("click", () => {
+
+                document
+                    .querySelectorAll(".client-item")
+                    .forEach(el =>
+                        el.classList.remove("active")
+                    );
+
+                item.classList.add("active");
+
+                currentClient = user;
+                currentChat = user.id;
+
+                document.getElementById("chatUsername").textContent =
+                    user.name || "Клиент";
+
+                document.getElementById("chatStatus").textContent =
+                    user.email || "";
+
+                loadMessages(user.id);
+
+            });
+
+            clientsList.appendChild(item);
+
+        });
+
+    });
+
+}
 });
 
 
