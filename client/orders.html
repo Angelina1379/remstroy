@@ -151,6 +151,132 @@ rel="stylesheet">
     </main>
 
 </div>
+   
+<!-- =====================================
+     МОДАЛЬНОЕ ОКНО ЗАЯВКИ
+===================================== -->
+
+<div
+    id="orderModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <h2>
+            Подать заявку
+        </h2>
+
+        <div class="form-group">
+
+            <label>
+                Вид работ
+            </label>
+
+            <input
+                type="text"
+                id="orderTitle"
+                placeholder="Например: ремонт квартиры"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Адрес объекта
+            </label>
+
+            <input
+                type="text"
+                id="orderAddress"
+                placeholder="Введите адрес"
+            >
+
+        </div>
+
+        <button
+            id="createOrderBtn"
+            class="btn btn-primary"
+        >
+            Отправить заявку
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     КАЛЬКУЛЯТОР
+===================================== -->
+
+<div
+    id="calculatorModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <h2>
+            Калькулятор ремонта
+        </h2>
+
+        <div class="form-group">
+
+            <label>
+                Площадь (м²)
+            </label>
+
+            <input
+                type="number"
+                id="calcArea"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Тип ремонта
+            </label>
+
+            <select id="calcType">
+
+                <option value="5000">
+                    Эконом
+                </option>
+
+                <option value="8000">
+                    Стандарт
+                </option>
+
+                <option value="12000">
+                    Премиум
+                </option>
+
+            </select>
+
+        </div>
+
+        <button
+            id="calculateBtn"
+            class="btn btn-blue"
+        >
+            Рассчитать
+        </button>
+
+        <div
+            id="calcResult"
+            class="calc-result"
+        >
+            0 ₽
+        </div>
+
+    </div>
+
+</div>
+
 
 <script
 type="module"
