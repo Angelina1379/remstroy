@@ -69,10 +69,14 @@ let audioChunks = [];
 
 onAuthStateChanged(auth, async(user) => {
 
+    console.log("AUTH USER:", user);
+
     if (!user) {
-        window.location.href = "login.html";
+        console.log("Пользователь не авторизован");
         return;
     }
+
+    console.log("UID:", user.uid);
 
     await setDoc(
         doc(db, "users", user.uid),
@@ -81,6 +85,11 @@ onAuthStateChanged(auth, async(user) => {
         },
         { merge: true }
     );
+
+    console.log("Запускаем loadClients");
+
+    loadClients();
+});
 
     function loadClients() {
 
