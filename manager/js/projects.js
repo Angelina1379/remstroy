@@ -1,49 +1,54 @@
 import { auth, db } from "./firebase.js";
 
 import {
-collection,
-addDoc,
-getDocs,
-doc,
-updateDoc,
-deleteDoc
+    collection,
+    addDoc,
+    getDocs,
+    doc,
+    updateDoc,
+    deleteDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
-signOut
+    signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* LOGOUT */
+/* =====================================
+   LOGOUT
+===================================== */
 
 document
 .getElementById("logoutBtn")
-.addEventListener("click", async () => {
+?.addEventListener("click", async () => {
 
     await signOut(auth);
 
-    window.location.href =
-    "index.html";
+    window.location.href = "index.html";
 
 });
 
-/* ELEMENTS */
+/* =====================================
+   ELEMENTS
+===================================== */
 
-const projectsList =
-document.getElementById("projectsList");
+const ordersList =
+document.getElementById("ordersList");
 
 const searchInput =
 document.getElementById("searchInput");
 
 const clientSelect =
-document.getElementById("clientName");
+document.getElementById("clientSelect");
 
-let selectedProjectId = null;
+let selectedOrderId = null;
 
 let clients = [];
 
-/* INIT */
+/* =====================================
+   INIT
+===================================== */
 
 window.addEventListener(
     "DOMContentLoaded",
@@ -51,14 +56,18 @@ window.addEventListener(
 
         await loadClients();
 
-        await loadProjects();
+        await loadOrders();
 
     }
 );
 
-/* LOAD CLIENTS */
+/* =====================================
+   CLIENTS
+===================================== */
 
 async function loadClients(){
+
+    if(!clientSelect) return;
 
     const snapshot =
     await getDocs(
@@ -94,16 +103,13 @@ async function loadClients(){
 
     });
 
-    console.log(
-        "Клиентов найдено:",
-        clients.length
-    );
-
 }
 
-/* AUTOFILL CLIENT DATA */
+/* =====================================
+   CLIENT AUTOFILL
+===================================== */
 
-clientSelect.addEventListener(
+clientSelect?.addEventListener(
     "change",
     () => {
 
@@ -130,21 +136,23 @@ clientSelect.addEventListener(
     }
 );
 
-/* LOAD PROJECTS */
+/* =====================================
+   LOAD ORDERS
+===================================== */
 
-async function loadProjects(){
+async function loadOrders(){
 
     const snap =
     await getDocs(
         collection(db,"projects")
     );
 
-    projectsList.innerHTML = "";
+    ordersList.innerHTML = "";
 
-    snap.forEach(project => {
+    snap.forEach(order => {
 
         const data =
-        project.data();
+        order.data();
 
         const card =
         document.createElement("div");
@@ -159,18 +167,8 @@ async function loadProjects(){
                     ${data.clientName || "Без имени"}
                 </h3>
 
-                <div class="status ${
-                    data.status === "Новая заявка"
-                    ? "new"
-                    : data.status === "Назначен замер"
-                    ? "measure"
-                    : data.status === "В работе"
-                    ? "work"
-                    : "done"
-                }">
-
+                <div class="status">
                     ${data.status || ""}
-
                 </div>
 
             </div>
@@ -184,10 +182,10 @@ async function loadProjects(){
             "click",
             () => {
 
-                selectedProjectId =
-                project.id;
+                selectedOrderId =
+                order.id;
 
-                fillProject(data);
+                fillOrder(data);
 
                 document
                 .querySelectorAll(
@@ -206,17 +204,19 @@ async function loadProjects(){
             }
         );
 
-        projectsList.appendChild(card);
+        ordersList.appendChild(card);
 
     });
 
 }
 
-/* CREATE */
+/* =====================================
+   CREATE ORDER
+===================================== */
 
 document
-.getElementById("createProjectBtn")
-.addEventListener(
+.getElementById("createOrderBtn")
+?.addEventListener(
     "click",
     async () => {
 
@@ -236,28 +236,30 @@ document
         );
 
         alert(
-            "Проект создан"
+            "Заказ создан"
         );
 
         clearForm();
 
-        await loadProjects();
+        await loadOrders();
 
     }
 );
 
-/* UPDATE */
+/* =====================================
+   UPDATE ORDER
+===================================== */
 
 document
-.getElementById("updateProjectBtn")
-.addEventListener(
+.getElementById("updateOrderBtn")
+?.addEventListener(
     "click",
     async () => {
 
-        if(!selectedProjectId){
+        if(!selectedOrderId){
 
             alert(
-                "Выберите проект"
+                "Выберите заказ"
             );
 
             return;
@@ -268,32 +270,34 @@ document
             doc(
                 db,
                 "projects",
-                selectedProjectId
+                selectedOrderId
             ),
             collectForm()
         );
 
         alert(
-            "Проект обновлен"
+            "Заказ обновлен"
         );
 
-        await loadProjects();
+        await loadOrders();
 
     }
 );
 
-/* DELETE */
+/* =====================================
+   DELETE ORDER
+===================================== */
 
 document
-.getElementById("deleteProjectBtn")
-.addEventListener(
+.getElementById("deleteOrderBtn")
+?.addEventListener(
     "click",
     async () => {
 
-        if(!selectedProjectId){
+        if(!selectedOrderId){
 
             alert(
-                "Выберите проект"
+                "Выберите заказ"
             );
 
             return;
@@ -304,183 +308,147 @@ document
             doc(
                 db,
                 "projects",
-                selectedProjectId
+                selectedOrderId
             )
         );
 
         alert(
-            "Проект удален"
+            "Заказ удален"
         );
 
         clearForm();
 
-        await loadProjects();
+        await loadOrders();
 
     }
 );
 
-/* FORM */
+/* =====================================
+   FORM
+===================================== */
 
 function collectForm(){
 
-    const selectedUid =
+    const uid =
     clientSelect.value;
 
-    const selectedClient =
+    const client =
     clients.find(
-        c => c.uid === selectedUid
+        c => c.uid === uid
     );
 
     return {
 
         clientUid:
-        selectedUid,
+        uid,
 
         clientName:
-        selectedClient?.name || "",
+        client?.name || "",
 
         phone:
-        document.getElementById(
-            "clientPhone"
-        ).value,
+        document.getElementById("clientPhone").value,
 
         email:
-        document.getElementById(
-            "clientEmail"
-        ).value,
+        document.getElementById("clientEmail").value,
 
         address:
-        document.getElementById(
-            "projectAddress"
-        ).value,
+        document.getElementById("projectAddress").value,
 
         type:
-        document.getElementById(
-            "projectType"
-        ).value,
+        document.getElementById("projectType").value,
 
         budget:
-        document.getElementById(
-            "projectBudget"
-        ).value,
+        document.getElementById("projectBudget").value,
 
         measureDate:
-        document.getElementById(
-            "measureDate"
-        ).value,
+        document.getElementById("measureDate").value,
 
         deadline:
-        document.getElementById(
-            "deadline"
-        ).value,
+        document.getElementById("deadline").value,
 
         status:
-        document.getElementById(
-            "projectStatus"
-        ).value,
+        document.getElementById("projectStatus").value,
 
         priority:
-        document.getElementById(
-            "priority"
-        ).value,
+        document.getElementById("priority").value,
+
+        manager:
+        document.getElementById("managerName").value,
 
         comment:
-        document.getElementById(
-            "comment"
-        ).value
+        document.getElementById("comment").value
 
     };
 
 }
 
-/* FILL PROJECT */
+/* =====================================
+   FILL ORDER
+===================================== */
 
-function fillProject(data){
+function fillOrder(data){
 
     clientSelect.value =
     data.clientUid || "";
 
-    document.getElementById(
-        "clientPhone"
-    ).value =
+    document.getElementById("clientPhone").value =
     data.phone || "";
 
-    document.getElementById(
-        "clientEmail"
-    ).value =
+    document.getElementById("clientEmail").value =
     data.email || "";
 
-    document.getElementById(
-        "projectAddress"
-    ).value =
+    document.getElementById("projectAddress").value =
     data.address || "";
 
-    document.getElementById(
-        "projectType"
-    ).value =
+    document.getElementById("projectType").value =
     data.type || "";
 
-    document.getElementById(
-        "projectBudget"
-    ).value =
+    document.getElementById("projectBudget").value =
     data.budget || "";
 
-    document.getElementById(
-        "measureDate"
-    ).value =
+    document.getElementById("measureDate").value =
     data.measureDate || "";
 
-    document.getElementById(
-        "deadline"
-    ).value =
+    document.getElementById("deadline").value =
     data.deadline || "";
 
-    document.getElementById(
-        "projectStatus"
-    ).value =
+    document.getElementById("projectStatus").value =
     data.status || "";
 
-    document.getElementById(
-        "priority"
-    ).value =
+    document.getElementById("priority").value =
     data.priority || "";
 
-    document.getElementById(
-        "comment"
-    ).value =
+    document.getElementById("managerName").value =
+    data.manager || "";
+
+    document.getElementById("comment").value =
     data.comment || "";
 
-    document.getElementById(
-        "infoStatus"
-    ).textContent =
+    document.getElementById("infoStatus").textContent =
     data.status || "—";
 
-    document.getElementById(
-        "infoBudget"
-    ).textContent =
+    document.getElementById("infoBudget").textContent =
     data.budget
     ? data.budget + " ₽"
     : "—";
 
-    document.getElementById(
-        "infoMeasure"
-    ).textContent =
+    document.getElementById("infoMeasure").textContent =
     data.measureDate || "—";
 
-    document.getElementById(
-        "infoDeadline"
-    ).textContent =
+    document.getElementById("infoDeadline").textContent =
     data.deadline || "—";
 
     renderTimeline(data);
 
 }
 
-/* CLEAR */
+/* =====================================
+   CLEAR
+===================================== */
 
 function clearForm(){
 
-    selectedProjectId = null;
+    selectedOrderId = null;
 
     document
     .querySelectorAll(
@@ -488,25 +456,24 @@ function clearForm(){
     )
     .forEach(el => {
 
-        el.value = "";
+        if(
+            el.type !== "button" &&
+            el.type !== "submit"
+        ){
+            el.value = "";
+        }
 
     });
 
     clientSelect.selectedIndex = 0;
 
-    document.getElementById(
-        "projectStatus"
-    ).selectedIndex = 0;
-
-    document.getElementById(
-        "priority"
-    ).selectedIndex = 0;
-
 }
 
-/* SEARCH */
+/* =====================================
+   SEARCH
+===================================== */
 
-searchInput.addEventListener(
+searchInput?.addEventListener(
     "input",
     () => {
 
@@ -532,7 +499,9 @@ searchInput.addEventListener(
     }
 );
 
-/* TIMELINE */
+/* =====================================
+   TIMELINE
+===================================== */
 
 function renderTimeline(data){
 
@@ -542,59 +511,31 @@ function renderTimeline(data){
     );
 
     timeline.innerHTML = `
+
         <div class="timeline-item">
-
             <div class="timeline-dot"></div>
-
             <div>
-
-                <h4>
-                    Проект создан
-                </h4>
-
-                <p>
-                    ${new Date().toLocaleDateString()}
-                </p>
-
+                <h4>Заказ создан</h4>
+                <p>${new Date().toLocaleDateString()}</p>
             </div>
-
         </div>
 
         <div class="timeline-item">
-
             <div class="timeline-dot"></div>
-
             <div>
-
-                <h4>
-                    Текущий статус
-                </h4>
-
-                <p>
-                    ${data.status || ""}
-                </p>
-
+                <h4>Текущий статус</h4>
+                <p>${data.status || ""}</p>
             </div>
-
         </div>
 
         <div class="timeline-item">
-
             <div class="timeline-dot"></div>
-
             <div>
-
-                <h4>
-                    Комментарий менеджера
-                </h4>
-
-                <p>
-                    ${data.comment || "Нет комментария"}
-                </p>
-
+                <h4>Комментарий менеджера</h4>
+                <p>${data.comment || "Нет комментария"}</p>
             </div>
-
         </div>
+
     `;
 
 }
