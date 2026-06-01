@@ -120,43 +120,60 @@ async function loadOrders() {
                 )
             );
 
+        console.log(
+            "Текущий UID:",
+            currentUser.uid
+        );
+
         allOrders = [];
 
         snapshot.forEach((docSnap) => {
-        
+
             const data =
                 docSnap.data();
-        
+
+            console.log(
+                "Проект:",
+                docSnap.id,
+                data
+            );
+
             if (
                 data.clientUid ===
                 currentUser.uid
             ) {
-        
+
                 allOrders.push({
-        
+
                     id: docSnap.id,
-        
+
                     ...data
-        
+
                 });
-        
+
             }
-        
+
         });
 
-        renderOrders(allOrders);
-        }
+        console.log(
+            "Найдено проектов:",
+            allOrders.length
+        );
 
-        catch(error) {
-    
-            console.error(
-                "Ошибка загрузки:",
-                error
-            );
-    
-        }
+        renderOrders(allOrders);
 
     }
+
+    catch(error) {
+
+        console.error(
+            "Ошибка загрузки:",
+            error
+        );
+
+    }
+
+}
 
 // ======================================
 // RENDER
