@@ -10,7 +10,9 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     
-    
+    let allEvents = [];
+    let selectedDate = null;
+
     document.addEventListener("DOMContentLoaded", async () => {
 
     const calendarEl =
@@ -600,3 +602,93 @@ async function(){
     }
 
 });
+
+async function loadCalendarData(uid) {
+
+    try {
+
+        const snapshot = await getDocs(
+            collection(db, "calendarEvents")
+        );
+
+        allEvents = [];
+
+        snapshot.forEach((docSnap) => {
+
+            const data = docSnap.data();
+
+            if (data.clientUid === uid) {
+                allEvents.push(data);
+            }
+        });
+
+        // 👉 по умолчанию показываем сегодня
+        selectedDate = new Date().toISOString().split("T")[0];
+
+        renderDayPlans();
+
+    } catch (error) {
+        console.error("Ошибка календаря:", error);
+    }
+}
+
+function renderDayPlans() {
+
+    const container = document.getElementById("visitsContainer");
+    const workContainer = document.getElementById("upcomingWorks");
+
+    if (!container || !workContainer) return;
+
+    const filtered = allEvents.filter(event => {
+
+        const eventDate = new Date(event.date)
+            .toISOString()
+            .split("T")[0];
+
+        return eventDate === selectedDate;
+    });
+
+    // если нет событий
+    if (filtered.length === 0) {
+
+        workContainer.innerHTML = `<div class="empty-card">Нет работ на этот день</div>`;
+        container.innerHTML = `<div class="empty-card">Нет визитов</div>`;
+        return;
+    }
+
+    workContainer.innerHTML = "";
+    container.innerHTML = "";
+
+    filtered.forEach(event => {
+
+        const workCard = document.createElement("div");
+        workCard.className = "work-card";
+
+        workCard.innerHTML = `
+            <h4>${event.workType || "Работа"}</h4>
+            <p>📅 ${formatDate(event.date)}</p>
+            <p>📍 ${event.address || "-"}</p>
+            <p>👤 ${event.manager || "-"}</p>
+        `;
+
+        workContainer.appendChild(workCard);
+
+        const visit = document.createElement("div");
+        visit.className = "visit-card";
+
+        visit.innerHTML = `
+            <strong>${formatDate(event.date)}</strong>
+            <p>${event.workType || ""}</p>
+            <p>${event.comment || ""}</p>
+        `;
+
+        container.appendChild(visit);
+    });
+}
+
+function setDate(dateStr) {
+    selectedDate = dateStr;
+    renderDayPlans();
+}
+
+selectedDate = new Date().toISOString().split("T")[0];
