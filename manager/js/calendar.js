@@ -31,6 +31,7 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     let currentEvent = null;
 
     let selectedDate = null;
+    let currentDocId = null;
 
     function clearForm(){
 
@@ -145,6 +146,7 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
                 currentEvent =
                 info.event;
+                currentDocId = info.event.id;
 
                 const p =
                 info.event.extendedProps;
@@ -204,6 +206,40 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     );
 
     calendar.render();
+        const snapshot =
+            await getDocs(
+                collection(db, "calendarEvents")
+            );
+            
+            snapshot.forEach((docSnap) => {
+            
+                const data = docSnap.data();
+            
+                calendar.addEvent({
+            
+                    id: docSnap.id,
+            
+                    title: data.client,
+            
+                    start: data.date,
+            
+                    backgroundColor: data.color,
+            
+                    borderColor: data.color,
+            
+                    extendedProps: {
+            
+                        phone: data.phone,
+                        address: data.address,
+                        workType: data.workType,
+                        manager: data.manager,
+                        comment: data.comment
+            
+                    }
+            
+                });
+            
+            });
 
     openModalBtn.addEventListener(
         "click",
@@ -231,7 +267,7 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     saveTaskBtn.addEventListener(
         "click",
-        ()=>{
+        async ()=>{
 
             const client =
             document.getElementById(
@@ -282,7 +318,26 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
             getColor(workType);
 
             if(currentEvent){
+                await updateDoc(
 
+    doc(
+        db,
+        "calendarEvents",
+        currentDocId
+    ),
+
+    {
+        client,
+        phone,
+        address,
+        workType,
+        manager,
+        comment,
+        date,
+        color
+    }
+
+);
                 currentEvent.setProp(
                     "title",
                     client
@@ -327,31 +382,51 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
                     comment
                 );
 
-            }else{
+}else{
 
-                calendar.addEvent({
+    const docRef =
+    await addDoc(
+        collection(
+            db,
+            "calendarEvents"
+        ),
+        {
+            client,
+            phone,
+            address,
+            workType,
+            manager,
+            comment,
+            date,
+            color
+        }
+    );
 
-                    title:client,
+    calendar.addEvent({
 
-                    start:date,
+        id: docRef.id,
 
-                    backgroundColor:color,
+        title: client,
 
-                    borderColor:color,
+        start: date,
 
-                    extendedProps:{
+        backgroundColor: color,
 
-                        phone,
-                        address,
-                        workType,
-                        manager,
-                        comment
+        borderColor: color,
 
-                    }
+        extendedProps: {
 
-                });
+            phone,
+            address,
+            workType,
+            manager,
+            comment
 
-            }
+        }
+
+    });
+
+}
 
             modal.style.display =
             "none";
@@ -365,8 +440,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         }
     );
 
-    window.deleteCurrentEvent =
-    function(){
+window.deleteCurrentEvent =
+async function(){
 
         if(!currentEvent){
 
@@ -383,7 +458,15 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
                 "Удалить запись?"
             )
         ){
-
+        await deleteDoc(
+        
+            doc(
+                db,
+                "calendarEvents",
+                currentDocId
+            )
+        
+        );
             currentEvent.remove();
 
             currentEvent = null;
