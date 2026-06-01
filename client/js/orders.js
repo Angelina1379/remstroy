@@ -120,11 +120,6 @@ async function loadOrders() {
                 )
             );
 
-        console.log(
-            "Текущий UID:",
-            currentUser.uid
-        );
-
         allOrders = [];
 
         snapshot.forEach((docSnap) => {
@@ -133,8 +128,7 @@ async function loadOrders() {
                 docSnap.data();
 
             console.log(
-                "Проект:",
-                docSnap.id,
+                "Документ:",
                 data
             );
 
@@ -193,7 +187,7 @@ function renderOrders(orders) {
                 </h3>
 
                 <p>
-                    Создайте первую заявку
+                    Для вас ещё не создано ни одного проекта
                 </p>
 
             </div>
@@ -209,41 +203,23 @@ function renderOrders(orders) {
             "status-new";
 
         let statusText =
-            "Новая";
+            order.status || "Новая";
 
         if (
-            order.status === "progress"
+            order.status === "В работе"
         ) {
 
             statusClass =
                 "status-work";
 
-            statusText =
-                "В работе";
-
         }
 
         if (
-            order.status === "completed"
+            order.status === "Завершён"
         ) {
 
             statusClass =
                 "status-done";
-
-            statusText =
-                "Завершён";
-
-        }
-
-        if (
-            order.status === "cancelled"
-        ) {
-
-            statusClass =
-                "status-cancel";
-
-            statusText =
-                "Отменён";
 
         }
 
@@ -253,46 +229,61 @@ function renderOrders(orders) {
         card.className =
             "order-card";
 
-       card.innerHTML = `
-            
+        card.innerHTML = `
+
             <div class="order-top">
-            
+
                 <div class="order-number">
-                    ${order.type || "Проект"}
+                    ${order.clientName || "Проект"}
                 </div>
-            
+
                 <div class="order-status ${statusClass}">
                     ${statusText}
                 </div>
-            
+
             </div>
-            
+
             <div class="order-info">
-            
+
                 <div class="order-row">
-                    <span class="order-label">Адрес</span>
+
+                    <span class="order-label">
+                        Адрес
+                    </span>
+
                     <span class="order-value">
                         ${order.address || "-"}
                     </span>
+
                 </div>
-            
+
                 <div class="order-row">
-                    <span class="order-label">Бюджет</span>
-                    <span class="order-value">
-                        ${order.budget || "0"} ₽
+
+                    <span class="order-label">
+                        Бюджет
                     </span>
+
+                    <span class="order-value">
+                        ${Number(order.budget || 0).toLocaleString("ru-RU")} ₽
+                    </span>
+
                 </div>
-            
+
                 <div class="order-row">
-                    <span class="order-label">Менеджер</span>
-                    <span class="order-value">
-                        ${order.manager || "-"}
+
+                    <span class="order-label">
+                        Замер
                     </span>
+
+                    <span class="order-value">
+                        ${order.measureDate || "-"}
+                    </span>
+
                 </div>
-            
+
             </div>
-            
-            `;
+
+        `;
 
         ordersList.appendChild(card);
 
