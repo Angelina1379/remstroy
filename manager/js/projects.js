@@ -46,6 +46,10 @@ let selectedOrderId = null;
 
 let clients = [];
 
+console.log("clientSelect =", clientSelect);
+console.log("ordersList =", document.getElementById("ordersList"));
+console.log("createOrderBtn =", document.getElementById("createOrderBtn"));
+
 /* =====================================
    INIT
 ===================================== */
