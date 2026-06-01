@@ -24,6 +24,12 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const saveTaskBtn =
     document.getElementById("saveTaskBtn");
+        
+    const clientSelect =
+    document.getElementById("clientSelect") || null;
+    
+    const clientUid =
+    clientSelect ? clientSelect.value : "";
 
     const closeModalBtn =
     document.getElementById("closeModal");
@@ -329,6 +335,7 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     {
         client,
+        clientUid,   
         phone,
         address,
         workType,
@@ -387,12 +394,10 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const docRef =
     await addDoc(
-        collection(
-            db,
-            "calendarEvents"
-        ),
+        collection(db, "calendarEvents"),
         {
             client,
+            clientUid,  
             phone,
             address,
             workType,
@@ -403,31 +408,22 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         }
     );
 
-    calendar.addEvent({
-
-        id: docRef.id,
-
-        title: client,
-
-        start: date,
-
-        backgroundColor: color,
-
-        borderColor: color,
-
-        extendedProps: {
-
-            phone,
-            address,
-            workType,
-            manager,
-            comment
-
-        }
-
-    });
-
-}
+            calendar.addEvent({
+                id: docRef.id,
+                title: client,
+                start: date,
+                backgroundColor: color,
+                borderColor: color,
+            
+                extendedProps: {
+                    clientUid,  
+                    phone,
+                    address,
+                    workType,
+                    manager,
+                    comment
+                }
+            });
 
             modal.style.display =
             "none";
