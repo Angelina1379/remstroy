@@ -130,8 +130,7 @@ async function loadOrders() {
             // показываем только заявки текущего клиента
 
             if (
-                data.clientUid ===
-                currentUser.uid
+                clientUid: currentUser.uid
             ) {
 
                 allOrders.push({
@@ -147,7 +146,7 @@ async function loadOrders() {
         });
 
         renderOrders(allOrders);
-        }
+        
 
     catch(error) {
 
