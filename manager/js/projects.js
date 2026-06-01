@@ -71,6 +71,60 @@ window.addEventListener(
 
 async function loadClients(){
 
+    console.log("Загружаем клиентов...");
+
+    const snapshot =
+    await getDocs(
+        collection(db,"users")
+    );
+
+    console.log(
+        "Всего пользователей:",
+        snapshot.size
+    );
+
+    clients = [];
+
+    clientSelect.innerHTML = `
+        <option value="">
+            Выберите клиента
+        </option>
+    `;
+
+    snapshot.forEach(docSnap => {
+
+        const client = {
+            id: docSnap.id,
+            ...docSnap.data()
+        };
+
+        console.log(client);
+
+        if(client.role === "client"){
+
+            console.log(
+                "Клиент найден:",
+                client.name
+            );
+
+            clients.push(client);
+
+            clientSelect.innerHTML += `
+                <option value="${client.uid}">
+                    ${client.name || "Без имени"}
+                </option>
+            `;
+
+        }
+
+    });
+
+    console.log(
+        "Итого клиентов:",
+        clients.length
+    );
+
+
     if(!clientSelect) return;
 
     const snapshot =
