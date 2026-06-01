@@ -3,8 +3,6 @@ from "./firebase.js";
 
 import {
     collection,
-    query,
-    where,
     getDocs,
     addDoc,
     serverTimestamp
@@ -114,20 +112,42 @@ async function loadOrders() {
 
     try {
 
-        const ordersRef =
-            collection(
-                db,
-                "orders"
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "orders"
+                )
             );
 
-        const q = query(
-            ordersRef,
-            where(
-                "userId",
-                "==",
-                currentUser.uid
-            )
+        allOrders = [];
+
+        snapshot.forEach((docSnap) => {
+
+            allOrders.push({
+
+                id: docSnap.id,
+
+                ...docSnap.data()
+
+            });
+
+        });
+
+        renderOrders(allOrders);
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Ошибка загрузки:",
+            error
         );
+
+    }
+
+}
 
         const snapshot =
             await getDocs(q);
