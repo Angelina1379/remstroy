@@ -124,9 +124,9 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
             dateClick(info){
 
                 currentEvent = null;
-
+                currentDocId = null;
+                
                 clearForm();
-
                 modal.style.display =
                 "flex";
 
@@ -241,19 +241,20 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
             
             });
 
-    openModalBtn.addEventListener(
-        "click",
-        ()=>{
-
-            currentEvent = null;
-
-            clearForm();
-
-            modal.style.display =
-            "flex";
-
-        }
-    );
+            openModalBtn.addEventListener(
+                "click",
+                ()=>{
+            
+                    currentEvent = null;
+                    currentDocId = null;
+            
+                    clearForm();
+            
+                    modal.style.display =
+                    "flex";
+            
+                }
+            );
 
     closeModalBtn.addEventListener(
         "click",
@@ -468,9 +469,10 @@ async function(){
         
         );
             currentEvent.remove();
-
+            
             currentEvent = null;
-
+            currentDocId = null;
+            
             modal.style.display =
             "none";
 
