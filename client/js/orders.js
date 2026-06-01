@@ -123,27 +123,25 @@ async function loadOrders() {
         allOrders = [];
 
         snapshot.forEach((docSnap) => {
-
+        
             const data =
                 docSnap.data();
-
-            // показываем только заявки текущего клиента
-
+        
             if (
-                data.clientUid === currentUser.uid
-
+                data.clientUid ===
+                currentUser.uid
             ) {
-
+        
                 allOrders.push({
-
+        
                     id: docSnap.id,
-
+        
                     ...data
-
+        
                 });
-
+        
             }
-
+        
         });
 
         renderOrders(allOrders);
@@ -238,50 +236,46 @@ function renderOrders(orders) {
         card.className =
             "order-card";
 
-        card.innerHTML = `
-
+       card.innerHTML = `
+            
             <div class="order-top">
-
+            
                 <div class="order-number">
-                    ${order.title || "Заявка"}
+                    ${order.type || "Проект"}
                 </div>
-
+            
                 <div class="order-status ${statusClass}">
                     ${statusText}
                 </div>
-
+            
             </div>
-
+            
             <div class="order-info">
-
+            
                 <div class="order-row">
-
-                    <span class="order-label">
-                        Адрес
-                    </span>
-
+                    <span class="order-label">Адрес</span>
                     <span class="order-value">
                         ${order.address || "-"}
                     </span>
-
                 </div>
-
+            
                 <div class="order-row">
-
-                    <span class="order-label">
-                        Стоимость
-                    </span>
-
+                    <span class="order-label">Бюджет</span>
                     <span class="order-value">
-                        ${(order.price || 0)
-                            .toLocaleString("ru-RU")} ₽
+                        ${order.budget || "0"} ₽
                     </span>
-
                 </div>
-
+            
+                <div class="order-row">
+                    <span class="order-label">Менеджер</span>
+                    <span class="order-value">
+                        ${order.manager || "-"}
+                    </span>
+                </div>
+            
             </div>
-
-        `;
+            
+            `;
 
         ordersList.appendChild(card);
 
