@@ -55,9 +55,7 @@ onAuthStateChanged(
             return;
         }
 
-        await loadCalendarData(
-            user.uid
-        );
+        await loadCalendarData(user.uid);
 
     }
 );
@@ -73,23 +71,20 @@ async function loadCalendarData(uid){
 
         const snapshot =
         await getDocs(
-            collection(
-                db,
-                "calendarEvents"
-            )
+            collection(db, "calendarEvents")
         );
 
         let events = [];
 
         snapshot.forEach(docSnap => {
 
-            const data =
-            docSnap.data();
+            const data = docSnap.data();
 
-            if(
-                data.clientUid === uid
-            ){
+            // 🔥 защита: проверяем clientUid
+            if(data.clientUid === uid){
+
                 events.push(data);
+
             }
 
         });
@@ -116,10 +111,8 @@ async function loadCalendarData(uid){
 
 function renderEvents(events){
 
-    if(
-        !events ||
-        events.length === 0
-    ){
+    // если пусто
+    if(!events || events.length === 0){
 
         upcomingWorks.innerHTML = `
             <div class="empty-card">
@@ -133,119 +126,79 @@ function renderEvents(events){
             </div>
         `;
 
+        startDate.textContent = "—";
+        finishDate.textContent = "—";
+        progressValue.textContent = "0%";
+
         return;
     }
 
-    events.sort(
-        (a,b)=>
-        new Date(a.date) -
-        new Date(b.date)
+    // сортировка по дате
+    events.sort((a, b) =>
+        new Date(a.date) - new Date(b.date)
     );
 
-    const firstEvent =
-    events[0];
-
-    const lastEvent =
-    events[
-        events.length - 1
-    ];
+    const firstEvent = events[0];
+    const lastEvent = events[events.length - 1];
 
     startDate.textContent =
-    formatDate(
-        firstEvent.date
-    );
+        formatDate(firstEvent?.date);
 
     finishDate.textContent =
-    formatDate(
-        lastEvent.date
-    );
+        formatDate(lastEvent?.date);
 
+    // защита от деления на 0
     const completed =
-    events.filter(
-        e =>
-        new Date(e.date)
-        < new Date()
-    ).length;
+        events.filter(e =>
+            new Date(e.date) < new Date()
+        ).length;
 
     const progress =
-    Math.round(
-        completed /
-        events.length *
-        100
-    );
+        events.length > 0
+            ? Math.round((completed / events.length) * 100)
+            : 0;
 
     progressValue.textContent =
-    progress + "%";
+        progress + "%";
 
+    // очистка
     upcomingWorks.innerHTML = "";
-
     visitsContainer.innerHTML = "";
 
+    // вывод
     events.forEach(event => {
 
         const workCard =
         document.createElement("div");
 
-        workCard.className =
-        "work-card";
+        workCard.className = "work-card";
 
         workCard.innerHTML = `
+            <h4>${event.workType || "Работа"}</h4>
 
-            <h4>
-                ${event.workType || "Работа"}
-            </h4>
+            <p>📅 ${formatDate(event.date)}</p>
 
-            <p>
-                📅 ${formatDate(event.date)}
-            </p>
+            <p>📍 ${event.address || "-"}</p>
 
-            <p>
-                📍 ${event.address || "-"}
-            </p>
-
-            <p>
-                👤 ${event.manager || "-"}
-            </p>
-
+            <p>👤 ${event.manager || "-"}</p>
         `;
 
-        upcomingWorks.appendChild(
-            workCard
-        );
+        upcomingWorks.appendChild(workCard);
 
         const visit =
         document.createElement("div");
 
-        visit.className =
-        "visit-card";
+        visit.className = "visit-card";
 
         visit.innerHTML = `
+            <strong>${formatDate(event.date)}</strong>
 
-            <strong>
+            <p>${event.workType || ""}</p>
 
-                ${formatDate(
-                    event.date
-                )}
-
-            </strong>
-
-            <p>
-
-                ${event.workType || ""}
-
-            </p>
-
-            <p>
-
-                ${event.comment || ""}
-
-            </p>
-
+            <p>${event.comment || ""}</p>
         `;
 
-        visitsContainer.appendChild(
-            visit
-        );
+        visitsContainer.appendChild(visit);
 
     });
 
@@ -260,10 +213,11 @@ function formatDate(date){
 
     if(!date) return "—";
 
-    return new Date(date)
-    .toLocaleDateString(
-        "ru-RU"
-    );
+    const d = new Date(date);
+
+    if(isNaN(d.getTime())) return "—";
+
+    return d.toLocaleDateString("ru-RU");
 
 }
 
@@ -278,8 +232,7 @@ logoutBtn?.addEventListener(
 
         await signOut(auth);
 
-        window.location.href =
-        "login.html";
+        window.location.href = "login.html";
 
     }
 );
