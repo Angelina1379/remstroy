@@ -103,6 +103,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         {
 
             locale:"ru",
+            
+            firstDay: 1, 
 
             initialView:"dayGridMonth",
 
