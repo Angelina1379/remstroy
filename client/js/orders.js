@@ -147,8 +147,7 @@ async function loadOrders() {
         });
 
         renderOrders(allOrders);
-
-    }
+        }
 
     catch(error) {
 
