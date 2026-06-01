@@ -107,6 +107,11 @@ logoutBtn?.addEventListener(
 
 function loadMessages(uid) {
 
+    console.log(
+        "Загрузка сообщений:",
+        uid
+    );
+
     const messagesRef = query(
 
         collection(
@@ -116,121 +121,138 @@ function loadMessages(uid) {
             "items"
         ),
 
-        orderBy("time")
+        orderBy("time", "asc")
 
     );
 
-    onSnapshot(messagesRef, (snapshot) => {
+    onSnapshot(
 
-        messagesContainer.innerHTML = "";
+        messagesRef,
 
-        if (snapshot.empty) {
+        (snapshot) => {
 
-            messagesContainer.innerHTML = `
+            console.log(
+                "Сообщений найдено:",
+                snapshot.size
+            );
 
-                <div class="empty-chat">
+            messagesContainer.innerHTML = "";
 
-                    Пока нет сообщений
+            if (snapshot.empty) {
 
-                </div>
-
-            `;
-
-            return;
-        }
-
-        snapshot.forEach((docSnap) => {
-
-            const msg = docSnap.data();
-
-            const div =
-            document.createElement("div");
-
-            div.className =
-            `message ${
-                msg.sender === "client"
-                ? "manager"
-                : "client"
-            }`;
-
-            let html = "";
-
-            if (msg.text) {
-
-                html += `
-                    <div>${msg.text}</div>
-                `;
-            }
-
-            if (msg.imageUrl) {
-
-                html += `
-                    <img
-                        src="${msg.imageUrl}"
-                        class="chat-image"
-                    >
-                `;
-            }
-
-            if (
-                msg.fileUrl &&
-                !msg.imageUrl
-            ) {
-
-                html += `
-                    <div class="file-box">
-
-                        <a
-                            href="${msg.fileUrl}"
-                            target="_blank"
-                        >
-
-                            📎 ${msg.fileName}
-
-                        </a>
-
+                messagesContainer.innerHTML = `
+                    <div class="empty-chat">
+                        Пока нет сообщений
                     </div>
                 `;
+
+                return;
             }
 
-            if (msg.voiceUrl) {
+            snapshot.forEach((docSnap) => {
+
+                const msg =
+                    docSnap.data();
+
+                console.log(
+                    "Сообщение:",
+                    msg
+                );
+
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    `message ${
+                        msg.sender === "client"
+                            ? "client"
+                            : "manager"
+                    }`;
+
+                let html = "";
+
+                if (msg.text) {
+
+                    html += `
+                        <div class="message-text">
+                            ${msg.text}
+                        </div>
+                    `;
+                }
+
+                if (msg.imageUrl) {
+
+                    html += `
+                        <img
+                            src="${msg.imageUrl}"
+                            class="chat-image"
+                            alt="Изображение"
+                        >
+                    `;
+                }
+
+                if (
+                    msg.fileUrl &&
+                    !msg.imageUrl
+                ) {
+
+                    html += `
+                        <div class="file-box">
+
+                            <a
+                                href="${msg.fileUrl}"
+                                target="_blank"
+                            >
+                                📎 ${msg.fileName || "Файл"}
+                            </a>
+
+                        </div>
+                    `;
+                }
+
+                if (msg.voiceUrl) {
+
+                    html += `
+                        <audio controls>
+                            <source src="${msg.voiceUrl}">
+                        </audio>
+                    `;
+                }
+
+                const messageTime =
+                    msg.time?.toDate
+                        ? msg.time.toDate()
+                        : new Date();
 
                 html += `
-                    <audio controls>
-
-                        <source
-                            src="${msg.voiceUrl}">
-
-                    </audio>
+                    <div class="message-time">
+                        ${messageTime.toLocaleString("ru-RU")}
+                    </div>
                 `;
-            }
 
-            const time =
-            msg.time?.toDate
-                ? msg.time.toDate()
-                : new Date();
+                div.innerHTML = html;
 
-            html += `
-                <div class="message-time">
+                messagesContainer.appendChild(div);
 
-                    ${time.toLocaleString("ru-RU")}
+            });
 
-                </div>
-            `;
+            messagesContainer.scrollTop =
+                messagesContainer.scrollHeight;
 
-            div.innerHTML = html;
+        },
 
-            messagesContainer.appendChild(div);
+        (error) => {
 
-        });
+            console.error(
+                "Ошибка Firestore:",
+                error
+            );
 
-        messagesContainer.scrollTop =
-        messagesContainer.scrollHeight;
+        }
 
-    });
+    );
 
 }
-
 
 // ======================================
 // FILE SELECT
