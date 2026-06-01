@@ -506,16 +506,23 @@ async function(){
         let html = "";
 
         events.forEach(event=>{
-
-            const eventDate =
-            event.start
-            .toISOString()
-            .split("T")[0];
-
-            if(
-                eventDate ===
-                selectedDate
-            ){
+        
+        const eventDate =
+        FullCalendar.formatDate(
+            event.start,
+            {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                timeZone: "local"
+            }
+        )
+        .split(".")
+        .reverse()
+        .join("-");
+        
+        if(eventDate === selectedDate)
+            {
 
                 const p =
                 event.extendedProps;
