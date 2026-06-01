@@ -116,7 +116,7 @@ async function loadOrders() {
             await getDocs(
                 collection(
                     db,
-                    "orders"
+                    "projects"
                 )
             );
 
@@ -124,13 +124,25 @@ async function loadOrders() {
 
         snapshot.forEach((docSnap) => {
 
-            allOrders.push({
+            const data =
+                docSnap.data();
 
-                id: docSnap.id,
+            // показываем только заявки текущего клиента
 
-                ...docSnap.data()
+            if (
+                data.clientUid ===
+                currentUser.uid
+            ) {
 
-            });
+                allOrders.push({
+
+                    id: docSnap.id,
+
+                    ...data
+
+                });
+
+            }
 
         });
 
