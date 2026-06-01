@@ -161,36 +161,6 @@ async function loadOrders() {
 
 }
 
-        const snapshot =
-            await getDocs(q);
-
-        allOrders = [];
-
-        snapshot.forEach((docSnap) => {
-
-            allOrders.push({
-                id: docSnap.id,
-                ...docSnap.data()
-            });
-
-        });
-
-        renderOrders(allOrders);
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "Ошибка загрузки:",
-            error
-        );
-
-    }
-
-}
-
-
 // ======================================
 // RENDER
 // ======================================
