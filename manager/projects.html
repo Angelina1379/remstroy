@@ -957,20 +957,20 @@ async function loadClients(){
 
 }
 
-    document
+  document
 .getElementById("clientName")
 .addEventListener(
     "change",
     () => {
 
-        const name =
+        const uid =
         document.getElementById(
             "clientName"
         ).value;
 
         const client =
         clients.find(
-            c => c.fullName === name
+            c => c.uid === uid
         );
 
         if(!client) return;
