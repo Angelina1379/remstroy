@@ -1,24 +1,13 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 
 import {
     collection,
-    getDocs,
     addDoc,
+    getDocs,
     updateDoc,
     deleteDoc,
     doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-let allEvents = [];
-let selectedDate = new Date().toISOString().split("T")[0];
-
-let calendar;
-let currentEvent = null;
-let currentDocId = null;
-
-// ======================================
-// INIT
-// ======================================
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -29,11 +18,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     const saveTaskBtn = document.getElementById("saveTaskBtn");
     const closeModalBtn = document.getElementById("closeModal");
 
+    let currentEvent = null;
+    let currentDocId = null;
+    let selectedDate = null;
+
     // ======================================
-    // CALENDAR
+    // COLOR MAP
     // ======================================
 
-    calendar = new FullCalendar.Calendar(calendarEl, {
+    function getColor(type) {
+        switch (type) {
+            case "Замер": return "#ffb547";
+            case "Смета": return "#2563eb";
+            case "Черновые работы": return "#ef4444";
+            case "Отделочные работы": return "#22c55e";
+            case "Сдача объекта": return "#8b5cf6";
+            default: return "#3b82f6";
+        }
+    }
+
+    // ======================================
+    // CLEAR FORM
+    // ======================================
+
+    function clearForm() {
+        [
+            "clientName",
+            "clientPhone",
+            "clientAddress",
+            "workType",
+            "manager",
+            "comment",
+            "eventDate"
+        ].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+        });
+    }
+
+    // ======================================
+    // CALENDAR INIT
+    // ======================================
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
 
         locale: "ru",
         firstDay: 1,
@@ -50,7 +77,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         dateClick(info) {
             selectedDate = info.dateStr;
-            renderDayPlans();
+            clearForm();
+            modal.style.display = "flex";
+
+            document.getElementById("eventDate").value =
+                info.dateStr + "T10:00";
         },
 
         eventClick(info) {
@@ -68,6 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("workType").value = p.workType || "";
             document.getElementById("manager").value = p.manager || "";
             document.getElementById("comment").value = p.comment || "";
+
             document.getElementById("eventDate").value =
                 info.event.start.toISOString().slice(0, 16);
         }
@@ -76,228 +108,117 @@ document.addEventListener("DOMContentLoaded", async () => {
     calendar.render();
 
     // ======================================
-    // LOAD FIREBASE DATA
+    // LOAD EVENTS
     // ======================================
-
-    await loadCalendarData();
-
-    // ======================================
-    // BUTTONS
-    // ======================================
-
-    openModalBtn?.addEventListener("click", () => {
-        currentEvent = null;
-        currentDocId = null;
-        clearForm();
-        modal.style.display = "flex";
-    });
-
-    closeModalBtn?.addEventListener("click", () => {
-        modal.style.display = "none";
-    });
-
-    saveTaskBtn?.addEventListener("click", saveEvent);
-});
-
-// ======================================
-// LOAD EVENTS
-// ======================================
-
-async function loadCalendarData() {
 
     const snapshot = await getDocs(collection(db, "calendarEvents"));
 
-    allEvents = [];
-
-    snapshot.forEach((docSnap) => {
+    snapshot.forEach(docSnap => {
 
         const data = docSnap.data();
 
-        const event = {
+        calendar.addEvent({
+
             id: docSnap.id,
             title: data.client,
             start: data.date,
+            backgroundColor: data.color,
+            borderColor: data.color,
+
             extendedProps: {
                 phone: data.phone,
                 address: data.address,
                 workType: data.workType,
                 manager: data.manager,
-                comment: data.comment
+                comment: data.comment,
+                clientUid: data.clientUid // 🔥 ВАЖНО
             }
-        };
-
-        allEvents.push(event);
-
-        calendar.addEvent(event);
+        });
     });
 
-    renderDayPlans();
-}
+    // ======================================
+    // SAVE EVENT
+    // ======================================
 
-// ======================================
-// SAVE EVENT
-// ======================================
+    saveTaskBtn.addEventListener("click", async () => {
 
-async function saveEvent() {
+        const client = document.getElementById("clientName").value;
+        const phone = document.getElementById("clientPhone").value;
+        const address = document.getElementById("clientAddress").value;
+        const workType = document.getElementById("workType").value;
+        const manager = document.getElementById("manager").value;
+        const comment = document.getElementById("comment").value;
+        const date = document.getElementById("eventDate").value;
 
-    const client = document.getElementById("clientName").value;
-    const phone = document.getElementById("clientPhone").value;
-    const address = document.getElementById("clientAddress").value;
-    const workType = document.getElementById("workType").value;
-    const manager = document.getElementById("manager").value;
-    const comment = document.getElementById("comment").value;
-    const date = document.getElementById("eventDate").value;
+        if (!client || !date) {
+            alert("Заполните обязательные поля");
+            return;
+        }
 
-    if (!client || !date) {
-        alert("Заполните обязательные поля");
-        return;
-    }
+        const user = auth.currentUser;
 
-    const data = {
-        client,
-        phone,
-        address,
-        workType,
-        manager,
-        comment,
-        date
+        const payload = {
+            client,
+            clientUid: user?.uid || "", // 🔥 ОБЯЗАТЕЛЬНО
+            phone,
+            address,
+            workType,
+            manager,
+            comment,
+            date,
+            color: getColor(workType)
+        };
+
+        if (currentEvent) {
+
+            await updateDoc(
+                doc(db, "calendarEvents", currentDocId),
+                payload
+            );
+
+            currentEvent.setProp("title", client);
+            currentEvent.setStart(date);
+
+        } else {
+
+            const docRef = await addDoc(
+                collection(db, "calendarEvents"),
+                payload
+            );
+
+            calendar.addEvent({
+                id: docRef.id,
+                title: client,
+                start: date,
+                backgroundColor: payload.color,
+                borderColor: payload.color,
+                extendedProps: payload
+            });
+        }
+
+        modal.style.display = "none";
+        clearForm();
+        currentEvent = null;
+        currentDocId = null;
+    });
+
+    // ======================================
+    // DELETE
+    // ======================================
+
+    window.deleteCurrentEvent = async function () {
+
+        if (!currentEvent) return;
+
+        await deleteDoc(doc(db, "calendarEvents", currentDocId));
+
+        currentEvent.remove();
+
+        currentEvent = null;
+        currentDocId = null;
+
+        modal.style.display = "none";
     };
 
-    if (currentEvent) {
-
-        await updateDoc(doc(db, "calendarEvents", currentDocId), data);
-
-        currentEvent.setProp("title", client);
-        currentEvent.setStart(date);
-
-    } else {
-
-        const docRef = await addDoc(collection(db, "calendarEvents"), data);
-
-        const event = {
-            id: docRef.id,
-            title: client,
-            start: date,
-            extendedProps: {
-                phone,
-                address,
-                workType,
-                manager,
-                comment
-            }
-        };
-
-        calendar.addEvent(event);
-        allEvents.push(event);
-    }
-
-    document.getElementById("taskModal").style.display = "none";
-    renderDayPlans();
-}
-
-// ======================================
-// DELETE
-// ======================================
-
-window.deleteCurrentEvent = async function () {
-
-    if (!currentEvent) return;
-
-    await deleteDoc(doc(db, "calendarEvents", currentDocId));
-
-    currentEvent.remove();
-
-    allEvents = allEvents.filter(e => e.id !== currentDocId);
-
-    currentEvent = null;
-    currentDocId = null;
-
-    document.getElementById("taskModal").style.display = "none";
-
-    renderDayPlans();
-};
-
-// ======================================
-// DAY PLANS (ВАЖНОЕ)
-// ======================================
-
-function renderDayPlans() {
-
-    const workContainer = document.getElementById("upcomingWorks");
-    const visitsContainer = document.getElementById("visitsContainer");
-
-    if (!workContainer || !visitsContainer) return;
-
-    const filtered = allEvents.filter(e => {
-
-        const eventDate = new Date(e.start)
-            .toISOString()
-            .split("T")[0];
-
-        return eventDate === selectedDate;
-    });
-
-    if (filtered.length === 0) {
-        workContainer.innerHTML = `<div class="empty-card">Нет работ на этот день</div>`;
-        visitsContainer.innerHTML = `<div class="empty-card">Нет визитов</div>`;
-        return;
-    }
-
-    workContainer.innerHTML = "";
-    visitsContainer.innerHTML = "";
-
-    filtered.forEach(e => {
-
-        const work = document.createElement("div");
-        work.className = "work-card";
-
-        work.innerHTML = `
-            <h4>${e.title}</h4>
-            <p>📅 ${formatDate(e.start)}</p>
-            <p>📍 ${e.extendedProps.address || "-"}</p>
-            <p>👤 ${e.extendedProps.manager || "-"}</p>
-        `;
-
-        workContainer.appendChild(work);
-
-        const visit = document.createElement("div");
-        visit.className = "visit-card";
-
-        visit.innerHTML = `
-            <strong>${formatDate(e.start)}</strong>
-            <p>${e.extendedProps.workType || ""}</p>
-            <p>${e.extendedProps.comment || ""}</p>
-        `;
-
-        visitsContainer.appendChild(visit);
-    });
-}
-
-// ======================================
-// FORMAT DATE
-// ======================================
-
-function formatDate(date) {
-    if (!date) return "—";
-    return new Date(date).toLocaleDateString("ru-RU");
-}
-
-// ======================================
-// FORM RESET
-// ======================================
-
-function clearForm() {
-
-    [
-        "clientName",
-        "clientPhone",
-        "clientAddress",
-        "workType",
-        "manager",
-        "comment",
-        "eventDate"
-    ].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-    });
-}
+    // ======================================
+});
