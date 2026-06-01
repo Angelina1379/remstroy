@@ -67,16 +67,18 @@ href="css/projects.css">
 
 <!-- MAIN -->
 
+```html
 <main class="main">
 
 <div class="topbar">
 
 <div>
-<h1>Проекты</h1>
-<p>Управление ремонтом и клиентами</p>
+<h1>Заказы</h1>
+<p>Управление заказами и объектами</p>
 </div>
 
 <div class="manager-card">
+
 <div class="avatar"></div>
 
 <div>
@@ -98,10 +100,10 @@ href="css/projects.css">
 type="text"
 id="searchInput"
 class="search"
-placeholder="Поиск клиента..."
+placeholder="Поиск заказа, адреса или клиента..."
 >
 
-<div id="projectsList"></div>
+<div id="ordersList"></div>
 
 </div>
 
@@ -109,15 +111,15 @@ placeholder="Поиск клиента..."
 
 <div class="right-panel">
 
-<!-- CREATE -->
+<!-- CREATE ORDER -->
 
 <div class="block">
 
-<h2>Создание проекта</h2>
+<h2>Создание заказа</h2>
 
 <div class="form-grid">
 
-<select id="clientName">
+<select id="clientSelect">
 
 <option value="">
 Выберите клиента
@@ -129,12 +131,14 @@ placeholder="Поиск клиента..."
 type="text"
 id="clientPhone"
 placeholder="Телефон"
+readonly
 >
 
 <input
 type="email"
 id="clientEmail"
 placeholder="Email"
+readonly
 >
 
 <input
@@ -143,11 +147,37 @@ id="projectAddress"
 placeholder="Адрес объекта"
 >
 
-<input
-type="text"
-id="projectType"
-placeholder="Тип ремонта"
->
+<select id="projectType">
+
+<option value="">
+Тип ремонта
+</option>
+
+<option value="Косметический ремонт">
+Косметический ремонт
+</option>
+
+<option value="Капитальный ремонт">
+Капитальный ремонт
+</option>
+
+<option value="Дизайнерский ремонт">
+Дизайнерский ремонт
+</option>
+
+<option value="Ремонт кухни">
+Ремонт кухни
+</option>
+
+<option value="Ремонт ванной">
+Ремонт ванной
+</option>
+
+<option value="Ремонт под ключ">
+Ремонт под ключ
+</option>
+
+</select>
 
 <input
 type="number"
@@ -175,16 +205,28 @@ id="deadline"
 Назначен замер
 </option>
 
-<option value="Документы">
-Документы
+<option value="Смета согласована">
+Смета согласована
 </option>
 
 <option value="В работе">
 В работе
 </option>
 
-<option value="Завершен">
-Завершен
+<option value="Отделка">
+Отделка
+</option>
+
+<option value="Сдача объекта">
+Сдача объекта
+</option>
+
+<option value="Завершён">
+Завершён
+</option>
+
+<option value="Отменён">
+Отменён
 </option>
 
 </select>
@@ -192,18 +234,24 @@ id="deadline"
 <select id="priority">
 
 <option value="Низкий">
-Низкий приоритет
+Низкий
 </option>
 
 <option value="Средний">
-Средний приоритет
+Средний
 </option>
 
 <option value="Высокий">
-Высокий приоритет
+Высокий
 </option>
 
 </select>
+
+<input
+type="text"
+id="managerName"
+placeholder="Ответственный менеджер"
+>
 
 <textarea
 id="comment"
@@ -214,27 +262,27 @@ placeholder="Комментарий менеджера..."
 
 <div class="actions">
 
-<button id="createProjectBtn">
-Создать проект
+<button id="createOrderBtn">
+Создать заказ
 </button>
 
-<button id="updateProjectBtn">
-Обновить
+<button id="updateOrderBtn">
+Обновить заказ
 </button>
 
-<button id="deleteProjectBtn">
-Удалить
+<button id="deleteOrderBtn">
+Удалить заказ
 </button>
 
 </div>
 
 </div>
 
-<!-- PROJECT INFO -->
+<!-- INFO -->
 
 <div class="block">
 
-<h2>Информация по объекту</h2>
+<h2>Информация по заказу</h2>
 
 <div class="info-list">
 
@@ -266,7 +314,7 @@ placeholder="Комментарий менеджера..."
 
 <div class="block">
 
-<h2>История проекта</h2>
+<h2>История заказа</h2>
 
 <div class="timeline" id="timeline">
 
@@ -275,7 +323,7 @@ placeholder="Комментарий менеджера..."
 <div class="timeline-dot"></div>
 
 <div>
-<h4>Проект создан</h4>
+<h4>Заказ создан</h4>
 <p>История появится автоматически</p>
 </div>
 
@@ -293,11 +341,10 @@ placeholder="Комментарий менеджера..."
 
 </div>
 
-<script type="module">
-
-
-
+<script
+type="module"
+src="js/projects.js">
 </script>
 
-</body>
+</body
 </html>
