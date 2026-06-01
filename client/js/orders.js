@@ -386,7 +386,7 @@ createOrderBtn?.addEventListener(
             await addDoc(
                 collection(
                     db,
-                    "orders"
+                    "projects"
                 ),
                 {
                     userId:
