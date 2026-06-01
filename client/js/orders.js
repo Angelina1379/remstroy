@@ -130,7 +130,9 @@ async function loadOrders() {
             // показываем только заявки текущего клиента
 
             if (
-                clientUid: currentUser.uid
+                if (
+                data.userId === currentUser.uid
+) {
             ) {
 
                 allOrders.push({
@@ -146,18 +148,18 @@ async function loadOrders() {
         });
 
         renderOrders(allOrders);
-        
+        }
 
-    catch(error) {
-
-        console.error(
-            "Ошибка загрузки:",
-            error
-        );
+        catch(error) {
+    
+            console.error(
+                "Ошибка загрузки:",
+                error
+            );
+    
+        }
 
     }
-
-}
 
 // ======================================
 // RENDER
