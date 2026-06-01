@@ -844,6 +844,7 @@ const searchInput =
 document.getElementById("searchInput");
 
 let selectedProjectId = null;
+let clients = [];
 
 /* LOAD PROJECTS */
 
@@ -907,6 +908,85 @@ projectsList.appendChild(card);
 }
 
 loadProjects();
+    loadClients();
+
+async function loadClients(){
+
+    const select =
+    document.getElementById(
+        "clientName"
+    );
+
+    const snapshot =
+    await getDocs(
+        collection(
+            db,
+            "users"
+        )
+    );
+
+    clients = [];
+
+    select.innerHTML =
+    `<option value="">
+        Выберите клиента
+    </option>`;
+
+    snapshot.forEach(docSnap => {
+
+        const client = {
+            id: docSnap.id,
+            ...docSnap.data()
+        };
+
+        if(
+            client.role === "client"
+        ){
+
+            clients.push(client);
+
+            select.innerHTML += `
+                <option value="${client.uid}">
+                    ${client.name}
+                </option>
+            `;
+
+        }
+
+    });
+
+}
+
+    document
+.getElementById("clientName")
+.addEventListener(
+    "change",
+    () => {
+
+        const name =
+        document.getElementById(
+            "clientName"
+        ).value;
+
+        const client =
+        clients.find(
+            c => c.fullName === name
+        );
+
+        if(!client) return;
+
+        document.getElementById(
+            "clientPhone"
+        ).value =
+        client.phone || "";
+
+        document.getElementById(
+            "clientEmail"
+        ).value =
+        client.email || "";
+
+    }
+);
 
 /* CREATE */
 
