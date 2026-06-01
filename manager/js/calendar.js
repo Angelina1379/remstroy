@@ -1,4 +1,38 @@
-document.addEventListener("DOMContentLoaded", () => {
+import { db } from "./firebase.js";
+
+import {
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const calendarEl =
+    document.getElementById("calendar");
+
+    const modal =
+    document.getElementById("taskModal");
+
+    const openModalBtn =
+    document.getElementById("openModalBtn");
+
+    const saveTaskBtn =
+    document.getElementById("saveTaskBtn");
+
+    const closeModalBtn =
+    document.getElementById("closeModal");
+
+    let currentEvent = null;
+    let currentDocId = null;
+    let selectedDate = null;
+    
+    
+    document.addEventListener("DOMContentLoaded", () => {
 
     const calendarEl =
     document.getElementById("calendar");
