@@ -1572,21 +1572,25 @@ info@buildhouse.ru
 
 <script>
 
+<script>
+
 const areaRange =
 document.getElementById('areaRange');
 
 const areaValue =
 document.getElementById('areaValue');
 
-const repairType =
-document.getElementById('repairType');
-
 const roomType =
 document.getElementById('roomType');
 
+const repairType =
+document.getElementById('repairType');
+
+const serviceType =
+document.getElementById('serviceType');
+
 const totalPrice =
 document.getElementById('totalPrice');
-
 
 
 function calculatePrice(){
@@ -1594,51 +1598,170 @@ function calculatePrice(){
     const area =
     parseInt(areaRange.value);
 
-    const repair =
-    parseInt(repairType.value);
-
     const room =
     parseFloat(roomType.value);
 
-    const total =
-    Math.round(area * repair * room);
+    let total = 0;
+
+    switch(serviceType.value){
+
+        case "full":
+
+            const repair =
+            parseInt(repairType.value);
+
+            total =
+            area *
+            repair *
+            room;
+
+            break;
+
+        case "wallpaper":
+
+            total =
+            area *
+            450 *
+            room;
+
+            break;
+
+        case "painting":
+
+            total =
+            area *
+            550 *
+            room;
+
+            break;
+
+        case "tile":
+
+            total =
+            area *
+            2200 *
+            room;
+
+            break;
+
+        case "laminate":
+
+            total =
+            area *
+            900 *
+            room;
+
+            break;
+
+        case "ceiling":
+
+            total =
+            area *
+            1200 *
+            room;
+
+            break;
+
+        case "electric":
+
+            total =
+            area *
+            1500 *
+            room;
+
+            break;
+
+        case "plumbing":
+
+            total =
+            area *
+            1800 *
+            room;
+
+            break;
+
+        case "bathroom":
+
+            total =
+            area *
+            18000 *
+            room;
+
+            break;
+
+        case "kitchen":
+
+            total =
+            area *
+            14000 *
+            room;
+
+            break;
+
+        default:
+
+            total =
+            area *
+            7000 *
+            room;
+
+    }
 
     totalPrice.innerText =
-    total.toLocaleString('ru-RU') + ' ₽';
+    Math.round(total)
+    .toLocaleString('ru-RU')
+    + ' ₽';
 
 }
 
 
-
 areaRange.addEventListener(
-'input',
-() => {
+    'input',
+    () => {
 
-    areaValue.innerText =
-    areaRange.value;
+        areaValue.innerText =
+        areaRange.value;
 
-    calculatePrice();
+        calculatePrice();
 
-});
-
-
-
-repairType.addEventListener(
-'change',
-calculatePrice
+    }
 );
-
-
 
 roomType.addEventListener(
-'change',
-calculatePrice
+    'change',
+    calculatePrice
 );
 
+repairType.addEventListener(
+    'change',
+    calculatePrice
+);
+
+serviceType.addEventListener(
+    'change',
+    () => {
+
+        if(
+            serviceType.value === "full"
+        ){
+
+            repairType.disabled =
+            false;
+
+        }else{
+
+            repairType.disabled =
+            true;
+
+        }
+
+        calculatePrice();
+
+    }
+);
 
 
 calculatePrice();
-
 
 
 const modal =
@@ -1651,71 +1774,96 @@ const closeModal =
 document.getElementById('closeModal');
 
 
-
 openModal.addEventListener(
-'click',
-() => {
+    'click',
+    () => {
 
-    modal.style.display = 'flex';
+        modal.style.display =
+        'flex';
 
-});
-
+    }
+);
 
 
 closeModal.addEventListener(
-'click',
-() => {
+    'click',
+    () => {
 
-    modal.style.display = 'none';
+        modal.style.display =
+        'none';
 
-});
-
+    }
+);
 
 
 window.addEventListener(
-'click',
-(e) => {
+    'click',
+    (e) => {
 
-    if(e.target === modal){
+        if(
+            e.target === modal
+        ){
 
-        modal.style.display = 'none';
+            modal.style.display =
+            'none';
+
+        }
 
     }
-
-});
-
+);
 
 
 const requestForm =
 document.getElementById('requestForm');
 
 
-
 requestForm.addEventListener(
-'submit',
-(e) => {
+    'submit',
+    (e) => {
 
-    e.preventDefault();
+        e.preventDefault();
 
-    const name =
-    document.getElementById('clientName').value;
+        const name =
+        document.getElementById(
+            'clientName'
+        ).value;
 
-    const phone =
-    document.getElementById('clientPhone').value;
+        const phone =
+        document.getElementById(
+            'clientPhone'
+        ).value;
 
-    alert(
+        const service =
+        serviceType.options[
+            serviceType.selectedIndex
+        ].text;
+
+        const price =
+        totalPrice.innerText;
+
+        alert(
+
 `Заявка отправлена!
 
 Имя: ${name}
-Телефон: ${phone}`
-    );
 
-    modal.style.display = 'none';
+Телефон: ${phone}
 
-    requestForm.reset();
+Услуга: ${service}
 
-});
+Стоимость: ${price}`
 
+        );
+
+        modal.style.display =
+        'none';
+
+        requestForm.reset();
+
+    }
+);
+
+</script>
 </script>
 
 </body>
