@@ -1408,41 +1408,95 @@ document.querySelectorAll(".filter-btn").forEach(button => {
 
 });
 
-document.getElementById("serviceForm")
+document
+.getElementById("serviceForm")
 .addEventListener("submit", async function(e){
 
     e.preventDefault();
 
     const name =
-    document.getElementById("serviceClientName").value;
+    document.getElementById(
+        "serviceClientName"
+    ).value.trim();
 
     const phone =
-    document.getElementById("serviceClientPhone").value;
+    document.getElementById(
+        "serviceClientPhone"
+    ).value.trim();
+
+    if(!name || !phone){
+
+        alert(
+            "Заполните имя и телефон"
+        );
+
+        return;
+
+    }
 
     try{
 
         await addDoc(
-            collection(db,"orders"),
+            collection(
+                db,
+                "projects"
+            ),
             {
-                service: currentService,
-                clientName: name,
-                phone: phone,
-                status: "Новая",
-                createdAt: serverTimestamp()
+                clientUid: "",
+
+                clientName:
+                name,
+
+                phone:
+                phone,
+
+                email: "",
+
+                address: "",
+
+                type:
+                currentService,
+
+                service:
+                currentService,
+
+                budget: "",
+
+                measureDate: "",
+
+                deadline: "",
+
+                manager: "",
+
+                comment: "",
+
+                priority:
+                "Средний",
+
+                status:
+                "Новая заявка",
+
+                createdAt:
+                Date.now()
             }
         );
 
-        alert("Заявка отправлена менеджеру");
+        alert(
+            "Заявка успешно отправлена"
+        );
 
         this.reset();
 
         closeServiceModal();
 
-    }catch(error){
+    }
+    catch(error){
 
         console.error(error);
 
-        alert("Ошибка отправки заявки");
+        alert(
+            "Ошибка отправки заявки"
+        );
 
     }
 
