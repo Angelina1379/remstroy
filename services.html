@@ -1078,55 +1078,205 @@ info@buildhouse.ru
 
 
 
-<script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+<script type="module">
+
+import { db } from "./firebase.js";
+
 import {
-    getFirestore,
     collection,
     addDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBuV2dJLDPxsk6E50e5p0E5Buk_NAc46-E",
-    authDomain: "remont-f7644.firebaseapp.com",
-    projectId: "remont-f7644",
-    storageBucket: "remont-f7644.appspot.com",
-    messagingSenderId: "404840020044",
-    appId: "1:404840020044:web:f81c9613321ac170c19ce9",
-    measurementId: "G-J7S537NP48"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 const serviceModal =
 document.getElementById("serviceModal");
 
 let currentService = "";
-let currentPrice = "";
 
-window.openServiceModal = function(
-    title,
-    price,
-    list
-){
+const services = {
 
-    currentService = title;
-    currentPrice = price;
+    "Косметический ремонт": {
+        price: "от 7 000 ₽/м²",
+        description: `
+        <h3>Что входит в услугу:</h3>
 
-    document.getElementById(
-        "modalTitle"
-    ).innerHTML = title;
+        ✔ Демонтаж старых покрытий<br>
+        ✔ Подготовка стен и потолков<br>
+        ✔ Шпаклевка поверхностей<br>
+        ✔ Поклейка обоев или покраска<br>
+        ✔ Укладка ламината<br>
+        ✔ Монтаж плинтусов<br>
+        ✔ Установка розеток и выключателей<br>
+        ✔ Монтаж светильников<br><br>
 
-    document.getElementById(
-        "modalPrice"
-    ).innerHTML = price;
+        <h3>Срок выполнения:</h3>
+        2–4 недели в зависимости от площади объекта.<br><br>
 
-    document.getElementById(
-        "modalList"
-    ).innerHTML = list;
+        <h3>Результат:</h3>
+        Полностью обновленный интерьер без капитального вмешательства.
+        `
+    },
+
+    "Капитальный ремонт": {
+        price: "от 12 000 ₽/м²",
+        description: `
+        <h3>Что входит:</h3>
+
+        ✔ Полный демонтаж старой отделки<br>
+        ✔ Замена электропроводки<br>
+        ✔ Замена сантехнических коммуникаций<br>
+        ✔ Выравнивание стен и полов<br>
+        ✔ Стяжка пола<br>
+        ✔ Монтаж перегородок<br>
+        ✔ Плиточные работы<br>
+        ✔ Натяжные потолки<br>
+        ✔ Чистовая отделка<br><br>
+
+        <h3>Срок:</h3>
+        От 1 до 4 месяцев.<br><br>
+
+        <h3>Преимущества:</h3>
+        Полное обновление квартиры с гарантией до 5 лет.
+        `
+    },
+
+    "Дизайнерский ремонт": {
+        price: "от 18 000 ₽/м²",
+        description: `
+        <h3>Что входит:</h3>
+
+        ✔ Дизайн-проект<br>
+        ✔ 3D-визуализация помещений<br>
+        ✔ Подбор материалов<br>
+        ✔ Авторский надзор<br>
+        ✔ Сложные инженерные решения<br>
+        ✔ Система умного дома<br>
+        ✔ Декоративное освещение<br>
+        ✔ Премиальная отделка<br><br>
+
+        <h3>Результат:</h3>
+        Индивидуальный интерьер по авторскому проекту.
+        `
+    },
+
+    "Поклейка обоев": {
+        price: "от 450 ₽/м²",
+        description: `
+        ✔ Подготовка стен<br>
+        ✔ Грунтование поверхности<br>
+        ✔ Поклейка виниловых, флизелиновых и бумажных обоев<br>
+        ✔ Подгонка рисунка<br>
+        ✔ Обработка стыков<br><br>
+
+        Используем профессиональный инструмент для идеального результата.
+        `
+    },
+
+    "Покраска стен": {
+        price: "от 500 ₽/м²",
+        description: `
+        ✔ Шлифовка поверхности<br>
+        ✔ Грунтовка<br>
+        ✔ Нанесение 2–3 слоев краски<br>
+        ✔ Работа с декоративными покрытиями<br><br>
+
+        Возможна колеровка в любой цвет.
+        `
+    },
+
+    "Укладка плитки": {
+        price: "от 2 000 ₽/м²",
+        description: `
+        ✔ Настенная плитка<br>
+        ✔ Напольная плитка<br>
+        ✔ Керамогранит<br>
+        ✔ Мозаика<br>
+        ✔ Затирка швов<br><br>
+
+        Работаем с любыми форматами плитки.
+        `
+    },
+
+    "Укладка ламината": {
+        price: "от 700 ₽/м²",
+        description: `
+        ✔ Подготовка основания<br>
+        ✔ Подложка<br>
+        ✔ Монтаж ламината<br>
+        ✔ Установка плинтусов<br><br>
+
+        Гарантия на работы.
+        `
+    },
+
+    "Укладка кварцвинила": {
+        price: "от 850 ₽/м²",
+        description: `
+        ✔ Подготовка пола<br>
+        ✔ Монтаж кварцвинилового покрытия<br>
+        ✔ Герметизация стыков<br><br>
+
+        Повышенная влагостойкость и износостойкость.
+        `
+    },
+
+    "Натяжные потолки": {
+        price: "от 950 ₽/м²",
+        description: `
+        ✔ Матовые потолки<br>
+        ✔ Глянцевые потолки<br>
+        ✔ Теневой профиль<br>
+        ✔ Встроенное освещение<br>
+        ✔ Световые линии<br><br>
+
+        Монтаж за 1 день.
+        `
+    },
+
+    "Электромонтажные работы": {
+        price: "от 25 000 ₽",
+        description: `
+        ✔ Разводка кабеля<br>
+        ✔ Монтаж розеток<br>
+        ✔ Монтаж выключателей<br>
+        ✔ Сборка электрощита<br>
+        ✔ Автоматы защиты<br>
+        ✔ Освещение помещений<br><br>
+
+        Работаем по ГОСТ.
+        `
+    },
+
+    "Сантехнические работы": {
+        price: "от 30 000 ₽",
+        description: `
+        ✔ Разводка труб<br>
+        ✔ Монтаж канализации<br>
+        ✔ Установка смесителей<br>
+        ✔ Подключение сантехники<br>
+        ✔ Проверка герметичности<br><br>
+
+        Используем качественные материалы.
+        `
+    }
+
+};
+
+window.openServiceModal = function(serviceName){
+
+    currentService = serviceName;
+
+    const service = services[serviceName];
+
+    document.getElementById("modalTitle").innerHTML =
+    serviceName;
+
+    document.getElementById("modalPrice").innerHTML =
+    service.price;
+
+    document.getElementById("modalList").innerHTML =
+    service.description;
 
     serviceModal.style.display = "flex";
 };
@@ -1134,221 +1284,60 @@ window.openServiceModal = function(
 window.closeServiceModal = function(){
 
     serviceModal.style.display = "none";
-
 };
 
-window.addEventListener(
-    "click",
-    (e)=>{
+window.addEventListener("click",(e)=>{
 
-        if(
-            e.target === serviceModal
-        ){
+    if(e.target === serviceModal){
 
-            closeServiceModal();
-
-        }
+        closeServiceModal();
 
     }
-);
+
+});
 
 document
 .getElementById("serviceForm")
-.addEventListener(
-    "submit",
-    async function(e){
+.addEventListener("submit", async function(e){
 
-        e.preventDefault();
+    e.preventDefault();
 
-        const submitBtn =
-        this.querySelector("button");
+    const name =
+    document.getElementById("serviceClientName").value;
 
-        submitBtn.disabled = true;
-        submitBtn.textContent =
-        "Отправка...";
+    const phone =
+    document.getElementById("serviceClientPhone").value;
 
-        try{
+    try{
 
-            const name =
-            document.getElementById(
-                "serviceClientName"
-            ).value.trim();
+        await addDoc(
+            collection(db,"orders"),
+            {
+                service: currentService,
+                clientName: name,
+                phone: phone,
+                status: "Новая",
+                createdAt: serverTimestamp()
+            }
+        );
 
-            const phone =
-            document.getElementById(
-                "serviceClientPhone"
-            ).value.trim();
+        alert(
+            "Заявка успешно отправлена менеджеру."
+        );
 
-            await addDoc(
-                collection(
-                    db,
-                    "service_requests"
-                ),
-                {
-                    name,
-                    phone,
-                    service: currentService,
-                    price: currentPrice,
-                    status: "Новая",
-                    createdAt:
-                    serverTimestamp()
-                }
-            );
+        this.reset();
 
-            alert(
-                "Заявка успешно отправлена!"
-            );
+        closeServiceModal();
 
-            this.reset();
+    }catch(error){
 
-            closeServiceModal();
+        console.error(error);
 
-        }catch(error){
-
-            console.error(error);
-
-            alert(
-                "Ошибка отправки заявки."
-            );
-
-        }
-
-        submitBtn.disabled = false;
-        submitBtn.textContent =
-        "Заказать услугу";
+        alert(
+            "Ошибка отправки заявки."
+        );
 
     }
-);
-
-document
-.querySelector(".cta-form")
-.addEventListener(
-    "submit",
-    async function(e){
-
-        e.preventDefault();
-
-        const submitBtn =
-        this.querySelector("button");
-
-        submitBtn.disabled = true;
-        submitBtn.textContent =
-        "Отправка...";
-
-        try{
-
-            const name =
-            this.querySelector(
-                'input[type="text"]'
-            ).value.trim();
-
-            const phone =
-            this.querySelector(
-                'input[type="tel"]'
-            ).value.trim();
-
-            const comment =
-            this.querySelector(
-                "textarea"
-            ).value.trim();
-
-            await addDoc(
-                collection(
-                    db,
-                    "consultation_requests"
-                ),
-                {
-                    name,
-                    phone,
-                    comment,
-                    status: "Новая",
-                    createdAt:
-                    serverTimestamp()
-                }
-            );
-
-            alert(
-                "Заявка успешно отправлена!"
-            );
-
-            this.reset();
-
-        }catch(error){
-
-            console.error(error);
-
-            alert(
-                "Ошибка отправки заявки."
-            );
-
-        }
-
-        submitBtn.disabled = false;
-        submitBtn.textContent =
-        "Получить консультацию";
-
-    }
-);
-const filterButtons =
-document.querySelectorAll(
-'.filter-btn'
-);
-
-const serviceCards =
-document.querySelectorAll(
-'.service-card'
-);
-
-filterButtons.forEach(btn=>{
-
-btn.addEventListener(
-'click',
-()=>{
-
-filterButtons.forEach(b=>
-b.classList.remove(
-'active'
-)
-);
-
-btn.classList.add(
-'active'
-);
-
-const filter =
-btn.dataset.filter;
-
-serviceCards.forEach(card=>{
-
-if(
-filter === 'all'
-){
-
-card.style.display =
-'block';
-
-return;
-
-}
-
-if(
-card.dataset.category ===
-filter
-){
-
-card.style.display =
-'block';
-
-}else{
-
-card.style.display =
-'none';
-
-}
-
-});
-
-});
 
 });
 
