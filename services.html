@@ -674,65 +674,16 @@ class="login-btn">
 
 <div class="services-filter">
 
-<button class="filter-btn active"
-data-filter="all">
-
-Все работы
-
-</button>
-
-<button class="filter-btn"
-data-filter="repair">
-
-Ремонт
-
-</button>
-
-<button class="filter-btn"
-data-filter="walls">
-
-Стены
-
-</button>
-
-<button class="filter-btn"
-data-filter="floors">
-
-Полы
-
-</button>
-
-<button class="filter-btn"
-data-filter="ceilings">
-
-Потолки
-
-</button>
-
-<button class="filter-btn"
-data-filter="electric">
-
-Электрика
-
-</button>
-
-<button class="filter-btn"
-data-filter="plumbing">
-
-Сантехника
-
-</button>
-
-<button class="filter-btn"
-data-filter="design">
-
-Дизайн
-
-</button>
+<button class="filter-btn active" data-filter="all">Все работы</button>
+<button class="filter-btn" data-filter="repair">Ремонт</button>
+<button class="filter-btn" data-filter="walls">Стены</button>
+<button class="filter-btn" data-filter="floors">Полы</button>
+<button class="filter-btn" data-filter="ceilings">Потолки</button>
+<button class="filter-btn" data-filter="electric">Электрика</button>
+<button class="filter-btn" data-filter="plumbing">Сантехника</button>
+<button class="filter-btn" data-filter="design">Дизайн</button>
 
 </div>
-
-<!-- SERVICES -->
 
 <section class="services-page">
 
@@ -740,188 +691,209 @@ data-filter="design">
 
 <div class="services-grid">
 
-<div class="service-card">
+<div class="service-card" data-category="repair">
 <div class="service-content">
 <h3>Косметический ремонт</h3>
 <p>Обновление интерьера без капитальных работ.</p>
 <div class="service-price">от 7 000 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Косметический ремонт">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="repair">
 <div class="service-content">
 <h3>Капитальный ремонт</h3>
 <p>Полное обновление помещения под ключ.</p>
 <div class="service-price">от 12 000 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Капитальный ремонт">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="design">
 <div class="service-content">
 <h3>Дизайнерский ремонт</h3>
 <p>Ремонт по индивидуальному дизайн-проекту.</p>
 <div class="service-price">от 18 000 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Дизайнерский ремонт">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="walls">
 <div class="service-content">
 <h3>Поклейка обоев</h3>
-<p>Подготовка стен и поклейка всех видов обоев.</p>
+<p>Флизелиновые, виниловые и фотообои.</p>
 <div class="service-price">от 450 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Поклейка обоев">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="walls">
 <div class="service-content">
 <h3>Покраска стен</h3>
-<p>Покраска стен и потолков современными материалами.</p>
+<p>Подготовка и окрашивание поверхностей.</p>
 <div class="service-price">от 500 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Покраска стен">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="walls">
+<div class="service-content">
+<h3>Штукатурные работы</h3>
+<p>Выравнивание стен и откосов.</p>
+<div class="service-price">от 600 ₽/м²</div>
+<button class="service-btn" data-service="Штукатурные работы">Подробнее</button>
+</div>
+</div>
+
+<div class="service-card" data-category="walls">
+<div class="service-content">
+<h3>Шпаклевка стен</h3>
+<p>Подготовка поверхностей под отделку.</p>
+<div class="service-price">от 350 ₽/м²</div>
+<button class="service-btn" data-service="Шпаклевка стен">Подробнее</button>
+</div>
+</div>
+
+<div class="service-card" data-category="floors">
 <div class="service-content">
 <h3>Укладка плитки</h3>
-<p>Керамическая плитка, керамогранит и мозаика.</p>
+<p>Керамогранит, плитка и мозаика.</p>
 <div class="service-price">от 2 000 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Укладка плитки">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="floors">
 <div class="service-content">
 <h3>Укладка ламината</h3>
-<p>Монтаж ламината и напольных покрытий.</p>
+<p>Монтаж ламината любой сложности.</p>
 <div class="service-price">от 700 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Укладка ламината">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="floors">
 <div class="service-content">
 <h3>Укладка кварцвинила</h3>
-<p>Износостойкие современные покрытия.</p>
+<p>Современное влагостойкое покрытие.</p>
 <div class="service-price">от 850 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Укладка кварцвинила">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="floors">
+<div class="service-content">
+<h3>Стяжка пола</h3>
+<p>Полусухая и бетонная стяжка.</p>
+<div class="service-price">от 650 ₽/м²</div>
+<button class="service-btn" data-service="Стяжка пола">Подробнее</button>
+</div>
+</div>
+
+<div class="service-card" data-category="ceilings">
 <div class="service-content">
 <h3>Натяжные потолки</h3>
 <p>Матовые, глянцевые и теневые потолки.</p>
 <div class="service-price">от 950 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Натяжные потолки">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="ceilings">
 <div class="service-content">
-<h3>Штукатурные работы</h3>
-<p>Выравнивание стен и подготовка под отделку.</p>
-<div class="service-price">от 600 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<h3>Подвесные потолки</h3>
+<p>Гипсокартонные конструкции любой формы.</p>
+<div class="service-price">от 1 400 ₽/м²</div>
+<button class="service-btn" data-service="Подвесные потолки">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
-<div class="service-content">
-<h3>Шпаклевка стен</h3>
-<p>Подготовка поверхностей под покраску и обои.</p>
-<div class="service-price">от 350 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
-</div>
-</div>
-
-<div class="service-card">
+<div class="service-card" data-category="electric">
 <div class="service-content">
 <h3>Электромонтажные работы</h3>
-<p>Монтаж проводки, розеток и освещения.</p>
+<p>Монтаж проводки и освещения.</p>
 <div class="service-price">от 25 000 ₽</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Электромонтажные работы">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="electric">
 <div class="service-content">
 <h3>Замена электропроводки</h3>
-<p>Полная или частичная замена электрики.</p>
+<p>Полная или частичная замена сети.</p>
 <div class="service-price">от 1 500 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Замена электропроводки">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="plumbing">
 <div class="service-content">
 <h3>Сантехнические работы</h3>
 <p>Разводка труб и подключение оборудования.</p>
 <div class="service-price">от 30 000 ₽</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Сантехнические работы">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="plumbing">
 <div class="service-content">
 <h3>Установка сантехники</h3>
-<p>Монтаж ванн, раковин, смесителей и инсталляций.</p>
+<p>Ванны, раковины, инсталляции и смесители.</p>
 <div class="service-price">от 5 000 ₽</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Установка сантехники">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="plumbing">
 <div class="service-content">
 <h3>Ремонт ванной комнаты</h3>
 <p>Комплексный ремонт санузла под ключ.</p>
 <div class="service-price">от 80 000 ₽</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Ремонт ванной комнаты">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="repair">
 <div class="service-content">
 <h3>Ремонт кухни</h3>
 <p>Полное обновление кухни любой сложности.</p>
 <div class="service-price">от 70 000 ₽</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Ремонт кухни">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="repair">
 <div class="service-content">
 <h3>Демонтажные работы</h3>
-<p>Демонтаж старой отделки и конструкций.</p>
+<p>Демонтаж старой отделки и перегородок.</p>
 <div class="service-price">от 300 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Демонтажные работы">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="repair">
 <div class="service-content">
 <h3>Установка дверей</h3>
-<p>Монтаж межкомнатных и входных дверей.</p>
+<p>Монтаж входных и межкомнатных дверей.</p>
 <div class="service-price">от 4 500 ₽</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Установка дверей">Подробнее</button>
 </div>
 </div>
 
-<div class="service-card">
+<div class="service-card" data-category="design">
 <div class="service-content">
 <h3>Разработка дизайн-проекта</h3>
-<p>Профессиональный проект интерьера с визуализацией.</p>
+<p>3D-визуализация и комплект чертежей.</p>
 <div class="service-price">от 1 500 ₽/м²</div>
-<button class="service-btn">Подробнее</button>
+<button class="service-btn" data-service="Разработка дизайн-проекта">Подробнее</button>
 </div>
 </div>
 
 </div>
 
+</div>
+
+</section>
 
 
 <!-- CTA -->
@@ -1294,6 +1266,68 @@ document
 
     }
 );
+const filterButtons =
+document.querySelectorAll(
+'.filter-btn'
+);
+
+const serviceCards =
+document.querySelectorAll(
+'.service-card'
+);
+
+filterButtons.forEach(btn=>{
+
+btn.addEventListener(
+'click',
+()=>{
+
+filterButtons.forEach(b=>
+b.classList.remove(
+'active'
+)
+);
+
+btn.classList.add(
+'active'
+);
+
+const filter =
+btn.dataset.filter;
+
+serviceCards.forEach(card=>{
+
+if(
+filter === 'all'
+){
+
+card.style.display =
+'block';
+
+return;
+
+}
+
+if(
+card.dataset.category ===
+filter
+){
+
+card.style.display =
+'block';
+
+}else{
+
+card.style.display =
+'none';
+
+}
+
+});
+
+});
+
+});
 
 </script>
 
