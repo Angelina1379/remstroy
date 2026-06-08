@@ -1414,76 +1414,37 @@ document
 
     e.preventDefault();
 
+    console.log("Форма отправлена");
+
     const name =
-    document.getElementById(
-        "serviceClientName"
-    ).value.trim();
+    document.getElementById("serviceClientName").value;
 
     const phone =
-    document.getElementById(
-        "serviceClientPhone"
-    ).value.trim();
+    document.getElementById("serviceClientPhone").value;
 
-    if(!name || !phone){
-
-        alert(
-            "Заполните имя и телефон"
-        );
-
-        return;
-
-    }
+    console.log("Имя:", name);
+    console.log("Телефон:", phone);
+    console.log("Услуга:", currentService);
 
     try{
 
-        await addDoc(
-            collection(
-                db,
-                "projects"
-            ),
+        const docRef = await addDoc(
+            collection(db,"projects"),
             {
-                clientUid: "",
-
-                clientName:
-                name,
-
-                phone:
-                phone,
-
-                email: "",
-
-                address: "",
-
-                type:
-                currentService,
-
-                service:
-                currentService,
-
-                budget: "",
-
-                measureDate: "",
-
-                deadline: "",
-
-                manager: "",
-
-                comment: "",
-
-                priority:
-                "Средний",
-
-                status:
-                "Новая заявка",
-
-                createdAt:
-                Date.now()
+                service: currentService,
+                clientName: name,
+                phone: phone,
+                status: "Новая заявка",
+                createdAt: Date.now()
             }
         );
 
-        alert(
-            "Заявка успешно отправлена"
+        console.log(
+            "Документ создан:",
+            docRef.id
         );
+
+        alert("Заявка отправлена");
 
         this.reset();
 
@@ -1492,10 +1453,14 @@ document
     }
     catch(error){
 
-        console.error(error);
+        console.error(
+            "Ошибка Firestore:",
+            error
+        );
 
         alert(
-            "Ошибка отправки заявки"
+            "Ошибка: " +
+            error.message
         );
 
     }
