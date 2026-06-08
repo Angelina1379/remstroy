@@ -969,103 +969,215 @@ info@buildhouse.ru
 
 <script>
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBuV2dJLDPxsk6E50e5p0E5Buk_NAc46-E",
+    authDomain: "remont-f7644.firebaseapp.com",
+    projectId: "remont-f7644",
+    storageBucket: "remont-f7644.appspot.com",
+    messagingSenderId: "404840020044",
+    appId: "1:404840020044:web:f81c9613321ac170c19ce9",
+    measurementId: "G-J7S537NP48"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const serviceModal =
-document.getElementById('serviceModal');
+document.getElementById("serviceModal");
 
+let currentService = "";
+let currentPrice = "";
 
-
-function openServiceModal(
-title,
-price,
-list
+window.openServiceModal = function(
+    title,
+    price,
+    list
 ){
 
+    currentService = title;
+    currentPrice = price;
+
     document.getElementById(
-    'modalTitle'
+        "modalTitle"
     ).innerHTML = title;
 
-
-
     document.getElementById(
-    'modalPrice'
+        "modalPrice"
     ).innerHTML = price;
 
-
-
     document.getElementById(
-    'modalList'
+        "modalList"
     ).innerHTML = list;
 
+    serviceModal.style.display = "flex";
+};
 
+window.closeServiceModal = function(){
 
-    serviceModal.style.display = 'flex';
+    serviceModal.style.display = "none";
 
-}
-
-
-
-function closeServiceModal(){
-
-    serviceModal.style.display = 'none';
-
-}
-
-
+};
 
 window.addEventListener(
-'click',
-(e)=>{
+    "click",
+    (e)=>{
 
-    if(e.target === serviceModal){
+        if(
+            e.target === serviceModal
+        ){
 
-        closeServiceModal();
+            closeServiceModal();
+
+        }
 
     }
+);
 
-});
+document
+.getElementById("serviceForm")
+.addEventListener(
+    "submit",
+    async function(e){
 
+        e.preventDefault();
 
+        const submitBtn =
+        this.querySelector("button");
 
-document.getElementById(
-'serviceForm'
-).addEventListener(
-'submit',
-function(e){
+        submitBtn.disabled = true;
+        submitBtn.textContent =
+        "Отправка...";
 
-    e.preventDefault();
+        try{
 
+            const name =
+            document.getElementById(
+                "serviceClientName"
+            ).value.trim();
 
+            const phone =
+            document.getElementById(
+                "serviceClientPhone"
+            ).value.trim();
 
-    const name =
-    document.getElementById(
-    'serviceClientName'
-    ).value;
+            await addDoc(
+                collection(
+                    db,
+                    "service_requests"
+                ),
+                {
+                    name,
+                    phone,
+                    service: currentService,
+                    price: currentPrice,
+                    status: "Новая",
+                    createdAt:
+                    serverTimestamp()
+                }
+            );
 
+            alert(
+                "Заявка успешно отправлена!"
+            );
 
+            this.reset();
 
-    const phone =
-    document.getElementById(
-    'serviceClientPhone'
-    ).value;
+            closeServiceModal();
 
+        }catch(error){
 
+            console.error(error);
 
-    alert(
-`Заявка отправлена!
+            alert(
+                "Ошибка отправки заявки."
+            );
 
-Имя: ${name}
-Телефон: ${phone}`
-    );
+        }
 
+        submitBtn.disabled = false;
+        submitBtn.textContent =
+        "Заказать услугу";
 
+    }
+);
 
-    closeServiceModal();
+document
+.querySelector(".cta-form")
+.addEventListener(
+    "submit",
+    async function(e){
 
+        e.preventDefault();
 
+        const submitBtn =
+        this.querySelector("button");
 
-    this.reset();
+        submitBtn.disabled = true;
+        submitBtn.textContent =
+        "Отправка...";
 
-});
+        try{
+
+            const name =
+            this.querySelector(
+                'input[type="text"]'
+            ).value.trim();
+
+            const phone =
+            this.querySelector(
+                'input[type="tel"]'
+            ).value.trim();
+
+            const comment =
+            this.querySelector(
+                "textarea"
+            ).value.trim();
+
+            await addDoc(
+                collection(
+                    db,
+                    "consultation_requests"
+                ),
+                {
+                    name,
+                    phone,
+                    comment,
+                    status: "Новая",
+                    createdAt:
+                    serverTimestamp()
+                }
+            );
+
+            alert(
+                "Заявка успешно отправлена!"
+            );
+
+            this.reset();
+
+        }catch(error){
+
+            console.error(error);
+
+            alert(
+                "Ошибка отправки заявки."
+            );
+
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.textContent =
+        "Получить консультацию";
+
+    }
+);
 
 </script>
 
