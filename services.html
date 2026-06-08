@@ -952,21 +952,33 @@ class="login-btn">
 
 
 
-<form class="cta-form">
+<form
+    id="serviceForm"
+    class="cta-form"
+>
 
-<input type="text"
-placeholder="Ваше имя">
+    <input
+        type="text"
+        id="serviceClientName"
+        placeholder="Ваше имя"
+        required
+    >
 
-<input type="tel"
-placeholder="Телефон">
+    <input
+        type="tel"
+        id="serviceClientPhone"
+        placeholder="Телефон"
+        required
+    >
 
-<textarea placeholder="Комментарий"></textarea>
+    <textarea
+        id="serviceComment"
+        placeholder="Комментарий"
+    ></textarea>
 
-<button type="submit">
-
-Получить консультацию
-
-</button>
+    <button type="submit">
+        Получить консультацию
+    </button>
 
 </form>
 
