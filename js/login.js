@@ -2,7 +2,7 @@ import { auth, db } from "./firebase.js";
 
 import {
     signInWithEmailAndPassword,
-    sendPasswordResetEmail,
+    createUserWithEmailAndPassword,
     RecaptchaVerifier,
     signInWithPhoneNumber
 }
@@ -10,18 +10,28 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
     doc,
-    getDoc
+    getDoc,
+    setDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let confirmationResult;
 
+
+
+/* ===========================
+   TOAST
+=========================== */
+
 const toast =
 document.getElementById("toast");
 
-function showToast(message,type="success"){
+function showToast(
+    message,
+    type = "success"
+){
 
-    toast.innerText = message;
+    toast.textContent = message;
 
     toast.className = "";
 
@@ -35,22 +45,39 @@ function showToast(message,type="success"){
 
     setTimeout(()=>{
 
-        toast.style.display="none";
+        toast.style.display = "none";
 
     },3000);
 
 }
 
+
+
+/* ===========================
+   ПРОВЕРКА EMAIL
+=========================== */
+
 function isValidEmail(email){
 
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    .test(email);
 
 }
+
+
+
+/* ===========================
+   ПЕРЕХОД ПО РОЛИ
+=========================== */
 
 async function redirectByRole(user){
 
     const userRef =
-    doc(db,"users",user.uid);
+    doc(
+        db,
+        "users",
+        user.uid
+    );
 
     const userSnap =
     await getDoc(userRef);
@@ -68,12 +95,16 @@ async function redirectByRole(user){
     const userData =
     userSnap.data();
 
-    if(userData.role === "manager"){
+    if(
+        userData.role === "manager"
+    ){
 
         window.location.href =
         "manager/manager-panel.html";
 
-    }else{
+    }
+
+    else{
 
         window.location.href =
         "client/client-cabinet.html";
@@ -81,6 +112,12 @@ async function redirectByRole(user){
     }
 
 }
+
+
+
+/* ===========================
+   ВХОД
+=========================== */
 
 document
 .getElementById("loginBtn")
@@ -151,59 +188,82 @@ async()=>{
 
     catch(error){
 
-        switch(error.code){
+        console.log(error);
 
-            case "auth/user-not-found":
-                showToast(
-                    "Пользователь не найден",
-                    "error"
-                );
-                break;
-
-            case "auth/wrong-password":
-                showToast(
-                    "Неверный пароль",
-                    "error"
-                );
-                break;
-
-            case "auth/invalid-credential":
-                showToast(
-                    "Неверный email или пароль",
-                    "error"
-                );
-                break;
-
-            default:
-                showToast(
-                    "Ошибка авторизации",
-                    "error"
-                );
-
-        }
+        showToast(
+            "Неверный Email или пароль",
+            "error"
+        );
 
     }
 
 });
 
+
+
+/* ===========================
+   REGISTRATION
+=========================== */
+
 document
-.getElementById("forgotPassword")
+.getElementById("registerBtn")
 .addEventListener(
 "click",
-async(e)=>{
+async()=>{
 
-    e.preventDefault();
+    const name =
+    document
+    .getElementById("regName")
+    .value
+    .trim();
 
     const email =
     document
-    .getElementById("email")
+    .getElementById("regEmail")
     .value
     .trim();
+
+    const phone =
+    document
+    .getElementById("regPhone")
+    .value
+    .trim();
+
+    const password =
+    document
+    .getElementById("regPassword")
+    .value
+    .trim();
+
+    if(
+        !name ||
+        !email ||
+        !phone ||
+        !password
+    ){
+
+        showToast(
+            "Заполните все поля",
+            "error"
+        );
+
+        return;
+    }
 
     if(!isValidEmail(email)){
 
         showToast(
-            "Введите Email для восстановления",
+            "Некорректный Email",
+            "error"
+        );
+
+        return;
+    }
+
+    if(password.length < 6){
+
+        showToast(
+            "Минимум 6 символов в пароле",
             "error"
         );
 
@@ -212,21 +272,66 @@ async(e)=>{
 
     try{
 
-        await sendPasswordResetEmail(
+        const userCredential =
+        await createUserWithEmailAndPassword(
             auth,
-            email
+            email,
+            password
+        );
+
+        const user =
+        userCredential.user;
+
+        await setDoc(
+            doc(
+                db,
+                "users",
+                user.uid
+            ),
+            {
+                uid:user.uid,
+                name:name,
+                email:email,
+                phone:phone,
+                role:"client",
+                createdAt:
+                new Date()
+                .toISOString()
+            }
         );
 
         showToast(
-            "Письмо для восстановления отправлено"
+            "Аккаунт создан"
         );
+
+        setTimeout(()=>{
+
+            window.location.href =
+            "client/client-cabinet.html";
+
+        },1000);
 
     }
 
-    catch{
+    catch(error){
+
+        console.log(error);
+
+        if(
+            error.code ===
+            "auth/email-already-in-use"
+        ){
+
+            showToast(
+                "Такой Email уже зарегистрирован",
+                "error"
+            );
+
+            return;
+        }
 
         showToast(
-            "Не удалось отправить письмо",
+            "Ошибка регистрации",
             "error"
         );
 
@@ -234,14 +339,26 @@ async(e)=>{
 
 });
 
+
+
+/* ===========================
+   ВОССТАНОВЛЕНИЕ ПО ТЕЛЕФОНУ
+=========================== */
+
 window.recaptchaVerifier =
 new RecaptchaVerifier(
-auth,
-"recaptcha-container",
-{
-    size:"normal"
-}
+    auth,
+    "recaptcha-container",
+    {
+        size:"normal"
+    }
 );
+
+
+
+/* ===========================
+   ОТПРАВКА SMS
+=========================== */
 
 document
 .getElementById("sendCodeBtn")
@@ -255,7 +372,9 @@ async()=>{
     .value
     .trim();
 
-    if(!phone.startsWith("+")){
+    if(
+        !phone.startsWith("+")
+    ){
 
         showToast(
             "Введите номер в формате +7XXXXXXXXXX",
@@ -280,26 +399,34 @@ async()=>{
 
         document
         .getElementById("smsCode")
-        .style.display = "block";
+        .style.display =
+        "block";
 
         document
         .getElementById("verifyCodeBtn")
-        .style.display = "block";
+        .style.display =
+        "block";
 
     }
 
     catch(error){
 
-        console.error(error);
+        console.log(error);
 
         showToast(
-            "Не удалось отправить SMS",
+            "Ошибка отправки SMS",
             "error"
         );
 
     }
 
 });
+
+
+
+/* ===========================
+   ПОДТВЕРЖДЕНИЕ КОДА
+=========================== */
 
 document
 .getElementById("verifyCodeBtn")
@@ -312,6 +439,16 @@ async()=>{
     .getElementById("smsCode")
     .value
     .trim();
+
+    if(!code){
+
+        showToast(
+            "Введите код из SMS",
+            "error"
+        );
+
+        return;
+    }
 
     try{
 
@@ -330,7 +467,9 @@ async()=>{
 
     }
 
-    catch{
+    catch(error){
+
+        console.log(error);
 
         showToast(
             "Неверный код",
