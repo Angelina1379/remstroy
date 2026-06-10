@@ -791,9 +791,51 @@ section{
         font-size:52px;
     }
 
+}
+@media(max-width:992px){
+
+    .burger{
+
+        display:block;
+    }
+
     .nav{
 
-        display:none;
+        position:absolute;
+
+        top:90px;
+
+        left:0;
+
+        width:100%;
+
+        background:white;
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:0;
+
+        max-height:0;
+
+        overflow:hidden;
+
+        transition:0.3s;
+
+        border-bottom:1px solid #eee;
+    }
+
+    .nav.active{
+
+        max-height:500px;
+    }
+
+    .nav a{
+
+        padding:18px 30px;
+
+        border-bottom:1px solid #f0f0f0;
     }
 
 }
@@ -816,6 +858,19 @@ section{
     }
 
 }
+.burger{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+}
 
 </style>
 
@@ -830,8 +885,11 @@ section{
 <div class="logo">
     <a href="index.html">BuildHouse</a>
 </div>
+<button class="burger" id="burger">
+    ☰
+</button>
 
-<nav class="nav">
+<nav class="nav" id="nav">
 
 <a href="services.html">Услуги</a>
 <a href="portfolio.html">Портфолио</a>
@@ -1857,6 +1915,20 @@ requestForm.addEventListener(
         'none';
 
         requestForm.reset();
+
+    }
+);
+const burger =
+document.getElementById('burger');
+
+const nav =
+document.getElementById('nav');
+
+burger.addEventListener(
+    'click',
+    () => {
+
+        nav.classList.toggle('active');
 
     }
 );
