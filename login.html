@@ -43,9 +43,45 @@
 
 
 
-    <button id="loginBtn">
-      Войти
-    </button>
+<button id="loginBtn">
+    Войти
+</button>
+
+<a href="#" id="forgotPassword">
+    Забыли пароль?
+</a>
+
+<div class="divider">
+    или
+</div>
+
+<input
+    type="tel"
+    id="phone"
+    placeholder="+7XXXXXXXXXX"
+>
+
+<div id="recaptcha-container"></div>
+
+<button id="sendCodeBtn">
+    Получить код
+</button>
+
+<input
+    type="text"
+    id="smsCode"
+    placeholder="Код из SMS"
+    style="display:none;"
+>
+
+<button
+    id="verifyCodeBtn"
+    style="display:none;"
+>
+    Подтвердить код
+</button>
+
+<div id="toast"></div>
 
 
 
