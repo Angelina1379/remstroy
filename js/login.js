@@ -1,10 +1,10 @@
+```javascript
 import { auth, db } from "./firebase.js";
 
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
-    RecaptchaVerifier,
-    signInWithPhoneNumber
+    sendPasswordResetEmail
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -15,14 +15,6 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-let confirmationResult;
-
-
-
-/* ===========================
-   TOAST
-=========================== */
-
 const toast =
 document.getElementById("toast");
 
@@ -31,7 +23,7 @@ function showToast(
     type = "success"
 ){
 
-    toast.textContent = message;
+    toast.innerText = message;
 
     toast.className = "";
 
@@ -51,33 +43,16 @@ function showToast(
 
 }
 
-
-
-/* ===========================
-   ПРОВЕРКА EMAIL
-=========================== */
-
 function isValidEmail(email){
 
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    .test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 }
-
-
-
-/* ===========================
-   ПЕРЕХОД ПО РОЛИ
-=========================== */
 
 async function redirectByRole(user){
 
     const userRef =
-    doc(
-        db,
-        "users",
-        user.uid
-    );
+    doc(db,"users",user.uid);
 
     const userSnap =
     await getDoc(userRef);
@@ -95,16 +70,12 @@ async function redirectByRole(user){
     const userData =
     userSnap.data();
 
-    if(
-        userData.role === "manager"
-    ){
+    if(userData.role === "manager"){
 
         window.location.href =
         "manager/manager-panel.html";
 
-    }
-
-    else{
+    }else{
 
         window.location.href =
         "client/client-cabinet.html";
@@ -113,15 +84,11 @@ async function redirectByRole(user){
 
 }
 
-
-
-/* ===========================
-   ВХОД
-=========================== */
+/* ВХОД */
 
 document
 .getElementById("loginBtn")
-.addEventListener(
+?.addEventListener(
 "click",
 async()=>{
 
@@ -199,15 +166,63 @@ async()=>{
 
 });
 
+/* ВОССТАНОВЛЕНИЕ */
 
+document
+.getElementById("forgotPasswordBtn")
+?.addEventListener(
+"click",
+async(e)=>{
 
-/* ===========================
-   REGISTRATION
-=========================== */
+    e.preventDefault();
+
+    const email =
+    document
+    .getElementById("email")
+    .value
+    .trim();
+
+    if(!email){
+
+        showToast(
+            "Введите Email",
+            "error"
+        );
+
+        return;
+    }
+
+    try{
+
+        await sendPasswordResetEmail(
+            auth,
+            email
+        );
+
+        showToast(
+            "Письмо отправлено на Email"
+        );
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+        showToast(
+            "Не удалось отправить письмо",
+            "error"
+        );
+
+    }
+
+});
+
+/* РЕГИСТРАЦИЯ */
 
 document
 .getElementById("registerBtn")
-.addEventListener(
+?.addEventListener(
 "click",
 async()=>{
 
@@ -263,7 +278,7 @@ async()=>{
     if(password.length < 6){
 
         showToast(
-            "Минимум 6 символов в пароле",
+            "Минимум 6 символов",
             "error"
         );
 
@@ -301,7 +316,7 @@ async()=>{
         );
 
         showToast(
-            "Аккаунт создан"
+            "Аккаунт успешно создан"
         );
 
         setTimeout(()=>{
@@ -309,7 +324,7 @@ async()=>{
             window.location.href =
             "client/client-cabinet.html";
 
-        },1000);
+        },1500);
 
     }
 
@@ -323,7 +338,7 @@ async()=>{
         ){
 
             showToast(
-                "Такой Email уже зарегистрирован",
+                "Email уже используется",
                 "error"
             );
 
@@ -338,144 +353,4 @@ async()=>{
     }
 
 });
-
-
-
-/* ===========================
-   ВОССТАНОВЛЕНИЕ ПО ТЕЛЕФОНУ
-=========================== */
-
-window.recaptchaVerifier =
-new RecaptchaVerifier(
-    auth,
-    "recaptcha-container",
-    {
-        size:"normal"
-    }
-);
-
-
-
-/* ===========================
-   ОТПРАВКА SMS
-=========================== */
-
-document
-.getElementById("sendCodeBtn")
-.addEventListener(
-"click",
-async()=>{
-
-    const phone =
-    document
-    .getElementById("phone")
-    .value
-    .trim();
-
-    if(
-        !phone.startsWith("+")
-    ){
-
-        showToast(
-            "Введите номер в формате +7XXXXXXXXXX",
-            "error"
-        );
-
-        return;
-    }
-
-    try{
-
-        confirmationResult =
-        await signInWithPhoneNumber(
-            auth,
-            phone,
-            window.recaptchaVerifier
-        );
-
-        showToast(
-            "Код отправлен"
-        );
-
-        document
-        .getElementById("smsCode")
-        .style.display =
-        "block";
-
-        document
-        .getElementById("verifyCodeBtn")
-        .style.display =
-        "block";
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-        showToast(
-            "Ошибка отправки SMS",
-            "error"
-        );
-
-    }
-
-});
-
-
-
-/* ===========================
-   ПОДТВЕРЖДЕНИЕ КОДА
-=========================== */
-
-document
-.getElementById("verifyCodeBtn")
-.addEventListener(
-"click",
-async()=>{
-
-    const code =
-    document
-    .getElementById("smsCode")
-    .value
-    .trim();
-
-    if(!code){
-
-        showToast(
-            "Введите код из SMS",
-            "error"
-        );
-
-        return;
-    }
-
-    try{
-
-        const result =
-        await confirmationResult.confirm(
-            code
-        );
-
-        showToast(
-            "Телефон подтвержден"
-        );
-
-        await redirectByRole(
-            result.user
-        );
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-        showToast(
-            "Неверный код",
-            "error"
-        );
-
-    }
-
-});
+```
