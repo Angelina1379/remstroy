@@ -1918,20 +1918,18 @@ requestForm.addEventListener(
 
     }
 );
-const burger =
-document.getElementById('burger');
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
 
-const nav =
-document.getElementById('nav');
+burger.addEventListener("click", () => {
+    nav.classList.toggle("active");
 
-burger.addEventListener(
-    'click',
-    () => {
-
-        nav.classList.toggle('active');
-
+    if (nav.classList.contains("active")) {
+        burger.innerHTML = "✕";
+    } else {
+        burger.innerHTML = "☰";
     }
-);
+});
 
 </script>
 
