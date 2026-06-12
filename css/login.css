@@ -27,18 +27,6 @@ body {
 
 /* ===== КАРТОЧКА ФОРМЫ ===== */
 
-.form-block {
-  width: 100%;
-  max-width: 420px;
-  background: white;
-  padding: 40px;
-  border-radius: 30px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  animation: formShow 0.3s ease;
-}
 
 @keyframes formShow {
   from {
