@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сидер клиентов | BuildHouse</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#f5f6fa;color:#222;padding:40px 20px;display:flex;justify-content:center;}
+.box{background:white;max-width:760px;width:100%;border-radius:28px;padding:40px;box-shadow:0 10px 35px rgba(0,0,0,.06);}
+h1{font-size:30px;margin-bottom:10px;}
+.sub{color:#666;line-height:1.7;margin-bottom:26px;}
+.warn{background:#fff3df;color:#a86500;padding:16px 20px;border-radius:16px;line-height:1.6;margin-bottom:26px;font-weight:500;}
+button{padding:18px 30px;border:none;border-radius:16px;background:#ffb547;font-size:17px;font-weight:700;cursor:pointer;transition:.25s;}
+button:hover{background:#ffa530;}
+button:disabled{background:#ffd699;cursor:not-allowed;}
+.bar{height:14px;background:#f0f0f0;border-radius:10px;overflow:hidden;margin:24px 0 10px;}
+.bar span{display:block;height:100%;width:0;background:#ffb547;transition:width .2s;}
+.count{font-weight:700;margin-bottom:20px;}
+#log{background:#0f0f0f;color:#9fef9f;font-family:monospace;font-size:13px;line-height:1.6;padding:20px;border-radius:16px;max-height:340px;overflow-y:auto;white-space:pre-wrap;margin-top:20px;}
+.err{color:#ff8080;}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>Заливка 100 клиентов в Firebase</h1>
+<p class="sub">Создаёт каждого клиента в Authentication (email + пароль) и пишет профиль в Firestore-коллекцию <b>users</b> с полями name, email, phone, role.</p>
+
+<div class="warn">
+⚠️ Запусти один раз. Повторный запуск выдаст ошибки «email уже используется» — это нормально, дубликаты не создадутся. После заливки удали этот файл с сайта, чтобы посторонние им не воспользовались.
+</div>
+
+<button id="startBtn">Залить 100 клиентов</button>
+
+<div class="bar"><span id="barFill"></span></div>
+<div class="count" id="count">Готово: 0 / 100</div>
+
+<div id="log"></div>
+</div>
+
+<script type="module">
+import { auth, db } from "./js/firebase.js";
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const clients = [{"name": "Алиса Ярцева", "email": "alisa.yartseva5766@rambler.ru", "phone": "+79214946088", "password": "NTZ7Frcnzm", "role": "client"}, {"name": "Светлана Закирова", "email": "svetlana.zakirova5413@mail.ru", "phone": "+79331338291", "password": "ZUiw6qHr1L", "role": "client"}, {"name": "Михаил Гуров", "email": "mihail.gurov5282@rambler.ru", "phone": "+79484103346", "password": "nW2J5sLfLQ", "role": "client"}, {"name": "Кристина Якушева", "email": "kristina.yakusheva1503@list.ru", "phone": "+79255525917", "password": "7QKf3xyu3E", "role": "client"}, {"name": "Ксения Колесникова", "email": "kseniya.kolesnikova6773@mail.ru", "phone": "+79041354382", "password": "iCm0mHLQ8e", "role": "client"}, {"name": "Светлана Гасанова", "email": "svetlana.gasanova2859@list.ru", "phone": "+79181285671", "password": "jJlY2nav3F", "role": "client"}, {"name": "Маргарита Рябова", "email": "margarita.ryabova230@yandex.ru", "phone": "+79987845310", "password": "spCEtANpUR", "role": "client"}, {"name": "Светлана Сазонова", "email": "svetlana.sazonova1134@list.ru", "phone": "+79951201948", "password": "LHrHutgExE", "role": "client"}, {"name": "Виталий Фомин", "email": "vitaliy.fomin1242@inbox.ru", "phone": "+79450775921", "password": "eU6AF7pGot", "role": "client"}, {"name": "Любовь Демидова", "email": "lyubov.demidova32@inbox.ru", "phone": "+79824373603", "password": "WtPoGBFkAE", "role": "client"}, {"name": "Регина Дроздова", "email": "regina.drozdova4928@inbox.ru", "phone": "+79572349911", "password": "qGiw7ef2te", "role": "client"}, {"name": "Светлана Лукьянова", "email": "svetlana.lukyanova6873@yandex.ru", "phone": "+79481514720", "password": "o0q7MWEzgS", "role": "client"}, {"name": "Аделина Демидова", "email": "adelina.demidova8702@mail.ru", "phone": "+79530594058", "password": "UHm3749VPT", "role": "client"}, {"name": "Софья Овчинникова", "email": "sofya.ovchinnikova9801@gmail.com", "phone": "+79494593517", "password": "OCCngUy4PX", "role": "client"}, {"name": "Полина Бабаева", "email": "polina.babaeva2496@bk.ru", "phone": "+79989075836", "password": "A9GQspFAeC", "role": "client"}, {"name": "Эдуард Исмаилов", "email": "eduard.ismailov6670@inbox.ru", "phone": "+79662325032", "password": "YFS2f2n1Cz", "role": "client"}, {"name": "Ангелина Каплина", "email": "angelina.kaplina5251@rambler.ru", "phone": "+79830245010", "password": "vgyHzt4MRz", "role": "client"}, {"name": "Виталий Несторов", "email": "vitaliy.nestorov5317@inbox.ru", "phone": "+79840687304", "password": "adHerRaNen", "role": "client"}, {"name": "Екатерина Каплина", "email": "ekaterina.kaplina5087@bk.ru", "phone": "+79738198586", "password": "8sF8nTsdVF", "role": "client"}, {"name": "Софья Каримова", "email": "sofya.karimova6116@yandex.ru", "phone": "+79290361113", "password": "TVGInWDqf7", "role": "client"}, {"name": "Алёна Дроздова", "email": "alena.drozdova5676@inbox.ru", "phone": "+79941846064", "password": "smRRIpOevy", "role": "client"}, {"name": "Леонид Магомедов", "email": "leonid.magomedov1871@mail.ru", "phone": "+79737842522", "password": "YYeL4ZnGdl", "role": "client"}, {"name": "Алексей Шубин", "email": "aleksey.shubin9116@list.ru", "phone": "+79043448629", "password": "7Q3lJPpYhE", "role": "client"}, {"name": "Елена Мельникова", "email": "elena.melnikova5222@rambler.ru", "phone": "+79412348031", "password": "dGUYsdnYZL", "role": "client"}, {"name": "Лилия Фомина", "email": "liliya.fomina5180@list.ru", "phone": "+79560593924", "password": "btloEEQvpv", "role": "client"}, {"name": "Милана Нургалиева", "email": "milana.nurgalieva9819@bk.ru", "phone": "+79154841054", "password": "6HcFUkEahr", "role": "client"}, {"name": "Артём Лаптев", "email": "artem.laptev586@gmail.com", "phone": "+79170861217", "password": "k3i5HaINP9", "role": "client"}, {"name": "Владислав Тарасов", "email": "vladislav.tarasov7143@inbox.ru", "phone": "+79450368699", "password": "IYJtHpv8PU", "role": "client"}, {"name": "Екатерина Гурова", "email": "ekaterina.gurova3072@yandex.ru", "phone": "+79598605170", "password": "4zG0uoXCZ2", "role": "client"}, {"name": "Максим Голубев", "email": "maksim.golubev5648@inbox.ru", "phone": "+79662015483", "password": "V2JPAr6fDH", "role": "client"}, {"name": "Владислав Бабаев", "email": "vladislav.babaev6537@yandex.ru", "phone": "+79395953278", "password": "K9nwP0INhE", "role": "client"}, {"name": "Марк Воронцов", "email": "mark.vorontsov7723@inbox.ru", "phone": "+79988965871", "password": "vXe58CfFb3", "role": "client"}, {"name": "Инна Бабаева", "email": "inna.babaeva6342@bk.ru", "phone": "+79188204130", "password": "iGZPIMgL3k", "role": "client"}, {"name": "Марк Мамедов", "email": "mark.mamedov2351@list.ru", "phone": "+79050720028", "password": "XYt1WqQVFc", "role": "client"}, {"name": "Яна Алиева", "email": "yana.alieva6364@gmail.com", "phone": "+79687369662", "password": "gQDke7QBEf", "role": "client"}, {"name": "Никита Игнатов", "email": "nikita.ignatov9556@inbox.ru", "phone": "+79290377006", "password": "WijzJ4lndt", "role": "client"}, {"name": "Даниил Якушев", "email": "daniil.yakushev9322@rambler.ru", "phone": "+79951482626", "password": "CDQhsX6eeu", "role": "client"}, {"name": "Кристина Журавлёва", "email": "kristina.zhuravleva1278@gmail.com", "phone": "+79092321512", "password": "ocsKp5pAJv", "role": "client"}, {"name": "Богдан Журавлёв", "email": "bogdan.zhuravlev8256@bk.ru", "phone": "+79429732756", "password": "xBd6W0doan", "role": "client"}, {"name": "Аделина Овчинникова", "email": "adelina.ovchinnikova7117@rambler.ru", "phone": "+79730487435", "password": "GEWZjxW2em", "role": "client"}, {"name": "Григорий Назаров", "email": "grigoriy.nazarov1166@gmail.com", "phone": "+79291834891", "password": "ChGETdHFUl", "role": "client"}, {"name": "Эльвира Назарова", "email": "elvira.nazarova2915@rambler.ru", "phone": "+79723373271", "password": "NkXRZkmkOM", "role": "client"}, {"name": "Ольга Чернова", "email": "olga.chernova906@yandex.ru", "phone": "+79647115154", "password": "RI1oMZf7vF", "role": "client"}, {"name": "Нина Лаптева", "email": "nina.lapteva1009@list.ru", "phone": "+79367427525", "password": "VaKTb7Lbf1", "role": "client"}, {"name": "Владислав Ярцев", "email": "vladislav.yartsev2539@rambler.ru", "phone": "+79020838600", "password": "GM1YBoFKgd", "role": "client"}, {"name": "Артур Нургалиев", "email": "artur.nurgaliev4934@list.ru", "phone": "+79247540608", "password": "LZVYxfow8c", "role": "client"}, {"name": "Руслан Аникин", "email": "ruslan.anikin848@inbox.ru", "phone": "+79589036295", "password": "pKxrthJXlc", "role": "client"}, {"name": "Нина Чернова", "email": "nina.chernova6727@list.ru", "phone": "+79039303222", "password": "CxCAjFQ4Hw", "role": "client"}, {"name": "Наталья Ярцева", "email": "natalya.yartseva1545@list.ru", "phone": "+79443277200", "password": "chjGie8MFu", "role": "client"}, {"name": "Егор Бектемиров", "email": "egor.bektemirov2354@gmail.com", "phone": "+79054632222", "password": "COTd5R4q55", "role": "client"}, {"name": "Виктория Алиева", "email": "viktoriya.alieva7277@bk.ru", "phone": "+79752750536", "password": "6jvz59DB7j", "role": "client"}, {"name": "Инна Гончарова", "email": "inna.goncharova535@rambler.ru", "phone": "+79298205389", "password": "ut1w0XL9xj", "role": "client"}, {"name": "Полина Хабибуллина", "email": "polina.habibullina2256@inbox.ru", "phone": "+79278923200", "password": "SBSBiICb2Y", "role": "client"}, {"name": "Милана Белякова", "email": "milana.belyakova255@rambler.ru", "phone": "+79778244097", "password": "j2jYtucM8L", "role": "client"}, {"name": "Леонид Мамедов", "email": "leonid.mamedov9621@yandex.ru", "phone": "+79688581362", "password": "6DFS9DW5JV", "role": "client"}, {"name": "Кирилл Воронцов", "email": "kirill.vorontsov5733@mail.ru", "phone": "+79591224827", "password": "oQTeRyQQiy", "role": "client"}, {"name": "Арсений Овчинников", "email": "arseniy.ovchinnikov1961@inbox.ru", "phone": "+79160533757", "password": "KVINlzQ1dg", "role": "client"}, {"name": "Антон Рябов", "email": "anton.ryabov1336@mail.ru", "phone": "+79346256512", "password": "LV6lHBzaxv", "role": "client"}, {"name": "Ирина Валиева", "email": "irina.valieva7118@mail.ru", "phone": "+79074778358", "password": "rsIH4ZuAl4", "role": "client"}, {"name": "Жанна Рахимова", "email": "zhanna.rahimova8263@bk.ru", "phone": "+79118386793", "password": "31lympfHcR", "role": "client"}, {"name": "Олег Сазонов", "email": "oleg.sazonov4708@inbox.ru", "phone": "+79295282552", "password": "dZcscLjeOl", "role": "client"}, {"name": "Глеб Каплин", "email": "gleb.kaplin4455@rambler.ru", "phone": "+79817175248", "password": "uRlUB3GbOV", "role": "client"}, {"name": "Маргарита Карпова", "email": "margarita.karpova5024@rambler.ru", "phone": "+79960606327", "password": "qhglTRuZAr", "role": "client"}, {"name": "Артём Бектемиров", "email": "artem.bektemirov6038@rambler.ru", "phone": "+79724523713", "password": "cTYjW6J1Al", "role": "client"}, {"name": "Руслан Лукьянов", "email": "ruslan.lukyanov7709@bk.ru", "phone": "+79583510345", "password": "g3ke1rxvLZ", "role": "client"}, {"name": "Анна Сафина", "email": "anna.safina3427@inbox.ru", "phone": "+79848453779", "password": "VsaH0WjRtv", "role": "client"}, {"name": "Илья Панфилов", "email": "ilya.panfilov9512@mail.ru", "phone": "+79777379308", "password": "PPhiv0ErzY", "role": "client"}, {"name": "Кирилл Ефремов", "email": "kirill.efremov4347@inbox.ru", "phone": "+79082153162", "password": "OEKMNndVJz", "role": "client"}, {"name": "Алёна Лаптева", "email": "alena.lapteva920@rambler.ru", "phone": "+79287123949", "password": "ttIJuBNmhX", "role": "client"}, {"name": "Даниил Колесников", "email": "daniil.kolesnikov7967@inbox.ru", "phone": "+79497243985", "password": "3jOMHPaM5Q", "role": "client"}, {"name": "Алина Чернова", "email": "alina.chernova2104@yandex.ru", "phone": "+79195800743", "password": "OTDGc7aa6w", "role": "client"}, {"name": "Кирилл Беляков", "email": "kirill.belyakov4318@gmail.com", "phone": "+79665183224", "password": "6p5hHtRYJw", "role": "client"}, {"name": "Татьяна Демидова", "email": "tatyana.demidova2834@list.ru", "phone": "+79960564252", "password": "vPPQYyHtLZ", "role": "client"}, {"name": "Карина Ярцева", "email": "karina.yartseva1114@list.ru", "phone": "+79798424788", "password": "VgU9LeL8iS", "role": "client"}, {"name": "Станислав Тагиров", "email": "stanislav.tagirov3852@bk.ru", "phone": "+79755844749", "password": "omBWIdGSfb", "role": "client"}, {"name": "Ольга Несторова", "email": "olga.nestorova8069@bk.ru", "phone": "+79257655070", "password": "dYa8sQzWp6", "role": "client"}, {"name": "Тимур Беляков", "email": "timur.belyakov3596@mail.ru", "phone": "+79441160844", "password": "GHrEeueIY1", "role": "client"}, {"name": "Андрей Сафин", "email": "andrey.safin6499@rambler.ru", "phone": "+79792993006", "password": "6MkHrviveP", "role": "client"}, {"name": "Ольга Закирова", "email": "olga.zakirova1803@bk.ru", "phone": "+79623283294", "password": "rY6oMgY4kH", "role": "client"}, {"name": "Нина Рахимова", "email": "nina.rahimova7480@gmail.com", "phone": "+79784808172", "password": "DTf5Je3YLq", "role": "client"}, {"name": "Кристина Сафина", "email": "kristina.safina1085@inbox.ru", "phone": "+79393098147", "password": "GToLOjyhNB", "role": "client"}, {"name": "Рустам Лаптев", "email": "rustam.laptev9923@list.ru", "phone": "+79191441143", "password": "WsCFXQnhTH", "role": "client"}, {"name": "Дмитрий Рябов", "email": "dmitriy.ryabov1420@bk.ru", "phone": "+79413648849", "password": "8wS5Ab1MFX", "role": "client"}, {"name": "Татьяна Несторова", "email": "tatyana.nestorova3958@gmail.com", "phone": "+79827154303", "password": "5v6WrQHO7I", "role": "client"}, {"name": "Любовь Овчинникова", "email": "lyubov.ovchinnikova1627@rambler.ru", "phone": "+79626507145", "password": "RZDyrMHdZR", "role": "client"}, {"name": "Кристина Ярцева", "email": "kristina.yartseva9652@mail.ru", "phone": "+79560131936", "password": "N0bhQo8hut", "role": "client"}, {"name": "Светлана Валиева", "email": "svetlana.valieva76@list.ru", "phone": "+79094358201", "password": "qo7svtjUl9", "role": "client"}, {"name": "Жанна Рябова", "email": "zhanna.ryabova1393@bk.ru", "phone": "+79095030855", "password": "XgDSse4L7k", "role": "client"}, {"name": "Любовь Гасанова", "email": "lyubov.gasanova1063@inbox.ru", "phone": "+79558656699", "password": "e1Oy8TLukI", "role": "client"}, {"name": "Регина Шестакова", "email": "regina.shestakova9812@rambler.ru", "phone": "+79617792799", "password": "AnfTLoRhrM", "role": "client"}, {"name": "Валентина Закирова", "email": "valentina.zakirova7449@mail.ru", "phone": "+79563838134", "password": "fXhsa13rev", "role": "client"}, {"name": "Яна Савельева", "email": "yana.saveleva860@gmail.com", "phone": "+79722288653", "password": "7D4ZNxym49", "role": "client"}, {"name": "Артём Несторов", "email": "artem.nestorov527@inbox.ru", "phone": "+79856524079", "password": "289EHiU9hz", "role": "client"}, {"name": "Анна Ярцева", "email": "anna.yartseva2706@gmail.com", "phone": "+79776383045", "password": "Bt2wbLqPtn", "role": "client"}, {"name": "Татьяна Карпова", "email": "tatyana.karpova5551@list.ru", "phone": "+79568473574", "password": "E0RRdL1nul", "role": "client"}, {"name": "Павел Несторов", "email": "pavel.nestorov5692@yandex.ru", "phone": "+79259262120", "password": "uCyxk8fRmk", "role": "client"}, {"name": "Владислав Закиров", "email": "vladislav.zakirov7166@bk.ru", "phone": "+79084126245", "password": "v7yx0TWGR2", "role": "client"}, {"name": "Леонид Шестаков", "email": "leonid.shestakov8569@bk.ru", "phone": "+79238703258", "password": "PCZRtr3IDe", "role": "client"}, {"name": "Сергей Юсупов", "email": "sergey.yusupov6238@mail.ru", "phone": "+79774489310", "password": "APs8lUWIKw", "role": "client"}, {"name": "Глеб Третьяков", "email": "gleb.tretyakov5743@bk.ru", "phone": "+79348361788", "password": "1xurbrxvPL", "role": "client"}];
+
+const logEl = document.getElementById("log");
+const barFill = document.getElementById("barFill");
+const countEl = document.getElementById("count");
+const startBtn = document.getElementById("startBtn");
+
+function log(msg, isErr){
+  const line = document.createElement("div");
+  if(isErr) line.className = "err";
+  line.textContent = msg;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+startBtn.addEventListener("click", async () => {
+  startBtn.disabled = true;
+  let done = 0, ok = 0, fail = 0;
+
+  for(const c of clients){
+    try{
+      const cred = await createUserWithEmailAndPassword(auth, c.email, c.password);
+      await setDoc(doc(db, "users", cred.user.uid), {
+        uid: cred.user.uid,
+        name: c.name,
+        email: c.email,
+        phone: c.phone,
+        role: "client",
+        createdAt: new Date().toISOString()
+      });
+      ok++;
+      log("✔️ " + c.name + " — " + c.email);
+    }catch(e){
+      fail++;
+      log("✖️ " + c.email + " — " + e.code, true);
+    }
+    done++;
+    barFill.style.width = (done) + "%";
+    countEl.textContent = "Готово: " + done + " / 100  (успешно " + ok + ", ошибок " + fail + ")";
+  }
+
+  log("");
+  log("=== ЗАВЕРШЕНО. Успешно: " + ok + ", ошибок: " + fail + " ===");
+  startBtn.textContent = "Готово";
+});
+</script>
+</body>
+</html>
