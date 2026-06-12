@@ -15,217 +15,43 @@
 
 </head>
 
-<body class="auth-body">
-
-<div class="auth-container">
-
-<div class="auth-card">
-
-<h1>Вход</h1>
-
-<p>CRM система ремонтной компании</p>
-
-<input
-type="email"
-id="email"
-placeholder="Email"
->
-
-<input
-type="password"
-id="password"
-placeholder="Пароль"
->
-
-<button id="loginBtn">
-Войти
-</button>
-
-<div class="auth-links">
-
-<a href="#" id="forgotPasswordBtn">
-Забыли пароль?
-</a>
-
-<a href="#" id="openRegisterBtn">
-Создать аккаунт
-</a>
-
-</div>
-
-<div id="toast"></div>
-
-</div>
-
-</div>
-
-
-<!-- МОДАЛЬНОЕ ОКНО ВОССТАНОВЛЕНИЯ -->
-
-<div class="modal" id="forgotModal">
-
-<div class="modal-content">
-
-<button class="close-modal" id="closeForgotModal">
-✕
-</button>
-
-<h2>Восстановление доступа</h2>
-
-<p class="modal-subtitle">
-Введите номер телефона
-</p>
-
-<input
-type="tel"
-id="phone"
-placeholder="+7XXXXXXXXXX"
->
-
-<div id="recaptcha-container"></div>
-
-<button id="sendCodeBtn">
-Получить код
-</button>
-
-<input
-type="text"
-id="smsCode"
-placeholder="Код из SMS"
-style="display:none;"
->
-
-<button
-id="verifyCodeBtn"
-style="display:none;"
->
-Подтвердить код
-</button>
-
-</div>
-
-</div>
-
-
-<!-- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ -->
-
-<div class="modal" id="registerModal">
-
-<div class="modal-content">
-
-<button class="close-modal" id="closeRegisterModal">
-✕
-</button>
-
-<h2>Создание аккаунта</h2>
-
-<p class="modal-subtitle">
-Заполните данные клиента
-</p>
-
-<input
-type="text"
-id="regName"
-placeholder="Ваше имя"
->
-
-<input
-type="email"
-id="regEmail"
-placeholder="Email"
->
-
-<input
-type="tel"
-id="regPhone"
-placeholder="+7XXXXXXXXXX"
->
-
-<input
-type="password"
-id="regPassword"
-placeholder="Пароль"
->
-
-<button id="registerBtn">
-Создать аккаунт
-</button>
-
-</div>
-
-</div>
-
-<script type="module" src="js/login.js"></script>
-
-<script>
-
-const forgotModal =
-document.getElementById("forgotModal");
-
-const registerModal =
-document.getElementById("registerModal");
-
-document
-.getElementById("forgotPasswordBtn")
-.addEventListener("click",(e)=>{
-
-e.preventDefault();
-
-forgotModal.style.display =
-"flex";
-
-});
-
-document
-.getElementById("openRegisterBtn")
-.addEventListener("click",(e)=>{
-
-e.preventDefault();
-
-registerModal.style.display =
-"flex";
-
-});
-
-document
-.getElementById("closeForgotModal")
-.addEventListener("click",()=>{
-
-forgotModal.style.display =
-"none";
-
-});
-
-document
-.getElementById("closeRegisterModal")
-.addEventListener("click",()=>{
-
-registerModal.style.display =
-"none";
-
-});
-
-window.addEventListener(
-"click",
-(e)=>{
-
-if(e.target===forgotModal){
-
-forgotModal.style.display =
-"none";
-
-}
-
-if(e.target===registerModal){
-
-registerModal.style.display =
-"none";
-
-}
-
-});
-
-</script>
-
+<body>
+
+  <!-- ВХОД -->
+  <div id="loginForm" class="form-block">
+    <h2>Вход</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Пароль">
+    <button type="button" id="loginBtn">Войти</button>
+
+    <p><a href="#" id="goForgot">Забыли пароль?</a></p>
+    <p><a href="#" id="goRegister">Создать аккаунт</a></p>
+  </div>
+
+  <!-- РЕГИСТРАЦИЯ -->
+  <div id="registerForm" class="form-block" style="display:none;">
+    <h2>Регистрация</h2>
+    <input type="text" id="regName" placeholder="Имя">
+    <input type="email" id="regEmail" placeholder="Email">
+    <input type="tel" id="regPhone" placeholder="Номер телефона">
+    <input type="password" id="regPassword" placeholder="Пароль">
+    <button type="button" id="registerBtn">Создать аккаунт</button>
+
+    <p><a href="#" class="goLogin">Назад ко входу</a></p>
+  </div>
+
+  <!-- ВОССТАНОВЛЕНИЕ -->
+  <div id="forgotForm" class="form-block" style="display:none;">
+    <h2>Восстановление пароля</h2>
+    <input type="email" id="forgotEmail" placeholder="Email">
+    <button type="button" id="forgotPasswordBtn">Отправить письмо</button>
+
+    <p><a href="#" class="goLogin">Назад ко входу</a></p>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast"></div>
+
+  <script type="module" src="login.js"></script>
 </body>
 </html>
