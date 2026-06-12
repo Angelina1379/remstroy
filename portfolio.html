@@ -23,6 +23,10 @@ rel="stylesheet">
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
 
     font-family:'Inter',sans-serif;
@@ -83,8 +87,8 @@ body{
 
 .logo a {
     text-decoration: none;
-    color: inherit; /* наследует цвет от .logo */
-    display: inline-block; /* или block, если нужно */
+    color: inherit;
+    display: inline-block;
 }
 
 .nav{
@@ -101,6 +105,13 @@ body{
     color:#222;
 
     font-weight:500;
+
+    transition:0.3s;
+}
+
+.nav a:hover{
+
+    color:#ff8c42;
 }
 
 .login-btn{
@@ -116,6 +127,21 @@ body{
     color:#222;
 
     font-weight:600;
+}
+
+.burger{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+    color:#222;
 }
 
 
@@ -178,82 +204,112 @@ body{
 
 
 
-/* PROJECTS */
+/* PORTFOLIO GRID */
 
-.projects{
+.portfolio{
 
     padding-bottom:120px;
 }
 
-.project-card{
+.portfolio-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(330px,1fr));
+
+    gap:30px;
+}
+
+.work-card{
 
     background:white;
 
-    border-radius:36px;
-
-    padding:40px;
-
-    margin-bottom:40px;
-}
-
-.project-top{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:35px;
-
-    gap:20px;
-
-    flex-wrap:wrap;
-}
-
-.project-title{
-
-    font-size:38px;
-
-    font-weight:800;
-}
-
-.project-badge{
-
-    background:#fff3df;
-
-    color:#ff9800;
-
-    padding:12px 18px;
-
-    border-radius:14px;
-
-    font-weight:700;
-}
-
-
-
-/* BEFORE AFTER */
-
-.before-after{
-
-    position:relative;
-
-    width:100%;
-
-    height:500px;
+    border-radius:32px;
 
     overflow:hidden;
 
-    border-radius:30px;
+    cursor:pointer;
 
-    margin-bottom:35px;
+    transition:0.3s;
 }
 
-.before-img,
-.after-img{
+.work-card:hover{
 
-    position:absolute;
+    transform:translateY(-8px);
+}
+
+.work-cover{
+
+    height:240px;
+
+    background:#e9e9e9;
+
+    background-size:cover;
+
+    background-position:center;
+
+    display:flex;
+
+    align-items:flex-end;
+}
+
+.work-cover-badge{
+
+    background:rgba(0,0,0,0.55);
+
+    color:white;
+
+    padding:8px 16px;
+
+    border-radius:12px;
+
+    margin:16px;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+.work-body{
+
+    padding:28px;
+}
+
+.work-body h3{
+
+    font-size:23px;
+
+    margin-bottom:12px;
+}
+
+.work-body p{
+
+    color:#666;
+
+    line-height:1.6;
+
+    font-size:15px;
+
+    margin-bottom:18px;
+}
+
+.work-more{
+
+    color:#ff8c42;
+
+    font-weight:700;
+
+    font-size:15px;
+}
+
+
+
+/* MODAL */
+
+.modal{
+
+    position:fixed;
 
     top:0;
     left:0;
@@ -261,114 +317,190 @@ body{
     width:100%;
     height:100%;
 
+    background:rgba(0,0,0,0.6);
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:9999;
+
+    padding:20px;
+}
+
+.modal.active{
+
+    display:flex;
+}
+
+.modal-content{
+
+    background:white;
+
+    width:100%;
+
+    max-width:900px;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    border-radius:36px;
+
+    padding:40px;
+
+    position:relative;
+}
+
+.close-modal{
+
+    position:absolute;
+
+    top:24px;
+    right:24px;
+
+    width:46px;
+    height:46px;
+
+    border:none;
+
+    background:#f3f3f3;
+
+    border-radius:50%;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+    z-index:5;
+}
+
+
+
+/* GALLERY */
+
+.gallery{
+
+    position:relative;
+
+    width:100%;
+
+    height:440px;
+
+    border-radius:26px;
+
+    overflow:hidden;
+
+    background:#e9e9e9;
+
+    margin-bottom:14px;
+}
+
+.gallery-img{
+
+    width:100%;
+
+    height:100%;
+
     background-size:cover;
 
     background-position:center;
 }
 
-.after-img{
-
-    width:50%;
-
-    overflow:hidden;
-
-    border-right:4px solid white;
-}
-
-.slider{
+.gallery-btn{
 
     position:absolute;
 
-    width:100%;
-    bottom:20px;
+    top:50%;
 
-    left:0;
+    transform:translateY(-50%);
+
+    width:52px;
+    height:52px;
+
+    border:none;
+
+    background:rgba(255,255,255,0.9);
+
+    border-radius:50%;
+
+    font-size:24px;
+
+    cursor:pointer;
 }
 
-
-
-/* INFO */
-
-.project-info{
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:40px;
+.gallery-prev{
+    left:18px;
 }
 
-.info-box{
-
-    background:#f8f8f8;
-
-    border-radius:28px;
-
-    padding:30px;
+.gallery-next{
+    right:18px;
 }
 
-.info-box h3{
+.gallery-counter{
 
-    margin-bottom:20px;
+    text-align:center;
 
-    font-size:26px;
+    color:#888;
+
+    font-weight:600;
+
+    margin-bottom:26px;
 }
 
-.info-box p{
+.modal-title{
 
-    line-height:1.9;
+    font-size:36px;
+
+    font-weight:800;
+
+    margin-bottom:8px;
+}
+
+.modal-badge{
+
+    display:inline-block;
+
+    background:#fff3df;
+
+    color:#ff9800;
+
+    padding:8px 16px;
+
+    border-radius:12px;
+
+    font-weight:700;
+
+    margin-bottom:24px;
+}
+
+.modal-desc{
+
+    line-height:1.8;
 
     color:#555;
+
+    margin-bottom:28px;
 }
 
-.work-list{
+.modal-services h4{
+
+    font-size:22px;
+
+    margin-bottom:16px;
+}
+
+.service-list{
 
     display:flex;
 
     flex-direction:column;
 
-    gap:14px;
+    gap:12px;
 
     color:#444;
-}
-
-
-
-/* STATS */
-
-.stats{
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
-
-    gap:25px;
-
-    margin-top:40px;
-}
-
-.stat-card{
-
-    background:white;
-
-    border-radius:30px;
-
-    padding:40px;
-
-    text-align:center;
-}
-
-.stat-card h2{
-
-    font-size:54px;
-
-    margin-bottom:10px;
-}
-
-.stat-card p{
-
-    color:#666;
 }
 
 
@@ -486,7 +618,6 @@ body{
 
 @media(max-width:992px){
 
-    .project-info,
     .cta-box{
 
         grid-template-columns:1fr;
@@ -497,9 +628,46 @@ body{
         font-size:52px;
     }
 
+    .burger{
+
+        display:block;
+    }
+
     .nav{
 
-        display:none;
+        position:absolute;
+
+        top:90px;
+
+        left:0;
+
+        width:100%;
+
+        background:white;
+
+        flex-direction:column;
+
+        gap:0;
+
+        max-height:0;
+
+        overflow:hidden;
+
+        transition:0.3s;
+
+        border-bottom:1px solid #eee;
+    }
+
+    .nav.active{
+
+        max-height:500px;
+    }
+
+    .nav a{
+
+        padding:18px 30px;
+
+        border-bottom:1px solid #f0f0f0;
     }
 
 }
@@ -516,9 +684,14 @@ body{
         font-size:42px;
     }
 
-    .before-after{
+    .gallery{
 
-        height:320px;
+        height:280px;
+    }
+
+    .modal-content{
+
+        padding:26px;
     }
 
 }
@@ -539,7 +712,11 @@ body{
     <a href="index.html">BuildHouse</a>
 </div>
 
-<nav class="nav">
+<button class="burger" id="burger">
+    ☰
+</button>
+
+<nav class="nav" id="nav">
 
 <a href="services.html">Услуги</a>
 <a href="portfolio.html">Портфолио</a>
@@ -549,6 +726,7 @@ body{
 <a href="contacts.html">Контакты</a>
 
 </nav>
+
 <a href="login.html"
 class="login-btn">
 
@@ -577,16 +755,17 @@ class="login-btn">
 <h1>
 
 Портфолио
-наших ремонтов
+наших работ
 
 </h1>
 
 <p class="hero-text">
 
-Сравните квартиры
-до и после ремонта.
-Показываем реальные объекты,
-сроки и выполненные работы.
+От замены электрики
+до полного ремонта под ключ.
+Нажмите на карточку,
+чтобы посмотреть фото
+и список выполненных работ.
 
 </p>
 
@@ -598,280 +777,61 @@ class="login-btn">
 
 
 
-<!-- PROJECTS -->
+<!-- PORTFOLIO GRID -->
 
-<section class="projects">
+<section class="portfolio">
 
 <div class="container">
 
+<div class="portfolio-grid" id="portfolioGrid">
 
-
-<!-- PROJECT -->
-
-<div class="project-card">
-
-<div class="project-top">
-
-<div class="project-title">
-
-3-комнатная квартира
-в современном стиле
-
-</div>
-
-<div class="project-badge">
-
-72 м² • 3 месяца
-
-</div>
-
-</div>
-
-
-
-<div class="before-after">
-
-<div class="before-img"
-style="background-image:url('https://images.unsplash.com/photo-1484154218962-a197022b5858?q=80&w=1400')">
-
-</div>
-
-<div class="after-img"
-id="after1"
-style="background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400')">
-
-</div>
-
-<input type="range"
-min="0"
-max="100"
-value="50"
-class="slider"
-oninput="slideImage(this,'after1')">
-
-</div>
-
-
-
-<div class="project-info">
-
-<div class="info-box">
-
-<h3>
-Описание проекта
-</h3>
-
-<p>
-
-Полный капитальный ремонт
-квартиры с перепланировкой,
-новой электрикой,
-натяжными потолками
-и дизайнерским освещением.
-
-</p>
-
-</div>
-
-
-
-<div class="info-box">
-
-<h3>
-Что было выполнено
-</h3>
-
-<div class="work-list">
-
-<div>
-✔ Демонтаж старой отделки
-</div>
-
-<div>
-✔ Замена электрики
-</div>
-
-<div>
-✔ Укладка плитки
-</div>
-
-<div>
-✔ Монтаж освещения
-</div>
-
-<div>
-✔ Натяжные потолки
-</div>
-
-<div>
-✔ Установка кухни
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<!-- PROJECT -->
-
-<div class="project-card">
-
-<div class="project-top">
-
-<div class="project-title">
-
-Кухня-гостиная
-в минимализме
-
-</div>
-
-<div class="project-badge">
-
-48 м² • 2 месяца
-
-</div>
-
-</div>
-
-
-
-<div class="before-after">
-
-<div class="before-img"
-style="background-image:url('https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1400')">
-
-</div>
-
-<div class="after-img"
-id="after2"
-style="background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400')">
-
-</div>
-
-<input type="range"
-min="0"
-max="100"
-value="50"
-class="slider"
-oninput="slideImage(this,'after2')">
-
-</div>
-
-
-
-<div class="project-info">
-
-<div class="info-box">
-
-<h3>
-Описание проекта
-</h3>
-
-<p>
-
-Современная кухня-гостиная
-с акцентным освещением,
-теплым полом
-и встроенной техникой.
-
-</p>
-
-</div>
-
-
-
-<div class="info-box">
-
-<h3>
-Что было выполнено
-</h3>
-
-<div class="work-list">
-
-<div>
-✔ Теплый пол
-</div>
-
-<div>
-✔ Выравнивание стен
-</div>
-
-<div>
-✔ Новая сантехника
-</div>
-
-<div>
-✔ Декоративная подсветка
-</div>
-
-<div>
-✔ Установка мебели
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<!-- STATS -->
-
-<div class="stats">
-
-<div class="stat-card">
-
-<h2>
-127
-</h2>
-
-<p>
-Завершенных проектов
-</p>
-
-</div>
-
-
-
-<div class="stat-card">
-
-<h2>
-9 лет
-</h2>
-
-<p>
-Опыт работы
-</p>
-
-</div>
-
-
-
-<div class="stat-card">
-
-<h2>
-4.9
-</h2>
-
-<p>
-Средняя оценка клиентов
-</p>
-
-</div>
+<!-- Карточки генерируются скриптом ниже -->
 
 </div>
 
 </div>
 
 </section>
+
+
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+<div class="modal-content">
+
+<button class="close-modal" id="closeModal">✕</button>
+
+<div class="gallery">
+
+<div class="gallery-img" id="galleryImg"></div>
+
+<button class="gallery-btn gallery-prev" id="galleryPrev">‹</button>
+
+<button class="gallery-btn gallery-next" id="galleryNext">›</button>
+
+</div>
+
+<div class="gallery-counter" id="galleryCounter">1 / 5</div>
+
+<div class="modal-title" id="modalTitle"></div>
+
+<div class="modal-badge" id="modalBadge"></div>
+
+<div class="modal-desc" id="modalDesc"></div>
+
+<div class="modal-services">
+
+<h4>Выполненные работы</h4>
+
+<div class="service-list" id="serviceList"></div>
+
+</div>
+
+</div>
+
+</div>
 
 
 
@@ -973,16 +933,206 @@ info@buildhouse.ru
 
 <script>
 
-function slideImage(
-slider,
-id
-){
+/* ===== ДАННЫЕ ПОРТФОЛИО =====
+   photos: пути к фото. Положите файлы в папку image
+   с именами portfolioN-1.jpg ... portfolioN-5.jpg
+   (N — номер карточки). Можно менять расширение на .png. */
 
-    document.getElementById(id)
-    .style.width =
-    slider.value + '%';
+const projects = [
+  {
+    folder: "portfolio1",
+    title: "Замена электрики",
+    badge: "45 м² • 1 неделя",
+    desc: "Полная замена проводки в квартире с установкой нового щитка, розеток и выключателей по современным стандартам безопасности.",
+    services: ["Демонтаж старой проводки", "Монтаж нового щитка", "Прокладка кабеля", "Установка розеток и выключателей", "Подключение освещения"]
+  },
+  {
+    folder: "portfolio2",
+    title: "Сантехнические работы",
+    badge: "6 м² • 5 дней",
+    desc: "Замена труб водоснабжения и канализации, установка сантехники и подключение бытовой техники.",
+    services: ["Замена труб", "Установка смесителей", "Монтаж унитаза и раковины", "Подключение стиральной машины", "Проверка на герметичность"]
+  },
+  {
+    folder: "portfolio3",
+    title: "Укладка плитки",
+    badge: "12 м² • 1 неделя",
+    desc: "Укладка керамической плитки на пол и стены с предварительным выравниванием и гидроизоляцией.",
+    services: ["Выравнивание поверхности", "Гидроизоляция", "Укладка плитки", "Затирка швов", "Установка плинтуса"]
+  },
+  {
+    folder: "portfolio4",
+    title: "Натяжные потолки",
+    badge: "60 м² • 3 дня",
+    desc: "Монтаж натяжных потолков с встроенным освещением во всей квартире.",
+    services: ["Замеры", "Установка профиля", "Монтаж полотна", "Встроенные светильники", "Финишная отделка"]
+  },
+  {
+    folder: "portfolio5",
+    title: "Поклейка обоев",
+    badge: "40 м² • 4 дня",
+    desc: "Подготовка стен и поклейка обоев в жилых комнатах с подбором рисунка.",
+    services: ["Снятие старых обоев", "Шпаклевка стен", "Грунтовка", "Поклейка обоев", "Подгонка рисунка"]
+  },
+  {
+    folder: "portfolio6",
+    title: "Покраска стен",
+    badge: "55 м² • 5 дней",
+    desc: "Выравнивание и окраска стен в современные оттенки с декоративными элементами.",
+    services: ["Выравнивание стен", "Грунтовка", "Финишная шпаклевка", "Окраска в два слоя", "Декоративные акценты"]
+  },
+  {
+    folder: "portfolio7",
+    title: "Ремонт ванной комнаты",
+    badge: "5 м² • 3 недели",
+    desc: "Полный ремонт санузла под ключ: плитка, сантехника, гидроизоляция и освещение.",
+    services: ["Демонтаж", "Гидроизоляция", "Укладка плитки", "Установка сантехники", "Монтаж освещения"]
+  },
+  {
+    folder: "portfolio8",
+    title: "Ремонт кухни",
+    badge: "14 м² • 1 месяц",
+    desc: "Комплексный ремонт кухни с заменой коммуникаций, отделкой и установкой гарнитура.",
+    services: ["Замена коммуникаций", "Отделка стен и пола", "Фартук из плитки", "Монтаж гарнитура", "Подключение техники"]
+  },
+  {
+    folder: "portfolio9",
+    title: "Косметический ремонт комнаты",
+    badge: "20 м² • 2 недели",
+    desc: "Обновление интерьера комнаты без перепланировки: стены, пол и потолок.",
+    services: ["Подготовка стен", "Поклейка обоев", "Укладка ламината", "Натяжной потолок", "Замена плинтусов"]
+  },
+  {
+    folder: "portfolio10",
+    title: "Капитальный ремонт студии",
+    badge: "32 м² • 2 месяца",
+    desc: "Капитальный ремонт квартиры-студии с перепланировкой и зонированием пространства.",
+    services: ["Перепланировка", "Новая электрика", "Выравнивание поверхностей", "Чистовая отделка", "Установка мебели"]
+  },
+  {
+    folder: "portfolio11",
+    title: "Ремонт 2-комнатной квартиры",
+    badge: "58 м² • 3 месяца",
+    desc: "Полный ремонт двухкомнатной квартиры под ключ с дизайнерским проектом.",
+    services: ["Демонтаж", "Замена коммуникаций", "Выравнивание стен и пола", "Чистовая отделка", "Установка дверей и мебели"]
+  },
+  {
+    folder: "portfolio12",
+    title: "Ремонт квартиры под ключ премиум",
+    badge: "85 м² • 4 месяца",
+    desc: "Дизайнерский ремонт просторной квартиры с премиальными материалами и умным домом.",
+    services: ["Дизайн-проект", "Перепланировка", "Инженерные системы", "Премиальная отделка", "Система умный дом"]
+  }
+];
 
+/* кол-во фото на карточку */
+const PHOTOS_PER_CARD = 5;
+/* расширение фото (поменяйте на .png при необходимости) */
+const PHOTO_EXT = ".jpg";
+
+/* ===== ГЕНЕРАЦИЯ КАРТОЧЕК ===== */
+
+const grid = document.getElementById("portfolioGrid");
+
+projects.forEach((p, index) => {
+  const cover = `image/${p.folder}-1${PHOTO_EXT}`;
+
+  const card = document.createElement("div");
+  card.className = "work-card";
+  card.innerHTML = `
+    <div class="work-cover" style="background-image:url('${cover}')">
+      <span class="work-cover-badge">${p.badge}</span>
+    </div>
+    <div class="work-body">
+      <h3>${p.title}</h3>
+      <p>${p.desc}</p>
+      <span class="work-more">Смотреть фото →</span>
+    </div>
+  `;
+  card.addEventListener("click", () => openModal(index));
+  grid.appendChild(card);
+});
+
+/* ===== МОДАЛКА + ГАЛЕРЕЯ ===== */
+
+const modal = document.getElementById("modal");
+const closeModalBtn = document.getElementById("closeModal");
+const galleryImg = document.getElementById("galleryImg");
+const galleryCounter = document.getElementById("galleryCounter");
+const galleryPrev = document.getElementById("galleryPrev");
+const galleryNext = document.getElementById("galleryNext");
+const modalTitle = document.getElementById("modalTitle");
+const modalBadge = document.getElementById("modalBadge");
+const modalDesc = document.getElementById("modalDesc");
+const serviceList = document.getElementById("serviceList");
+
+let currentProject = 0;
+let currentPhoto = 0;
+
+function openModal(index) {
+  currentProject = index;
+  currentPhoto = 0;
+
+  const p = projects[index];
+
+  modalTitle.innerText = p.title;
+  modalBadge.innerText = p.badge;
+  modalDesc.innerText = p.desc;
+
+  serviceList.innerHTML = "";
+  p.services.forEach((s) => {
+    const row = document.createElement("div");
+    row.innerText = "✔️ " + s;
+    serviceList.appendChild(row);
+  });
+
+  showPhoto();
+  modal.classList.add("active");
 }
+
+function showPhoto() {
+  const p = projects[currentProject];
+  const src = `image/${p.folder}-${currentPhoto + 1}${PHOTO_EXT}`;
+  galleryImg.style.backgroundImage = `url('${src}')`;
+  galleryCounter.innerText = `${currentPhoto + 1} / ${PHOTOS_PER_CARD}`;
+}
+
+galleryNext.addEventListener("click", () => {
+  currentPhoto = (currentPhoto + 1) % PHOTOS_PER_CARD;
+  showPhoto();
+});
+
+galleryPrev.addEventListener("click", () => {
+  currentPhoto = (currentPhoto - 1 + PHOTOS_PER_CARD) % PHOTOS_PER_CARD;
+  showPhoto();
+});
+
+closeModalBtn.addEventListener("click", () => {
+  modal.classList.remove("active");
+});
+
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("active");
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (!modal.classList.contains("active")) return;
+  if (e.key === "Escape") modal.classList.remove("active");
+  if (e.key === "ArrowRight") galleryNext.click();
+  if (e.key === "ArrowLeft") galleryPrev.click();
+});
+
+/* ===== БУРГЕР ===== */
+
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
+
+burger.addEventListener("click", () => {
+  nav.classList.toggle("active");
+  burger.innerHTML = nav.classList.contains("active") ? "✕" : "☰";
+});
 
 </script>
 
