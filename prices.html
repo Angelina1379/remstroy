@@ -23,6 +23,10 @@ rel="stylesheet">
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
 
     font-family:'Inter',sans-serif;
@@ -83,8 +87,8 @@ body{
 
 .logo a {
     text-decoration: none;
-    color: inherit; /* наследует цвет от .logo */
-    display: inline-block; /* или block, если нужно */
+    color: inherit;
+    display: inline-block;
 }
 
 .nav{
@@ -101,6 +105,13 @@ body{
     color:#222;
 
     font-weight:500;
+
+    transition:0.3s;
+}
+
+.nav a:hover{
+
+    color:#ff8c42;
 }
 
 .login-btn{
@@ -116,6 +127,21 @@ body{
     color:#222;
 
     font-weight:600;
+}
+
+.burger{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+    color:#222;
 }
 
 
@@ -190,11 +216,44 @@ body{
     margin-bottom:80px;
 }
 
-.category-title{
+.category-head{
 
-    font-size:44px;
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
 
     margin-bottom:35px;
+}
+
+.category-num{
+
+    width:54px;
+    height:54px;
+
+    border-radius:16px;
+
+    background:#ffb547;
+
+    color:#222;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:24px;
+
+    font-weight:800;
+
+    flex-shrink:0;
+}
+
+.category-title{
+
+    font-size:42px;
 }
 
 .price-grid{
@@ -202,7 +261,7 @@ body{
     display:grid;
 
     grid-template-columns:
-    repeat(auto-fit,minmax(320px,1fr));
+    repeat(auto-fit,minmax(310px,1fr));
 
     gap:28px;
 }
@@ -213,28 +272,71 @@ body{
 
     border-radius:32px;
 
-    padding:35px;
+    padding:36px;
 
     transition:0.3s;
+
+    border:2px solid transparent;
+
+    display:flex;
+
+    flex-direction:column;
+
+    position:relative;
 }
 
 .price-card:hover{
 
     transform:translateY(-8px);
+
+    border-color:#ffb547;
+
+    box-shadow:0 18px 40px rgba(255,181,71,0.18);
+}
+
+/* популярная карточка */
+.price-card.popular{
+
+    border-color:#ffb547;
+
+    background:linear-gradient(180deg,#fffaf0,#ffffff);
+}
+
+.popular-badge{
+
+    position:absolute;
+
+    top:-14px;
+
+    right:24px;
+
+    background:#ff8c42;
+
+    color:white;
+
+    padding:7px 16px;
+
+    border-radius:12px;
+
+    font-size:13px;
+
+    font-weight:700;
 }
 
 .price-card h3{
 
-    font-size:28px;
+    font-size:26px;
 
-    margin-bottom:20px;
+    margin-bottom:18px;
 }
 
 .price{
 
-    font-size:38px;
+    font-size:34px;
 
     font-weight:800;
+
+    color:#ff8c42;
 
     margin-bottom:24px;
 }
@@ -245,85 +347,39 @@ body{
 
     flex-direction:column;
 
-    gap:14px;
+    gap:13px;
 
     margin-bottom:30px;
 
     color:#555;
+
+    flex-grow:1;
 }
 
 .price-btn{
 
     width:100%;
 
-    padding:18px;
+    padding:17px;
 
     border:none;
 
-    border-radius:18px;
+    border-radius:16px;
 
     background:#ffb547;
 
-    font-size:17px;
+    font-size:16px;
 
     font-weight:700;
 
     cursor:pointer;
+
+    transition:0.25s;
 }
 
+.price-btn:hover{
 
-
-/* BONUS */
-
-.bonus{
-
-    background:white;
-
-    border-radius:36px;
-
-    padding:60px;
-
-    margin-bottom:120px;
-}
-
-.bonus h2{
-
-    font-size:52px;
-
-    margin-bottom:25px;
-}
-
-.bonus-grid{
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
-
-    gap:25px;
-
-    margin-top:40px;
-}
-
-.bonus-card{
-
-    background:#f7f7f7;
-
-    border-radius:24px;
-
-    padding:30px;
-}
-
-.bonus-card h3{
-
-    margin-bottom:14px;
-}
-
-.bonus-card p{
-
-    color:#666;
-
-    line-height:1.7;
+    background:#ffa530;
 }
 
 
@@ -352,7 +408,7 @@ body{
 
 .cta-left h2{
 
-    font-size:54px;
+    font-size:52px;
 
     line-height:1.1;
 
@@ -451,9 +507,46 @@ body{
         font-size:52px;
     }
 
+    .burger{
+
+        display:block;
+    }
+
     .nav{
 
-        display:none;
+        position:absolute;
+
+        top:90px;
+
+        left:0;
+
+        width:100%;
+
+        background:white;
+
+        flex-direction:column;
+
+        gap:0;
+
+        max-height:0;
+
+        overflow:hidden;
+
+        transition:0.3s;
+
+        border-bottom:1px solid #eee;
+    }
+
+    .nav.active{
+
+        max-height:600px;
+    }
+
+    .nav a{
+
+        padding:18px 30px;
+
+        border-bottom:1px solid #f0f0f0;
     }
 
 }
@@ -472,7 +565,7 @@ body{
 
     .category-title{
 
-        font-size:34px;
+        font-size:32px;
     }
 
 }
@@ -493,7 +586,11 @@ body{
     <a href="index.html">BuildHouse</a>
 </div>
 
-<nav class="nav">
+<button class="burger" id="burger">
+    ☰
+</button>
+
+<nav class="nav" id="nav">
 
 <a href="services.html">Услуги</a>
 <a href="portfolio.html">Портфолио</a>
@@ -541,7 +638,8 @@ class="login-btn">
 Прозрачные цены
 без скрытых платежей.
 Подбираем оптимальный
-вариант ремонта под ваш бюджет.
+вариант ремонта
+под ваш бюджет.
 
 </p>
 
@@ -559,142 +657,55 @@ class="login-btn">
 
 
 
-<!-- CATEGORY -->
+<!-- CATEGORY 1 -->
 
 <div class="price-category">
 
-<h2 class="category-title">
+<div class="category-head">
 
-Косметический ремонт
+<div class="category-num">1</div>
 
-</h2>
+<h2 class="category-title">Косметический ремонт</h2>
+
+</div>
 
 <div class="price-grid">
 
+<div class="price-card">
+<h3>Комната</h3>
+<div class="price">от 6 500 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Покраска стен</div>
+<div>✔️ Замена обоев</div>
+<div>✔️ Ламинат</div>
+<div>✔️ Плинтусы</div>
+</div>
+<button class="price-btn" data-service="Косметический ремонт — Комната">Оставить заявку</button>
+</div>
 
+<div class="price-card popular">
+<div class="popular-badge">Популярное</div>
+<h3>Кухня</h3>
+<div class="price">от 8 000 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Подготовка стен</div>
+<div>✔️ Укладка плитки</div>
+<div>✔️ Освещение</div>
+<div>✔️ Монтаж фартука</div>
+</div>
+<button class="price-btn" data-service="Косметический ремонт — Кухня">Оставить заявку</button>
+</div>
 
 <div class="price-card">
-
-<h3>
-Комната
-</h3>
-
-<div class="price">
-
-от 6 500 ₽/м²
-
-</div>
-
+<h3>Ванная</h3>
+<div class="price">от 10 000 ₽/м²</div>
 <div class="price-list">
-
-<div>
-✔ Покраска стен
+<div>✔️ Плиточные работы</div>
+<div>✔️ Сантехника</div>
+<div>✔️ Потолок</div>
+<div>✔️ Гидроизоляция</div>
 </div>
-
-<div>
-✔ Замена обоев
-</div>
-
-<div>
-✔ Ламинат
-</div>
-
-<div>
-✔ Плинтусы
-</div>
-
-</div>
-
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Кухня
-</h3>
-
-<div class="price">
-
-от 8 000 ₽/м²
-
-</div>
-
-<div class="price-list">
-
-<div>
-✔ Подготовка стен
-</div>
-
-<div>
-✔ Укладка плитки
-</div>
-
-<div>
-✔ Освещение
-</div>
-
-<div>
-✔ Монтаж фартука
-</div>
-
-</div>
-
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Ванная
-</h3>
-
-<div class="price">
-
-от 10 000 ₽/м²
-
-</div>
-
-<div class="price-list">
-
-<div>
-✔ Плиточные работы
-</div>
-
-<div>
-✔ Сантехника
-</div>
-
-<div>
-✔ Потолок
-</div>
-
-<div>
-✔ Гидроизоляция
-</div>
-
-</div>
-
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
+<button class="price-btn" data-service="Косметический ремонт — Ванная">Оставить заявку</button>
 </div>
 
 </div>
@@ -703,142 +714,55 @@ class="login-btn">
 
 
 
-<!-- CATEGORY -->
+<!-- CATEGORY 2 -->
 
 <div class="price-category">
 
-<h2 class="category-title">
+<div class="category-head">
 
-Капитальный ремонт
+<div class="category-num">2</div>
 
-</h2>
+<h2 class="category-title">Капитальный ремонт</h2>
+
+</div>
 
 <div class="price-grid">
 
+<div class="price-card">
+<h3>1-комнатная квартира</h3>
+<div class="price">от 450 000 ₽</div>
+<div class="price-list">
+<div>✔️ Демонтаж</div>
+<div>✔️ Новая электрика</div>
+<div>✔️ Сантехника</div>
+<div>✔️ Полная отделка</div>
+</div>
+<button class="price-btn" data-service="Капитальный ремонт — 1-комнатная">Оставить заявку</button>
+</div>
 
+<div class="price-card popular">
+<div class="popular-badge">Выбор клиентов</div>
+<h3>2-комнатная квартира</h3>
+<div class="price">от 680 000 ₽</div>
+<div class="price-list">
+<div>✔️ Перепланировка</div>
+<div>✔️ Выравнивание стен</div>
+<div>✔️ Потолки</div>
+<div>✔️ Освещение</div>
+</div>
+<button class="price-btn" data-service="Капитальный ремонт — 2-комнатная">Оставить заявку</button>
+</div>
 
 <div class="price-card">
-
-<h3>
-1-комнатная квартира
-</h3>
-
-<div class="price">
-
-от 450 000 ₽
-
-</div>
-
+<h3>3-комнатная квартира</h3>
+<div class="price">от 920 000 ₽</div>
 <div class="price-list">
-
-<div>
-✔ Демонтаж
+<div>✔️ Дизайн-проект</div>
+<div>✔️ Полный цикл работ</div>
+<div>✔️ Умный дом</div>
+<div>✔️ Премиальная отделка</div>
 </div>
-
-<div>
-✔ Новая электрика
-</div>
-
-<div>
-✔ Сантехника
-</div>
-
-<div>
-✔ Полная отделка
-</div>
-
-</div>
-
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-2-комнатная квартира
-</h3>
-
-<div class="price">
-
-от 680 000 ₽
-
-</div>
-
-<div class="price-list">
-
-<div>
-✔ Перепланировка
-</div>
-
-<div>
-✔ Выравнивание стен
-</div>
-
-<div>
-✔ Потолки
-</div>
-
-<div>
-✔ Освещение
-</div>
-
-</div>
-
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-3-комнатная квартира
-</h3>
-
-<div class="price">
-
-от 920 000 ₽
-
-</div>
-
-<div class="price-list">
-
-<div>
-✔ Дизайн-проект
-</div>
-
-<div>
-✔ Полный цикл работ
-</div>
-
-<div>
-✔ Умный дом
-</div>
-
-<div>
-✔ Премиальная отделка
-</div>
-
-</div>
-
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
+<button class="price-btn" data-service="Капитальный ремонт — 3-комнатная">Оставить заявку</button>
 </div>
 
 </div>
@@ -847,530 +771,186 @@ class="login-btn">
 
 
 
-<!-- CATEGORY -->
+<!-- CATEGORY 3 -->
 
 <div class="price-category">
 
-<h2 class="category-title">
+<div class="category-head">
 
-Дополнительные услуги
+<div class="category-num">3</div>
 
-</h2>
+<h2 class="category-title">Дополнительные услуги</h2>
+
+</div>
 
 <div class="price-grid">
 
-
-
 <div class="price-card">
-
-<h3>
-Натяжные потолки
-</h3>
-
-<div class="price">
-
-от 950 ₽/м²
-
-</div>
-
+<h3>Натяжные потолки</h3>
+<div class="price">от 950 ₽/м²</div>
 <div class="price-list">
-
-<div>
-✔ Матовые
+<div>✔️ Матовые</div>
+<div>✔️ Глянцевые</div>
+<div>✔️ Теневые</div>
+<div>✔️ Подсветка</div>
 </div>
-
-<div>
-✔ Глянцевые
-</div>
-
-<div>
-✔ Теневые
-</div>
-
-<div>
-✔ Подсветка
-</div>
-
-</div>
-
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Электромонтаж
-</h3>
-
-<div class="price">
-
-от 25 000 ₽
-
-</div>
-
-<div class="price-list">
-
-<div>
-✔ Розетки
-</div>
-
-<div>
-✔ Освещение
-</div>
-
-<div>
-✔ Щиток
-</div>
-
-<div>
-✔ Автоматы
-</div>
-
-</div>
-
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
+<button class="price-btn" data-service="Натяжные потолки">Оставить заявку</button>
 </div>
 
 <div class="price-card">
-
-<h3>
-Поклейка обоев
-</h3>
-
-<div class="price">
-от 450 ₽/м²
-</div>
-
+<h3>Электромонтаж</h3>
+<div class="price">от 25 000 ₽</div>
 <div class="price-list">
-
-<div>✔ Флизелиновые обои</div>
-<div>✔ Виниловые обои</div>
-<div>✔ Подготовка стен</div>
-<div>✔ Подрезка и стыковка</div>
-
+<div>✔️ Розетки</div>
+<div>✔️ Освещение</div>
+<div>✔️ Щиток</div>
+<div>✔️ Автоматы</div>
 </div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Покраска стен
-</h3>
-
-<div class="price">
-от 550 ₽/м²
-</div>
-
-<div class="price-list">
-
-<div>✔ Грунтовка</div>
-<div>✔ Шпатлевание</div>
-<div>✔ Покраска в 2 слоя</div>
-<div>✔ Уборка после работ</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Укладка плитки
-</h3>
-
-<div class="price">
-от 2 200 ₽/м²
-</div>
-
-<div class="price-list">
-
-<div>✔ Пол</div>
-<div>✔ Стены</div>
-<div>✔ Затирка швов</div>
-<div>✔ Подрезка плитки</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Укладка ламината
-</h3>
-
-<div class="price">
-от 900 ₽/м²
-</div>
-
-<div class="price-list">
-
-<div>✔ Подложка</div>
-<div>✔ Монтаж покрытия</div>
-<div>✔ Установка плинтусов</div>
-<div>✔ Порожки</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Штукатурка стен
-</h3>
-
-<div class="price">
-от 650 ₽/м²
-</div>
-
-<div class="price-list">
-
-<div>✔ Выравнивание стен</div>
-<div>✔ Маяки</div>
-<div>✔ Грунтовка</div>
-<div>✔ Подготовка под отделку</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Шпатлевание стен
-</h3>
-
-<div class="price">
-от 450 ₽/м²
-</div>
-
-<div class="price-list">
-
-<div>✔ Стартовая шпаклевка</div>
-<div>✔ Финишная шпаклевка</div>
-<div>✔ Шлифовка</div>
-<div>✔ Под покраску</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Монтаж гипсокартона
-</h3>
-
-<div class="price">
-от 1 300 ₽/м²
-</div>
-
-<div class="price-list">
-
-<div>✔ Перегородки</div>
-<div>✔ Короба</div>
-<div>✔ Потолки</div>
-<div>✔ Ниши и конструкции</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Установка дверей
-</h3>
-
-<div class="price">
-от 5 000 ₽/шт
-</div>
-
-<div class="price-list">
-
-<div>✔ Межкомнатные двери</div>
-<div>✔ Коробка</div>
-<div>✔ Наличники</div>
-<div>✔ Фурнитура</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Установка окон
-</h3>
-
-<div class="price">
-от 12 000 ₽
-</div>
-
-<div class="price-list">
-
-<div>✔ Демонтаж старых окон</div>
-<div>✔ Монтаж новых</div>
-<div>✔ Откосы</div>
-<div>✔ Подоконники</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Монтаж теплого пола
-</h3>
-
-<div class="price">
-от 1 800 ₽/м²
-</div>
-
-<div class="price-list">
-
-<div>✔ Электрический пол</div>
-<div>✔ Датчики температуры</div>
-<div>✔ Подключение</div>
-<div>✔ Настройка системы</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
-</div>
-
-
-
-<div class="price-card">
-
-<h3>
-Демонтажные работы
-</h3>
-
-<div class="price">
-от 350 ₽/м²
-</div>
-
-<div class="price-list">
-
-<div>✔ Демонтаж стен</div>
-<div>✔ Снятие плитки</div>
-<div>✔ Демонтаж пола</div>
-<div>✔ Вывоз мусора</div>
-
-</div>
-
-<button class="price-btn">
-Оставить заявку
-</button>
-
+<button class="price-btn" data-service="Электромонтаж">Оставить заявку</button>
 </div>
 
 <div class="price-card">
-
-<h3>
-Сантехнические работы
-</h3>
-
-<div class="price">
-
-от 30 000 ₽
-
-</div>
-
+<h3>Поклейка обоев</h3>
+<div class="price">от 450 ₽/м²</div>
 <div class="price-list">
-
-<div>
-✔ Разводка труб
+<div>✔️ Флизелиновые обои</div>
+<div>✔️ Виниловые обои</div>
+<div>✔️ Подготовка стен</div>
+<div>✔️ Подрезка и стыковка</div>
+</div>
+<button class="price-btn" data-service="Поклейка обоев">Оставить заявку</button>
 </div>
 
-<div>
-✔ Установка ванны
+<div class="price-card">
+<h3>Покраска стен</h3>
+<div class="price">от 550 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Грунтовка</div>
+<div>✔️ Шпатлевание</div>
+<div>✔️ Покраска в 2 слоя</div>
+<div>✔️ Уборка после работ</div>
+</div>
+<button class="price-btn" data-service="Покраска стен">Оставить заявку</button>
 </div>
 
-<div>
-✔ Инсталляция
+<div class="price-card">
+<h3>Укладка плитки</h3>
+<div class="price">от 2 200 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Пол</div>
+<div>✔️ Стены</div>
+<div>✔️ Затирка швов</div>
+<div>✔️ Подрезка плитки</div>
+</div>
+<button class="price-btn" data-service="Укладка плитки">Оставить заявку</button>
 </div>
 
-<div>
-✔ Смесители
+<div class="price-card">
+<h3>Укладка ламината</h3>
+<div class="price">от 900 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Подложка</div>
+<div>✔️ Монтаж покрытия</div>
+<div>✔️ Установка плинтусов</div>
+<div>✔️ Порожки</div>
+</div>
+<button class="price-btn" data-service="Укладка ламината">Оставить заявку</button>
 </div>
 
+<div class="price-card">
+<h3>Штукатурка стен</h3>
+<div class="price">от 650 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Выравнивание стен</div>
+<div>✔️ Маяки</div>
+<div>✔️ Грунтовка</div>
+<div>✔️ Подготовка под отделку</div>
+</div>
+<button class="price-btn" data-service="Штукатурка стен">Оставить заявку</button>
 </div>
 
-<button class="price-btn">
-
-Оставить заявку
-
-</button>
-
+<div class="price-card">
+<h3>Шпатлевание стен</h3>
+<div class="price">от 450 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Стартовая шпаклевка</div>
+<div>✔️ Финишная шпаклевка</div>
+<div>✔️ Шлифовка</div>
+<div>✔️ Под покраску</div>
+</div>
+<button class="price-btn" data-service="Шпатлевание стен">Оставить заявку</button>
 </div>
 
+<div class="price-card">
+<h3>Монтаж гипсокартона</h3>
+<div class="price">от 1 300 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Перегородки</div>
+<div>✔️ Короба</div>
+<div>✔️ Потолки</div>
+<div>✔️ Ниши и конструкции</div>
+</div>
+<button class="price-btn" data-service="Монтаж гипсокартона">Оставить заявку</button>
 </div>
 
+<div class="price-card">
+<h3>Установка дверей</h3>
+<div class="price">от 5 000 ₽/шт</div>
+<div class="price-list">
+<div>✔️ Межкомнатные двери</div>
+<div>✔️ Коробка</div>
+<div>✔️ Наличники</div>
+<div>✔️ Фурнитура</div>
+</div>
+<button class="price-btn" data-service="Установка дверей">Оставить заявку</button>
 </div>
 
-
-
-<!-- BONUS -->
-
-<div class="bonus">
-
-<h2>
-
-Почему цены
-у нас прозрачные?
-
-</h2>
-
-<p class="hero-text">
-
-Мы фиксируем стоимость
-в договоре и не увеличиваем
-ее в процессе ремонта.
-
-</p>
-
-
-
-<div class="bonus-grid">
-
-<div class="bonus-card">
-
-<h3>
-Без скрытых платежей
-</h3>
-
-<p>
-
-Все работы и материалы
-фиксируются в смете.
-
-</p>
-
+<div class="price-card">
+<h3>Установка окон</h3>
+<div class="price">от 12 000 ₽</div>
+<div class="price-list">
+<div>✔️ Демонтаж старых окон</div>
+<div>✔️ Монтаж новых</div>
+<div>✔️ Откосы</div>
+<div>✔️ Подоконники</div>
+</div>
+<button class="price-btn" data-service="Установка окон">Оставить заявку</button>
 </div>
 
-
-
-<div class="bonus-card">
-
-<h3>
-Фотоотчеты онлайн
-</h3>
-
-<p>
-
-Контроль ремонта
-через личный кабинет.
-
-</p>
-
+<div class="price-card">
+<h3>Монтаж теплого пола</h3>
+<div class="price">от 1 800 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Электрический пол</div>
+<div>✔️ Датчики температуры</div>
+<div>✔️ Подключение</div>
+<div>✔️ Настройка системы</div>
+</div>
+<button class="price-btn" data-service="Монтаж теплого пола">Оставить заявку</button>
 </div>
 
-
-
-<div class="bonus-card">
-
-<h3>
-Поэтапная оплата
-</h3>
-
-<p>
-
-Вы оплачиваете
-только выполненные работы.
-
-</p>
-
+<div class="price-card">
+<h3>Демонтажные работы</h3>
+<div class="price">от 350 ₽/м²</div>
+<div class="price-list">
+<div>✔️ Демонтаж стен</div>
+<div>✔️ Снятие плитки</div>
+<div>✔️ Демонтаж пола</div>
+<div>✔️ Вывоз мусора</div>
+</div>
+<button class="price-btn" data-service="Демонтажные работы">Оставить заявку</button>
 </div>
 
-
-
-<div class="bonus-card">
-
-<h3>
-Гарантия до 5 лет
-</h3>
-
-<p>
-
-На все виды
-ремонтных работ.
-
-</p>
-
+<div class="price-card">
+<h3>Сантехнические работы</h3>
+<div class="price">от 30 000 ₽</div>
+<div class="price-list">
+<div>✔️ Разводка труб</div>
+<div>✔️ Установка ванны</div>
+<div>✔️ Инсталляция</div>
+<div>✔️ Смесители</div>
+</div>
+<button class="price-btn" data-service="Сантехнические работы">Оставить заявку</button>
 </div>
 
 </div>
@@ -1394,39 +974,39 @@ class="login-btn">
 <div class="cta-left">
 
 <h2>
-
 Получить
 точный расчет?
-
 </h2>
 
 <p>
-
 Оставьте заявку —
 мы свяжемся с вами
 и подготовим
 индивидуальную смету.
-
 </p>
 
 </div>
 
 
 
-<form class="cta-form">
+<form id="ctaForm" class="cta-form">
 
 <input type="text"
-placeholder="Ваше имя">
+id="ctaName"
+placeholder="Ваше имя"
+required>
 
 <input type="tel"
-placeholder="Телефон">
+id="ctaPhone"
+placeholder="Телефон"
+required>
 
-<textarea placeholder="Комментарий"></textarea>
+<textarea
+id="ctaComment"
+placeholder="Комментарий"></textarea>
 
 <button type="submit">
-
 Получить расчет
-
 </button>
 
 </form>
@@ -1465,11 +1045,11 @@ BuildHouse
 </h4>
 
 <p>
-+7 (999) 999-99-99
++7 903 349-11-91
 </p>
 
 <p>
-info@buildhouse.ru
+vitalikpozolotin@yandex.ru
 </p>
 
 </div>
@@ -1477,6 +1057,79 @@ info@buildhouse.ru
 </div>
 
 </footer>
+
+
+
+<script type="module">
+
+import { db } from "./js/firebase.js";
+
+import {
+    collection,
+    addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+/* ===== КНОПКИ "ОСТАВИТЬ ЗАЯВКУ" -> ПОДСТАВЛЯЮТ УСЛУГУ И СКРОЛЛЯТ К ФОРМЕ ===== */
+
+const ctaForm = document.getElementById("ctaForm");
+const ctaComment = document.getElementById("ctaComment");
+
+document.querySelectorAll(".price-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+        const service = btn.dataset.service || "";
+        ctaComment.value = "Интересует услуга: " + service;
+        ctaForm.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+});
+
+
+/* ===== ОТПРАВКА ЗАЯВКИ В FIRESTORE ===== */
+
+ctaForm.addEventListener("submit", async function (e) {
+
+    e.preventDefault();
+
+    const name = document.getElementById("ctaName").value;
+    const phone = document.getElementById("ctaPhone").value;
+    const comment = ctaComment.value;
+
+    try {
+        await addDoc(collection(db, "projects"), {
+            service: comment || "Расчёт стоимости",
+            clientName: name,
+            phone: phone,
+            comment: comment,
+            status: "Новая заявка",
+            createdAt: Date.now()
+        });
+
+        alert("Заявка отправлена! Мы свяжемся с вами.");
+        this.reset();
+    } catch (error) {
+        console.error("Ошибка Firestore:", error);
+        alert("Ошибка: " + error.message);
+    }
+
+});
+
+</script>
+
+
+
+<script>
+
+/* ===== БУРГЕР ===== */
+
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
+
+burger.addEventListener("click", () => {
+    nav.classList.toggle("active");
+    burger.innerHTML = nav.classList.contains("active") ? "✕" : "☰";
+});
+
+</script>
 
 </body>
 </html>
