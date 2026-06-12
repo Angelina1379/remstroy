@@ -23,6 +23,10 @@ rel="stylesheet">
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
 
     font-family:'Inter',sans-serif;
@@ -83,8 +87,8 @@ body{
 
 .logo a {
     text-decoration: none;
-    color: inherit; /* наследует цвет от .logo */
-    display: inline-block; /* или block, если нужно */
+    color: inherit;
+    display: inline-block;
 }
 
 .nav{
@@ -101,6 +105,13 @@ body{
     color:#222;
 
     font-weight:500;
+
+    transition:0.3s;
+}
+
+.nav a:hover{
+
+    color:#ff8c42;
 }
 
 .login-btn{
@@ -116,6 +127,21 @@ body{
     color:#222;
 
     font-weight:600;
+}
+
+.burger{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+    color:#222;
 }
 
 
@@ -187,38 +213,55 @@ body{
 
 .reviews-top{
 
-    display:flex;
+    display:grid;
 
-    justify-content:center;
-
-    align-items:center;
+    grid-template-columns:1fr 320px;
 
     gap:40px;
 
+    align-items:center;
+
     margin-bottom:50px;
+}
 
-    flex-wrap:wrap;
+.reviews-top-left h2{
 
-    text-align:center;
+    font-size:50px;
 
+    margin-bottom:14px;
+
+    line-height:1.1;
+}
+
+.reviews-top-left p{
+
+    color:#666;
+
+    line-height:1.8;
+
+    font-size:17px;
 }
 
 .rating-box{
 
     background:white;
 
-    padding:30px;
+    padding:36px;
 
     border-radius:28px;
 
-    min-width:260px;
+    text-align:center;
+
+    box-shadow:0 10px 35px rgba(0,0,0,.05);
 }
 
 .rating-box h2{
 
-    font-size:60px;
+    font-size:64px;
 
-    margin-bottom:10px;
+    margin-bottom:6px;
+
+    color:#ff8c42;
 }
 
 .rating-stars{
@@ -227,7 +270,14 @@ body{
 
     font-size:24px;
 
-    margin-bottom:10px;
+    margin-bottom:12px;
+
+    letter-spacing:3px;
+}
+
+.rating-box p{
+
+    color:#666;
 }
 
 
@@ -251,7 +301,11 @@ body{
     text-align:center;
 
     font-weight:600;
+}
 
+.auth-warning a{
+
+    color:#ff8c42;
 }
 
 
@@ -266,20 +320,18 @@ body{
 
     padding:50px;
 
-    margin:0 auto 60px auto;
+    margin:0 auto 70px auto;
 
     max-width:900px;
 
-    box-shadow:
-    0 10px 35px rgba(0,0,0,.05);
-
+    box-shadow:0 10px 35px rgba(0,0,0,.05);
 }
 
 .review-form h2{
 
     margin-bottom:25px;
 
-    font-size:38px;
+    font-size:36px;
 }
 
 .stars{
@@ -293,7 +345,7 @@ body{
 
 .star{
 
-    font-size:36px;
+    font-size:38px;
 
     cursor:pointer;
 
@@ -307,7 +359,7 @@ body{
     color:#ffb547;
 }
 
-.review-form input,
+.review-form input[type="text"],
 .review-form textarea{
 
     width:100%;
@@ -323,11 +375,13 @@ body{
     margin-bottom:18px;
 
     font-size:16px;
+
+    font-family:inherit;
 }
 
 .review-form textarea{
 
-    min-height:180px;
+    min-height:160px;
 
     resize:none;
 }
@@ -337,9 +391,20 @@ body{
     margin-bottom:24px;
 }
 
-.review-form button{
+.file-upload label{
 
-    padding:20px 30px;
+    display:block;
+
+    margin-bottom:10px;
+
+    font-weight:600;
+
+    color:#555;
+}
+
+.review-form .submit-review{
+
+    padding:20px 34px;
 
     border:none;
 
@@ -354,6 +419,63 @@ body{
     cursor:pointer;
 }
 
+.review-form .submit-review:disabled{
+
+    background:#ffd699;
+
+    cursor:not-allowed;
+}
+
+
+
+/* FILTERS */
+
+.reviews-filter{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:14px;
+
+    margin-bottom:40px;
+
+    justify-content:center;
+}
+
+.filter-btn{
+
+    border:2px solid transparent;
+
+    background:white;
+
+    padding:13px 24px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    font-size:15px;
+
+    color:#444;
+
+    transition:0.25s;
+}
+
+.filter-btn:hover{
+
+    border-color:#ffb547;
+}
+
+.filter-btn.active{
+
+    background:#ffb547;
+
+    color:#222;
+}
+
 
 
 /* REVIEWS GRID */
@@ -363,12 +485,9 @@ body{
     display:grid;
 
     grid-template-columns:
-    repeat(auto-fit,minmax(420px,1fr));
+    repeat(auto-fit,minmax(380px,1fr));
 
     gap:30px;
-
-    margin-top:40px;
-
 }
 
 .review-card{
@@ -378,15 +497,30 @@ body{
     border-radius:32px;
 
     overflow:hidden;
+
+    border:2px solid transparent;
+
+    transition:0.3s;
+}
+
+.review-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#ffb547;
+
+    box-shadow:0 18px 40px rgba(255,181,71,0.15);
 }
 
 .review-image{
 
-    height:260px;
+    height:240px;
 
     background-size:cover;
 
     background-position:center;
+
+    background-color:#eee;
 }
 
 .review-content{
@@ -402,14 +536,14 @@ body{
 
     gap:16px;
 
-    margin-bottom:20px;
+    margin-bottom:18px;
 }
 
 .user-avatar{
 
-    width:58px;
+    width:56px;
 
-    height:58px;
+    height:56px;
 
     border-radius:50%;
 
@@ -424,11 +558,13 @@ body{
     font-weight:800;
 
     font-size:20px;
+
+    flex-shrink:0;
 }
 
 .review-name{
 
-    font-size:22px;
+    font-size:20px;
 
     font-weight:700;
 }
@@ -437,101 +573,29 @@ body{
 
     color:#ffb547;
 
-    margin-top:5px;
+    margin-top:4px;
+
+    letter-spacing:2px;
 }
 
 .review-text{
 
     color:#666;
 
-    line-height:1.9;
-}
-
-
-
-/* CTA */
-
-.cta{
-
-    padding-bottom:120px;
-}
-
-.cta-box{
-
-    background:white;
-
-    border-radius:36px;
-
-    padding:60px;
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:60px;
-}
-
-.cta-left h2{
-
-    font-size:54px;
-
-    line-height:1.1;
-
-    margin-bottom:24px;
-}
-
-.cta-left p{
-
     line-height:1.8;
-
-    color:#666;
 }
 
-.cta-form{
+.no-reviews{
 
-    display:flex;
+    text-align:center;
 
-    flex-direction:column;
-
-    gap:18px;
-}
-
-.cta-form input,
-.cta-form textarea{
-
-    padding:18px;
-
-    border:none;
-
-    border-radius:18px;
-
-    background:#f5f5f5;
-
-    font-size:16px;
-}
-
-.cta-form textarea{
-
-    min-height:150px;
-
-    resize:none;
-}
-
-.cta-form button{
-
-    padding:20px;
-
-    border:none;
-
-    border-radius:20px;
-
-    background:#ffb547;
+    color:#999;
 
     font-size:18px;
 
-    font-weight:700;
+    padding:60px 0;
 
-    cursor:pointer;
+    grid-column:1/-1;
 }
 
 
@@ -562,7 +626,7 @@ body{
 
 @media(max-width:992px){
 
-    .cta-box{
+    .reviews-top{
 
         grid-template-columns:1fr;
     }
@@ -572,9 +636,46 @@ body{
         font-size:52px;
     }
 
+    .burger{
+
+        display:block;
+    }
+
     .nav{
 
-        display:none;
+        position:absolute;
+
+        top:90px;
+
+        left:0;
+
+        width:100%;
+
+        background:white;
+
+        flex-direction:column;
+
+        gap:0;
+
+        max-height:0;
+
+        overflow:hidden;
+
+        transition:0.3s;
+
+        border-bottom:1px solid #eee;
+    }
+
+    .nav.active{
+
+        max-height:500px;
+    }
+
+    .nav a{
+
+        padding:18px 30px;
+
+        border-bottom:1px solid #f0f0f0;
     }
 
 }
@@ -589,6 +690,11 @@ body{
     .hero-box h1{
 
         font-size:42px;
+    }
+
+    .review-form{
+
+        padding:30px;
     }
 
 }
@@ -609,7 +715,11 @@ body{
     <a href="index.html">BuildHouse</a>
 </div>
 
-<nav class="nav">
+<button class="burger" id="burger">
+    ☰
+</button>
+
+<nav class="nav" id="nav">
 
 <a href="services.html">Услуги</a>
 <a href="portfolio.html">Портфолио</a>
@@ -675,112 +785,128 @@ class="login-btn">
 <div class="container">
 
 
-
 <div class="reviews-top">
 
-<div>
+<div class="reviews-top-left">
 
-<h2 style="font-size:54px;margin-bottom:12px;">
-
-Отзывы клиентов
-
+<h2>
+Отзывы наших клиентов
 </h2>
 
-<p class="hero-text">
+<p>
 
-Каждый отзыв проходит проверку
-и доступен только
-авторизованным клиентам.
+Каждый отзыв оставлен
+реальным клиентом,
+авторизованным
+в системе BuildHouse.
 
 </p>
 
 </div>
 
-
-
 <div class="rating-box">
 
-    <h2 id="averageRating">
-        0.0
-    </h2>
+<h2 id="averageRating">0.0</h2>
 
-    <div class="rating-stars">
-        ★★★★★
-    </div>
+<div class="rating-stars" id="averageStars">
+★★★★★
+</div>
 
-    <p>
+<p>
+На основе
+<span id="reviewsCount">0</span>
+отзывов
+</p>
 
-        На основе
-        <span id="reviewsCount">0</span>
-        отзывов
-
-    </p>
+</div>
 
 </div>
 
 
+<!-- AUTH WARNING (показывается если не вошёл) -->
 
-<!-- AUTH WARNING -->
+<div class="auth-warning" id="authWarning" style="display:none;">
 
-<div class="auth-warning">
-
-Отзывы могут оставлять
-только авторизованные пользователи,
-которые зарегистрированы
-в системе BuildHouse.
+Отзывы могут оставлять только авторизованные клиенты.
+<a href="login.html">Войти в личный кабинет →</a>
 
 </div>
-
 
 
 <!-- REVIEW FORM -->
 
 <div class="review-form">
 
-<h2>
+<h2>Оставить отзыв</h2>
 
-Оставить отзыв
+<div class="stars" id="starsInput">
 
-</h2>
-
-<div class="stars">
-
-<span class="star active">★</span>
-<span class="star active">★</span>
-<span class="star active">★</span>
-<span class="star active">★</span>
-<span class="star active">★</span>
+<span class="star" data-value="1">★</span>
+<span class="star" data-value="2">★</span>
+<span class="star" data-value="3">★</span>
+<span class="star" data-value="4">★</span>
+<span class="star" data-value="5">★</span>
 
 </div>
 
 <input type="text"
+id="reviewName"
 placeholder="Ваше имя"
 disabled>
 
-<textarea placeholder="Напишите ваш отзыв..."
+<textarea
+id="reviewText"
+placeholder="Напишите ваш отзыв..."
 disabled></textarea>
 
 <div class="file-upload">
 
+<label>Прикрепить фото (необязательно)</label>
+
 <input type="file"
+id="reviewPhoto"
+accept="image/*"
 disabled>
 
 </div>
 
-<button onclick="showAuthMessage()">
+<button class="submit-review" id="submitReview" disabled>
 
-Войдите в аккаунт,
-чтобы оставить отзыв
+Войдите, чтобы оставить отзыв
 
 </button>
 
 </div>
 
 
+<!-- FILTERS -->
+
+<div class="reviews-filter">
+
+<button class="filter-btn active" data-stars="all">Все отзывы</button>
+<button class="filter-btn" data-stars="5">5 ★</button>
+<button class="filter-btn" data-stars="4">4 ★</button>
+<button class="filter-btn" data-stars="3">3 ★</button>
+<button class="filter-btn" data-stars="2">2 ★</button>
+<button class="filter-btn" data-stars="1">1 ★</button>
+
+</div>
+
 
 <!-- REVIEWS GRID -->
 
-<div class="reviews-grid">
+<div class="reviews-grid" id="reviewsGrid">
+
+<div class="no-reviews">Загрузка отзывов...</div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
 
 <footer class="footer">
 
@@ -808,11 +934,11 @@ BuildHouse
 </h4>
 
 <p>
-+7 (999) 999-99-99
++7 903 349-11-91
 </p>
 
 <p>
-info@buildhouse.ru
+vitalikpozolotin@yandex.ru
 </p>
 
 </div>
@@ -823,15 +949,297 @@ info@buildhouse.ru
 
 
 
+<script type="module">
+
+import { auth, db, storage } from "./js/firebase.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+    collection,
+    addDoc,
+    getDocs,
+    getDoc,
+    doc,
+    query,
+    orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+    ref,
+    uploadBytes,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+
+/* ===== ЭЛЕМЕНТЫ ===== */
+
+const starsInput = document.getElementById("starsInput");
+const reviewName = document.getElementById("reviewName");
+const reviewText = document.getElementById("reviewText");
+const reviewPhoto = document.getElementById("reviewPhoto");
+const submitReview = document.getElementById("submitReview");
+const authWarning = document.getElementById("authWarning");
+const reviewsGrid = document.getElementById("reviewsGrid");
+
+let selectedRating = 5;
+let currentUser = null;
+let currentUserName = "";
+let allReviews = [];
+
+
+/* ===== ВЫБОР ЗВЁЗД В ФОРМЕ ===== */
+
+function paintStars(value) {
+    starsInput.querySelectorAll(".star").forEach((s) => {
+        s.classList.toggle("active", Number(s.dataset.value) <= value);
+    });
+}
+
+paintStars(selectedRating);
+
+starsInput.querySelectorAll(".star").forEach((star) => {
+    star.addEventListener("click", () => {
+        if (!currentUser) return;
+        selectedRating = Number(star.dataset.value);
+        paintStars(selectedRating);
+    });
+});
+
+
+/* ===== ПРОВЕРКА АВТОРИЗАЦИИ ===== */
+
+onAuthStateChanged(auth, async (user) => {
+
+    if (user) {
+        currentUser = user;
+
+        // берём имя из коллекции users
+        try {
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) {
+                currentUserName = snap.data().name || "Клиент";
+            } else {
+                currentUserName = "Клиент";
+            }
+        } catch (e) {
+            currentUserName = "Клиент";
+        }
+
+        // включаем форму
+        reviewName.disabled = false;
+        reviewText.disabled = false;
+        reviewPhoto.disabled = false;
+        submitReview.disabled = false;
+        submitReview.innerText = "Опубликовать отзыв";
+        reviewName.value = currentUserName;
+        authWarning.style.display = "none";
+
+    } else {
+        currentUser = null;
+        reviewName.disabled = true;
+        reviewText.disabled = true;
+        reviewPhoto.disabled = true;
+        submitReview.disabled = true;
+        submitReview.innerText = "Войдите, чтобы оставить отзыв";
+        authWarning.style.display = "block";
+    }
+});
+
+
+/* ===== ОТПРАВКА ОТЗЫВА ===== */
+
+submitReview.addEventListener("click", async () => {
+
+    if (!currentUser) return;
+
+    const name = reviewName.value.trim() || currentUserName;
+    const text = reviewText.value.trim();
+
+    if (!text) {
+        alert("Напишите текст отзыва");
+        return;
+    }
+
+    submitReview.disabled = true;
+    submitReview.innerText = "Публикуем...";
+
+    try {
+
+        let photoURL = "";
+
+        // загрузка фото в Storage, если выбрано
+        if (reviewPhoto.files.length > 0) {
+            const file = reviewPhoto.files[0];
+            const storageRef = ref(
+                storage,
+                "reviews/" + currentUser.uid + "_" + Date.now() + "_" + file.name
+            );
+            await uploadBytes(storageRef, file);
+            photoURL = await getDownloadURL(storageRef);
+        }
+
+        await addDoc(collection(db, "reviews"), {
+            uid: currentUser.uid,
+            name: name,
+            text: text,
+            rating: selectedRating,
+            photoURL: photoURL,
+            createdAt: Date.now()
+        });
+
+        alert("Спасибо! Ваш отзыв опубликован.");
+
+        reviewText.value = "";
+        reviewPhoto.value = "";
+        selectedRating = 5;
+        paintStars(selectedRating);
+
+        loadReviews();
+
+    } catch (error) {
+        console.error("Ошибка отправки отзыва:", error);
+        alert("Ошибка: " + error.message);
+    }
+
+    submitReview.disabled = false;
+    submitReview.innerText = "Опубликовать отзыв";
+});
+
+
+/* ===== ЗАГРУЗКА И ОТРИСОВКА ОТЗЫВОВ ===== */
+
+function starsLine(rating) {
+    const full = "★".repeat(rating);
+    const empty = "☆".repeat(5 - rating);
+    return full + empty;
+}
+
+function renderReviews(list) {
+
+    reviewsGrid.innerHTML = "";
+
+    if (list.length === 0) {
+        reviewsGrid.innerHTML =
+            '<div class="no-reviews">Пока нет отзывов в этой категории</div>';
+        return;
+    }
+
+    list.forEach((r) => {
+
+        const initial = (r.name || "К").trim().charAt(0).toUpperCase();
+
+        const imageBlock = r.photoURL
+            ? `<div class="review-image" style="background-image:url('${r.photoURL}')"></div>`
+            : "";
+
+        const card = document.createElement("div");
+        card.className = "review-card";
+        card.innerHTML = `
+            ${imageBlock}
+            <div class="review-content">
+                <div class="review-user">
+                    <div class="user-avatar">${initial}</div>
+                    <div>
+                        <div class="review-name">${r.name || "Клиент"}</div>
+                        <div class="review-stars">${starsLine(r.rating)}</div>
+                    </div>
+                </div>
+                <div class="review-text">${r.text || ""}</div>
+            </div>
+        `;
+        reviewsGrid.appendChild(card);
+    });
+}
+
+function updateAverage() {
+
+    const count = allReviews.length;
+    document.getElementById("reviewsCount").innerText = count;
+
+    if (count === 0) {
+        document.getElementById("averageRating").innerText = "0.0";
+        return;
+    }
+
+    let sum = 0;
+    allReviews.forEach((r) => (sum += Number(r.rating) || 0));
+    const avg = sum / count;
+
+    document.getElementById("averageRating").innerText = avg.toFixed(1);
+    document.getElementById("averageStars").innerText =
+        starsLine(Math.round(avg));
+}
+
+async function loadReviews() {
+
+    try {
+        const q = query(
+            collection(db, "reviews"),
+            orderBy("createdAt", "desc")
+        );
+        const snap = await getDocs(q);
+
+        allReviews = [];
+        snap.forEach((d) => allReviews.push(d.data()));
+
+        updateAverage();
+        applyFilter();
+
+    } catch (error) {
+        console.error("Ошибка загрузки отзывов:", error);
+        reviewsGrid.innerHTML =
+            '<div class="no-reviews">Не удалось загрузить отзывы</div>';
+    }
+}
+
+
+/* ===== ФИЛЬТРАЦИЯ ПО ОЦЕНКАМ ===== */
+
+let activeFilter = "all";
+
+function applyFilter() {
+    let list = allReviews;
+    if (activeFilter !== "all") {
+        list = allReviews.filter(
+            (r) => Number(r.rating) === Number(activeFilter)
+        );
+    }
+    renderReviews(list);
+}
+
+document.querySelectorAll(".filter-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+        document
+            .querySelectorAll(".filter-btn")
+            .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeFilter = btn.dataset.stars;
+        applyFilter();
+    });
+});
+
+
+/* старт */
+loadReviews();
+
+</script>
+
+
+
 <script>
 
-function showAuthMessage(){
+/* ===== БУРГЕР ===== */
 
-    alert(
-'Чтобы оставить отзыв, необходимо войти в личный кабинет.'
-    );
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
 
-}
+burger.addEventListener("click", () => {
+    nav.classList.toggle("active");
+    burger.innerHTML = nav.classList.contains("active") ? "✕" : "☰";
+});
 
 </script>
 
