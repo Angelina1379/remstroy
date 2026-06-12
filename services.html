@@ -87,10 +87,9 @@ body{
 
 .logo a {
     text-decoration: none;
-    color: inherit; /* наследует цвет от .logo */
-    display: inline-block; /* или block, если нужно */
+    color: inherit;
+    display: inline-block;
 }
-
 
 .nav{
 
@@ -128,6 +127,21 @@ body{
     border-radius:16px;
 
     font-weight:600;
+}
+
+.burger{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+    color:#222;
 }
 
 
@@ -197,88 +211,171 @@ body{
     padding-bottom:120px;
 }
 
+.services-filter{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:14px;
+
+    margin-bottom:45px;
+}
+
+.filter-btn{
+
+    border:2px solid transparent;
+
+    background:white;
+
+    padding:13px 24px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    font-size:15px;
+
+    color:#444;
+
+    transition:0.25s;
+}
+
+.filter-btn:hover{
+
+    border-color:#ffb547;
+
+    color:#222;
+}
+
+.filter-btn.active{
+
+    background:#ffb547;
+
+    color:#222;
+}
+
 .services-grid{
 
     display:grid;
 
     grid-template-columns:
-    repeat(auto-fit,minmax(320px,1fr));
+    repeat(auto-fit,minmax(300px,1fr));
 
-    gap:28px;
+    gap:26px;
 }
 
 .service-card{
 
     background:white;
 
-    border-radius:32px;
+    border-radius:28px;
 
     overflow:hidden;
 
+    border:2px solid transparent;
+
     transition:0.3s;
+
+    display:flex;
+
+    flex-direction:column;
 }
 
 .service-card:hover{
 
-    transform:translateY(-10px);
-}
+    transform:translateY(-8px);
 
-.service-image{
+    border-color:#ffb547;
 
-    height:260px;
-
-    background-size:cover;
-
-    background-position:center;
+    box-shadow:0 18px 40px rgba(255,181,71,0.18);
 }
 
 .service-content{
 
-    padding:34px;
+    padding:32px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    height:100%;
+}
+
+.service-cat{
+
+    align-self:flex-start;
+
+    background:#fff3df;
+
+    color:#ff9800;
+
+    padding:6px 14px;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    margin-bottom:18px;
 }
 
 .service-content h3{
 
-    font-size:32px;
+    font-size:26px;
 
-    margin-bottom:18px;
+    margin-bottom:14px;
 }
 
 .service-content p{
 
     color:#666;
 
-    line-height:1.8;
+    line-height:1.7;
 
-    margin-bottom:24px;
+    margin-bottom:22px;
+
+    flex-grow:1;
 }
 
 .service-price{
 
-    font-size:32px;
+    font-size:28px;
 
     font-weight:800;
 
-    margin-bottom:24px;
+    color:#ff8c42;
+
+    margin-bottom:22px;
 }
 
 .service-btn{
 
     width:100%;
 
-    padding:18px;
+    padding:16px;
 
     border:none;
 
-    border-radius:18px;
+    border-radius:16px;
 
     background:#ffb547;
 
-    font-size:17px;
+    font-size:16px;
 
     font-weight:700;
 
     cursor:pointer;
+
+    transition:0.25s;
+}
+
+.service-btn:hover{
+
+    background:#ffa530;
 }
 
 
@@ -307,11 +404,13 @@ body{
 
 .cta-left h2{
 
-    font-size:54px;
+    font-size:48px;
 
     line-height:1.1;
 
     margin-bottom:24px;
+
+    margin-top:14px;
 }
 
 .cta-left p{
@@ -391,11 +490,13 @@ body{
     justify-content:center;
 
     z-index:9999;
+
+    padding:20px;
 }
 
 .modal-content{
 
-    width:90%;
+    width:100%;
 
     max-width:650px;
 
@@ -403,7 +504,7 @@ body{
 
     border-radius:36px;
 
-    padding:40px;
+    padding:44px;
 
     position:relative;
 
@@ -416,32 +517,49 @@ body{
 
     position:absolute;
 
-    top:20px;
-    right:20px;
+    top:24px;
+    right:24px;
+
+    width:44px;
+    height:44px;
 
     border:none;
 
-    background:none;
+    background:#f3f3f3;
 
-    font-size:28px;
+    border-radius:50%;
+
+    font-size:22px;
 
     cursor:pointer;
 }
 
 .modal-content h2{
 
-    font-size:42px;
+    font-size:38px;
 
-    margin-bottom:20px;
+    margin-bottom:16px;
+
+    padding-right:40px;
 }
 
 .service-modal-price{
 
-    font-size:34px;
+    display:inline-block;
+
+    background:#fff3df;
+
+    color:#ff8c42;
+
+    padding:10px 20px;
+
+    border-radius:14px;
+
+    font-size:24px;
 
     font-weight:800;
 
-    margin-bottom:30px;
+    margin-bottom:28px;
 }
 
 .service-modal-list{
@@ -450,7 +568,7 @@ body{
 
     line-height:2;
 
-    margin-bottom:35px;
+    margin-bottom:32px;
 }
 
 #serviceForm{
@@ -459,7 +577,7 @@ body{
 
     flex-direction:column;
 
-    gap:18px;
+    gap:16px;
 }
 
 #serviceForm input{
@@ -530,13 +648,49 @@ body{
         font-size:52px;
     }
 
+    .burger{
+
+        display:block;
+    }
+
     .nav{
 
-        display:none;
+        position:absolute;
+
+        top:90px;
+
+        left:0;
+
+        width:100%;
+
+        background:white;
+
+        flex-direction:column;
+
+        gap:0;
+
+        max-height:0;
+
+        overflow:hidden;
+
+        transition:0.3s;
+
+        border-bottom:1px solid #eee;
+    }
+
+    .nav.active{
+
+        max-height:500px;
+    }
+
+    .nav a{
+
+        padding:18px 30px;
+
+        border-bottom:1px solid #f0f0f0;
     }
 
 }
-    
 
 @media(max-width:768px){
 
@@ -552,49 +706,13 @@ body{
 
     .cta-left h2{
 
-        font-size:40px;
+        font-size:36px;
     }
 
-}
-.services-filter{
+    .modal-content{
 
-display:flex;
-
-flex-wrap:wrap;
-
-gap:15px;
-
-margin-bottom:40px;
-
-}
-
-.filter-btn{
-
-border:none;
-
-background:white;
-
-padding:14px 24px;
-
-border-radius:18px;
-
-cursor:pointer;
-
-font-weight:600;
-
-transition:.3s;
-
-}
-
-.filter-btn:hover{
-
-background:#ffb547;
-
-}
-
-.filter-btn.active{
-
-background:#ffb547;
+        padding:30px;
+    }
 
 }
 
@@ -614,7 +732,11 @@ background:#ffb547;
     <a href="index.html">BuildHouse</a>
 </div>
 
-<nav class="nav">
+<button class="burger" id="burger">
+    ☰
+</button>
+
+<nav class="nav" id="nav">
 
 <a href="services.html">Услуги</a>
 <a href="portfolio.html">Портфолио</a>
@@ -672,6 +794,8 @@ class="login-btn">
 
 </section>
 
+
+
 <section class="services-page">
 
 <div class="container">
@@ -716,6 +840,7 @@ class="login-btn">
 
 <div class="service-card" data-category="repair">
 <div class="service-content">
+<span class="service-cat">Ремонт</span>
 <h3>Косметический ремонт</h3>
 <p>Обновление интерьера без капитальных работ.</p>
 <div class="service-price">от 7 000 ₽/м²</div>
@@ -725,6 +850,7 @@ class="login-btn">
 
 <div class="service-card" data-category="repair">
 <div class="service-content">
+<span class="service-cat">Ремонт</span>
 <h3>Капитальный ремонт</h3>
 <p>Полное обновление помещения под ключ.</p>
 <div class="service-price">от 12 000 ₽/м²</div>
@@ -734,6 +860,7 @@ class="login-btn">
 
 <div class="service-card" data-category="design">
 <div class="service-content">
+<span class="service-cat">Дизайн</span>
 <h3>Дизайнерский ремонт</h3>
 <p>Ремонт по индивидуальному дизайн-проекту.</p>
 <div class="service-price">от 18 000 ₽/м²</div>
@@ -743,6 +870,7 @@ class="login-btn">
 
 <div class="service-card" data-category="walls">
 <div class="service-content">
+<span class="service-cat">Стены</span>
 <h3>Поклейка обоев</h3>
 <p>Флизелиновые, виниловые и фотообои.</p>
 <div class="service-price">от 450 ₽/м²</div>
@@ -752,6 +880,7 @@ class="login-btn">
 
 <div class="service-card" data-category="walls">
 <div class="service-content">
+<span class="service-cat">Стены</span>
 <h3>Покраска стен</h3>
 <p>Подготовка и окрашивание поверхностей.</p>
 <div class="service-price">от 500 ₽/м²</div>
@@ -761,6 +890,7 @@ class="login-btn">
 
 <div class="service-card" data-category="walls">
 <div class="service-content">
+<span class="service-cat">Стены</span>
 <h3>Штукатурные работы</h3>
 <p>Выравнивание стен и откосов.</p>
 <div class="service-price">от 600 ₽/м²</div>
@@ -770,6 +900,7 @@ class="login-btn">
 
 <div class="service-card" data-category="walls">
 <div class="service-content">
+<span class="service-cat">Стены</span>
 <h3>Шпаклевка стен</h3>
 <p>Подготовка поверхностей под отделку.</p>
 <div class="service-price">от 350 ₽/м²</div>
@@ -779,6 +910,7 @@ class="login-btn">
 
 <div class="service-card" data-category="floors">
 <div class="service-content">
+<span class="service-cat">Полы</span>
 <h3>Укладка плитки</h3>
 <p>Керамогранит, плитка и мозаика.</p>
 <div class="service-price">от 2 000 ₽/м²</div>
@@ -788,6 +920,7 @@ class="login-btn">
 
 <div class="service-card" data-category="floors">
 <div class="service-content">
+<span class="service-cat">Полы</span>
 <h3>Укладка ламината</h3>
 <p>Монтаж ламината любой сложности.</p>
 <div class="service-price">от 700 ₽/м²</div>
@@ -797,6 +930,7 @@ class="login-btn">
 
 <div class="service-card" data-category="floors">
 <div class="service-content">
+<span class="service-cat">Полы</span>
 <h3>Укладка кварцвинила</h3>
 <p>Современное влагостойкое покрытие.</p>
 <div class="service-price">от 850 ₽/м²</div>
@@ -806,6 +940,7 @@ class="login-btn">
 
 <div class="service-card" data-category="floors">
 <div class="service-content">
+<span class="service-cat">Полы</span>
 <h3>Стяжка пола</h3>
 <p>Полусухая и бетонная стяжка.</p>
 <div class="service-price">от 650 ₽/м²</div>
@@ -815,6 +950,7 @@ class="login-btn">
 
 <div class="service-card" data-category="ceilings">
 <div class="service-content">
+<span class="service-cat">Потолки</span>
 <h3>Натяжные потолки</h3>
 <p>Матовые, глянцевые и теневые потолки.</p>
 <div class="service-price">от 950 ₽/м²</div>
@@ -824,6 +960,7 @@ class="login-btn">
 
 <div class="service-card" data-category="ceilings">
 <div class="service-content">
+<span class="service-cat">Потолки</span>
 <h3>Подвесные потолки</h3>
 <p>Гипсокартонные конструкции любой формы.</p>
 <div class="service-price">от 1 400 ₽/м²</div>
@@ -833,6 +970,7 @@ class="login-btn">
 
 <div class="service-card" data-category="electric">
 <div class="service-content">
+<span class="service-cat">Электрика</span>
 <h3>Электромонтажные работы</h3>
 <p>Монтаж проводки и освещения.</p>
 <div class="service-price">от 25 000 ₽</div>
@@ -842,6 +980,7 @@ class="login-btn">
 
 <div class="service-card" data-category="electric">
 <div class="service-content">
+<span class="service-cat">Электрика</span>
 <h3>Замена электропроводки</h3>
 <p>Полная или частичная замена сети.</p>
 <div class="service-price">от 1 500 ₽/м²</div>
@@ -851,6 +990,7 @@ class="login-btn">
 
 <div class="service-card" data-category="plumbing">
 <div class="service-content">
+<span class="service-cat">Сантехника</span>
 <h3>Сантехнические работы</h3>
 <p>Разводка труб и подключение оборудования.</p>
 <div class="service-price">от 30 000 ₽</div>
@@ -860,6 +1000,7 @@ class="login-btn">
 
 <div class="service-card" data-category="plumbing">
 <div class="service-content">
+<span class="service-cat">Сантехника</span>
 <h3>Установка сантехники</h3>
 <p>Ванны, раковины, инсталляции и смесители.</p>
 <div class="service-price">от 5 000 ₽</div>
@@ -869,6 +1010,7 @@ class="login-btn">
 
 <div class="service-card" data-category="plumbing">
 <div class="service-content">
+<span class="service-cat">Сантехника</span>
 <h3>Ремонт ванной комнаты</h3>
 <p>Комплексный ремонт санузла под ключ.</p>
 <div class="service-price">от 80 000 ₽</div>
@@ -878,6 +1020,7 @@ class="login-btn">
 
 <div class="service-card" data-category="repair">
 <div class="service-content">
+<span class="service-cat">Ремонт</span>
 <h3>Ремонт кухни</h3>
 <p>Полное обновление кухни любой сложности.</p>
 <div class="service-price">от 70 000 ₽</div>
@@ -887,6 +1030,7 @@ class="login-btn">
 
 <div class="service-card" data-category="repair">
 <div class="service-content">
+<span class="service-cat">Ремонт</span>
 <h3>Демонтажные работы</h3>
 <p>Демонтаж старой отделки и перегородок.</p>
 <div class="service-price">от 300 ₽/м²</div>
@@ -896,6 +1040,7 @@ class="login-btn">
 
 <div class="service-card" data-category="repair">
 <div class="service-content">
+<span class="service-cat">Ремонт</span>
 <h3>Установка дверей</h3>
 <p>Монтаж входных и межкомнатных дверей.</p>
 <div class="service-price">от 4 500 ₽</div>
@@ -905,6 +1050,7 @@ class="login-btn">
 
 <div class="service-card" data-category="design">
 <div class="service-content">
+<span class="service-cat">Дизайн</span>
 <h3>Разработка дизайн-проекта</h3>
 <p>3D-визуализация и комплект чертежей.</p>
 <div class="service-price">от 1 500 ₽/м²</div>
@@ -919,6 +1065,7 @@ class="login-btn">
 </section>
 
 
+
 <!-- CTA -->
 
 <section class="cta">
@@ -929,7 +1076,7 @@ class="login-btn">
 
 <div class="cta-left">
 
-<p class="hero-subtitle">
+<p class="hero-subtitle" style="color:#ff8c42;">
 Бесплатная консультация
 </p>
 
@@ -952,33 +1099,30 @@ class="login-btn">
 
 
 
-<form
-    id="serviceForm"
-    class="cta-form"
+<form id="ctaForm" class="cta-form">
+
+<input
+    type="text"
+    id="ctaName"
+    placeholder="Ваше имя"
+    required
 >
 
-    <input
-        type="text"
-        id="serviceClientName"
-        placeholder="Ваше имя"
-        required
-    >
+<input
+    type="tel"
+    id="ctaPhone"
+    placeholder="Телефон"
+    required
+>
 
-    <input
-        type="tel"
-        id="serviceClientPhone"
-        placeholder="Телефон"
-        required
-    >
+<textarea
+    id="ctaComment"
+    placeholder="Комментарий"
+></textarea>
 
-    <textarea
-        id="serviceComment"
-        placeholder="Комментарий"
-    ></textarea>
-
-    <button type="submit">
-        Получить консультацию
-    </button>
+<button type="submit">
+    Получить консультацию
+</button>
 
 </form>
 
@@ -992,35 +1136,17 @@ class="login-btn">
 
 <!-- MODAL -->
 
-<div class="modal"
-id="serviceModal">
+<div class="modal" id="serviceModal">
 
 <div class="modal-content">
 
-<button class="close-modal"
-onclick="closeServiceModal()">
+<button class="close-modal" onclick="closeServiceModal()">✕</button>
 
-✕
+<h2 id="modalTitle">Косметический ремонт</h2>
 
-</button>
+<div class="service-modal-price" id="modalPrice">от 7 000 ₽/м²</div>
 
-<h2 id="modalTitle">
-Косметический ремонт
-</h2>
-
-<div class="service-modal-price"
-id="modalPrice">
-
-от 7 000 ₽/м²
-
-</div>
-
-<div class="service-modal-list"
-id="modalList">
-
-</div>
-
-
+<div class="service-modal-list" id="modalList"></div>
 
 <form id="serviceForm">
 
@@ -1034,8 +1160,7 @@ id="serviceClientPhone"
 placeholder="Телефон"
 required>
 
-<button type="submit"
-class="submit-btn">
+<button type="submit" class="submit-btn">
 
 Заказать услугу
 
@@ -1075,11 +1200,11 @@ BuildHouse
 </h4>
 
 <p>
-+7 (999) 999-99-99
++7 903 349-11-91
 </p>
 
 <p>
-info@buildhouse.ru
+vitalikpozolotin@yandex.ru
 </p>
 
 </div>
@@ -1097,8 +1222,7 @@ import { db } from "./js/firebase.js";
 
 import {
     collection,
-    addDoc,
-    serverTimestamp
+    addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const serviceModal =
@@ -1111,14 +1235,14 @@ const services = {
     "Косметический ремонт": {
         price: "от 7 000 ₽/м²",
         description: `
-        ✔ Демонтаж старых покрытий<br>
-        ✔ Подготовка стен и потолков<br>
-        ✔ Шпаклевка поверхностей<br>
-        ✔ Поклейка обоев или покраска<br>
-        ✔ Укладка ламината<br>
-        ✔ Монтаж плинтусов<br>
-        ✔ Замена розеток и выключателей<br>
-        ✔ Монтаж освещения<br><br>
+        ✔️ Демонтаж старых покрытий<br>
+        ✔️ Подготовка стен и потолков<br>
+        ✔️ Шпаклевка поверхностей<br>
+        ✔️ Поклейка обоев или покраска<br>
+        ✔️ Укладка ламината<br>
+        ✔️ Монтаж плинтусов<br>
+        ✔️ Замена розеток и выключателей<br>
+        ✔️ Монтаж освещения<br><br>
         Срок выполнения: 2–4 недели.
         `
     },
@@ -1126,14 +1250,14 @@ const services = {
     "Капитальный ремонт": {
         price: "от 12 000 ₽/м²",
         description: `
-        ✔ Полный демонтаж старой отделки<br>
-        ✔ Замена электропроводки<br>
-        ✔ Замена сантехники<br>
-        ✔ Выравнивание стен<br>
-        ✔ Стяжка пола<br>
-        ✔ Плиточные работы<br>
-        ✔ Натяжные потолки<br>
-        ✔ Чистовая отделка<br><br>
+        ✔️ Полный демонтаж старой отделки<br>
+        ✔️ Замена электропроводки<br>
+        ✔️ Замена сантехники<br>
+        ✔️ Выравнивание стен<br>
+        ✔️ Стяжка пола<br>
+        ✔️ Плиточные работы<br>
+        ✔️ Натяжные потолки<br>
+        ✔️ Чистовая отделка<br><br>
         Срок выполнения: 1–4 месяца.
         `
     },
@@ -1141,12 +1265,12 @@ const services = {
     "Дизайнерский ремонт": {
         price: "от 18 000 ₽/м²",
         description: `
-        ✔ Дизайн-проект<br>
-        ✔ 3D-визуализация<br>
-        ✔ Авторский надзор<br>
-        ✔ Подбор материалов<br>
-        ✔ Умный дом<br>
-        ✔ Декоративное освещение<br><br>
+        ✔️ Дизайн-проект<br>
+        ✔️ 3D-визуализация<br>
+        ✔️ Авторский надзор<br>
+        ✔️ Подбор материалов<br>
+        ✔️ Умный дом<br>
+        ✔️ Декоративное освещение<br><br>
         Индивидуальный интерьер под ключ.
         `
     },
@@ -1154,199 +1278,199 @@ const services = {
     "Поклейка обоев": {
         price: "от 450 ₽/м²",
         description: `
-        ✔ Подготовка стен<br>
-        ✔ Грунтовка<br>
-        ✔ Поклейка виниловых обоев<br>
-        ✔ Поклейка флизелиновых обоев<br>
-        ✔ Фотообои и дизайнерские решения
+        ✔️ Подготовка стен<br>
+        ✔️ Грунтовка<br>
+        ✔️ Поклейка виниловых обоев<br>
+        ✔️ Поклейка флизелиновых обоев<br>
+        ✔️ Фотообои и дизайнерские решения
         `
     },
 
     "Покраска стен": {
         price: "от 500 ₽/м²",
         description: `
-        ✔ Подготовка поверхности<br>
-        ✔ Шлифовка<br>
-        ✔ Грунтовка<br>
-        ✔ Покраска в 2-3 слоя<br>
-        ✔ Декоративные покрытия
+        ✔️ Подготовка поверхности<br>
+        ✔️ Шлифовка<br>
+        ✔️ Грунтовка<br>
+        ✔️ Покраска в 2-3 слоя<br>
+        ✔️ Декоративные покрытия
         `
     },
 
     "Штукатурные работы": {
         price: "от 600 ₽/м²",
         description: `
-        ✔ Выравнивание стен<br>
-        ✔ Выравнивание откосов<br>
-        ✔ Маячная штукатурка<br>
-        ✔ Машинное нанесение<br>
-        ✔ Подготовка под отделку
+        ✔️ Выравнивание стен<br>
+        ✔️ Выравнивание откосов<br>
+        ✔️ Маячная штукатурка<br>
+        ✔️ Машинное нанесение<br>
+        ✔️ Подготовка под отделку
         `
     },
 
     "Шпаклевка стен": {
         price: "от 350 ₽/м²",
         description: `
-        ✔ Стартовая шпаклевка<br>
-        ✔ Финишная шпаклевка<br>
-        ✔ Шлифовка поверхности<br>
-        ✔ Подготовка под покраску и обои
+        ✔️ Стартовая шпаклевка<br>
+        ✔️ Финишная шпаклевка<br>
+        ✔️ Шлифовка поверхности<br>
+        ✔️ Подготовка под покраску и обои
         `
     },
 
     "Укладка плитки": {
         price: "от 2 000 ₽/м²",
         description: `
-        ✔ Керамическая плитка<br>
-        ✔ Керамогранит<br>
-        ✔ Мозаика<br>
-        ✔ Затирка швов<br>
-        ✔ Работа с крупным форматом
+        ✔️ Керамическая плитка<br>
+        ✔️ Керамогранит<br>
+        ✔️ Мозаика<br>
+        ✔️ Затирка швов<br>
+        ✔️ Работа с крупным форматом
         `
     },
 
     "Укладка ламината": {
         price: "от 700 ₽/м²",
         description: `
-        ✔ Подготовка основания<br>
-        ✔ Подложка<br>
-        ✔ Монтаж ламината<br>
-        ✔ Установка плинтусов
+        ✔️ Подготовка основания<br>
+        ✔️ Подложка<br>
+        ✔️ Монтаж ламината<br>
+        ✔️ Установка плинтусов
         `
     },
 
     "Укладка кварцвинила": {
         price: "от 850 ₽/м²",
         description: `
-        ✔ Подготовка основания<br>
-        ✔ Монтаж кварцвинила<br>
-        ✔ Герметизация стыков<br>
-        ✔ Гарантия на покрытие
+        ✔️ Подготовка основания<br>
+        ✔️ Монтаж кварцвинила<br>
+        ✔️ Герметизация стыков<br>
+        ✔️ Гарантия на покрытие
         `
     },
 
     "Стяжка пола": {
         price: "от 650 ₽/м²",
         description: `
-        ✔ Полусухая стяжка<br>
-        ✔ Бетонная стяжка<br>
-        ✔ Выравнивание пола<br>
-        ✔ Подготовка под напольное покрытие
+        ✔️ Полусухая стяжка<br>
+        ✔️ Бетонная стяжка<br>
+        ✔️ Выравнивание пола<br>
+        ✔️ Подготовка под напольное покрытие
         `
     },
 
     "Натяжные потолки": {
         price: "от 950 ₽/м²",
         description: `
-        ✔ Матовые потолки<br>
-        ✔ Глянцевые потолки<br>
-        ✔ Теневой профиль<br>
-        ✔ Световые линии<br>
-        ✔ Встроенные светильники
+        ✔️ Матовые потолки<br>
+        ✔️ Глянцевые потолки<br>
+        ✔️ Теневой профиль<br>
+        ✔️ Световые линии<br>
+        ✔️ Встроенные светильники
         `
     },
 
     "Подвесные потолки": {
         price: "от 1 400 ₽/м²",
         description: `
-        ✔ Гипсокартонные конструкции<br>
-        ✔ Многоуровневые потолки<br>
-        ✔ Подсветка<br>
-        ✔ Ниши под карнизы
+        ✔️ Гипсокартонные конструкции<br>
+        ✔️ Многоуровневые потолки<br>
+        ✔️ Подсветка<br>
+        ✔️ Ниши под карнизы
         `
     },
 
     "Электромонтажные работы": {
         price: "от 25 000 ₽",
         description: `
-        ✔ Разводка кабеля<br>
-        ✔ Монтаж розеток<br>
-        ✔ Монтаж выключателей<br>
-        ✔ Освещение<br>
-        ✔ Электрощит
+        ✔️ Разводка кабеля<br>
+        ✔️ Монтаж розеток<br>
+        ✔️ Монтаж выключателей<br>
+        ✔️ Освещение<br>
+        ✔️ Электрощит
         `
     },
 
     "Замена электропроводки": {
         price: "от 1 500 ₽/м²",
         description: `
-        ✔ Демонтаж старой проводки<br>
-        ✔ Прокладка новых линий<br>
-        ✔ Автоматы защиты<br>
-        ✔ Проверка системы
+        ✔️ Демонтаж старой проводки<br>
+        ✔️ Прокладка новых линий<br>
+        ✔️ Автоматы защиты<br>
+        ✔️ Проверка системы
         `
     },
 
     "Сантехнические работы": {
         price: "от 30 000 ₽",
         description: `
-        ✔ Разводка труб<br>
-        ✔ Канализация<br>
-        ✔ Подключение сантехники<br>
-        ✔ Проверка герметичности
+        ✔️ Разводка труб<br>
+        ✔️ Канализация<br>
+        ✔️ Подключение сантехники<br>
+        ✔️ Проверка герметичности
         `
     },
 
     "Установка сантехники": {
         price: "от 5 000 ₽",
         description: `
-        ✔ Установка ванны<br>
-        ✔ Установка раковины<br>
-        ✔ Монтаж инсталляции<br>
-        ✔ Подключение смесителей
+        ✔️ Установка ванны<br>
+        ✔️ Установка раковины<br>
+        ✔️ Монтаж инсталляции<br>
+        ✔️ Подключение смесителей
         `
     },
 
     "Ремонт ванной комнаты": {
         price: "от 80 000 ₽",
         description: `
-        ✔ Демонтаж<br>
-        ✔ Плитка<br>
-        ✔ Сантехника<br>
-        ✔ Освещение<br>
-        ✔ Потолок
+        ✔️ Демонтаж<br>
+        ✔️ Плитка<br>
+        ✔️ Сантехника<br>
+        ✔️ Освещение<br>
+        ✔️ Потолок
         `
     },
 
     "Ремонт кухни": {
         price: "от 70 000 ₽",
         description: `
-        ✔ Электрика<br>
-        ✔ Полы<br>
-        ✔ Отделка стен<br>
-        ✔ Фартук<br>
-        ✔ Подготовка под кухонный гарнитур
+        ✔️ Электрика<br>
+        ✔️ Полы<br>
+        ✔️ Отделка стен<br>
+        ✔️ Фартук<br>
+        ✔️ Подготовка под кухонный гарнитур
         `
     },
 
     "Демонтажные работы": {
         price: "от 300 ₽/м²",
         description: `
-        ✔ Демонтаж плитки<br>
-        ✔ Демонтаж перегородок<br>
-        ✔ Снятие старой отделки<br>
-        ✔ Вывоз строительного мусора
+        ✔️ Демонтаж плитки<br>
+        ✔️ Демонтаж перегородок<br>
+        ✔️ Снятие старой отделки<br>
+        ✔️ Вывоз строительного мусора
         `
     },
 
     "Установка дверей": {
         price: "от 4 500 ₽",
         description: `
-        ✔ Межкомнатные двери<br>
-        ✔ Входные двери<br>
-        ✔ Врезка замков<br>
-        ✔ Установка наличников
+        ✔️ Межкомнатные двери<br>
+        ✔️ Входные двери<br>
+        ✔️ Врезка замков<br>
+        ✔️ Установка наличников
         `
     },
 
     "Разработка дизайн-проекта": {
         price: "от 1 500 ₽/м²",
         description: `
-        ✔ Планировка<br>
-        ✔ 3D-визуализация<br>
-        ✔ Рабочие чертежи<br>
-        ✔ Подбор материалов<br>
-        ✔ Смета
+        ✔️ Планировка<br>
+        ✔️ 3D-визуализация<br>
+        ✔️ Рабочие чертежи<br>
+        ✔️ Подбор материалов<br>
+        ✔️ Смета
         `
     }
 };
@@ -1374,9 +1498,7 @@ document.querySelectorAll(".service-btn").forEach(btn => {
 
     btn.addEventListener("click", () => {
 
-        openServiceModal(
-            btn.dataset.service
-        );
+        openServiceModal(btn.dataset.service);
 
     });
 
@@ -1390,6 +1512,12 @@ window.addEventListener("click", e => {
 
 });
 
+document.addEventListener("keydown", e => {
+    if(e.key === "Escape") closeServiceModal();
+});
+
+/* ===== ФИЛЬТРЫ ===== */
+
 document.querySelectorAll(".filter-btn").forEach(button => {
 
     button.addEventListener("click", () => {
@@ -1399,17 +1527,13 @@ document.querySelectorAll(".filter-btn").forEach(button => {
 
         button.classList.add("active");
 
-        const filter =
-        button.dataset.filter;
+        const filter = button.dataset.filter;
 
         document.querySelectorAll(".service-card")
         .forEach(card => {
 
-            if(
-                filter === "all" ||
-                card.dataset.category === filter
-            ){
-                card.style.display = "block";
+            if(filter === "all" || card.dataset.category === filter){
+                card.style.display = "flex";
             }else{
                 card.style.display = "none";
             }
@@ -1420,23 +1544,16 @@ document.querySelectorAll(".filter-btn").forEach(button => {
 
 });
 
+/* ===== ОТПРАВКА ЗАЯВКИ ИЗ МОДАЛКИ ===== */
+
 document
 .getElementById("serviceForm")
 .addEventListener("submit", async function(e){
 
     e.preventDefault();
 
-    console.log("Форма отправлена");
-
-    const name =
-    document.getElementById("serviceClientName").value;
-
-    const phone =
-    document.getElementById("serviceClientPhone").value;
-
-    console.log("Имя:", name);
-    console.log("Телефон:", phone);
-    console.log("Услуга:", currentService);
+    const name = document.getElementById("serviceClientName").value;
+    const phone = document.getElementById("serviceClientPhone").value;
 
     try{
 
@@ -1451,10 +1568,7 @@ document
             }
         );
 
-        console.log(
-            "Документ создан:",
-            docRef.id
-        );
+        console.log("Документ создан:", docRef.id);
 
         alert("Заявка отправлена");
 
@@ -1465,18 +1579,68 @@ document
     }
     catch(error){
 
-        console.error(
-            "Ошибка Firestore:",
-            error
-        );
+        console.error("Ошибка Firestore:", error);
 
-        alert(
-            "Ошибка: " +
-            error.message
-        );
+        alert("Ошибка: " + error.message);
 
     }
 
+});
+
+/* ===== ОТПРАВКА ЗАЯВКИ ИЗ CTA ===== */
+
+document
+.getElementById("ctaForm")
+.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const name = document.getElementById("ctaName").value;
+    const phone = document.getElementById("ctaPhone").value;
+    const comment = document.getElementById("ctaComment").value;
+
+    try{
+
+        await addDoc(
+            collection(db,"projects"),
+            {
+                service: "Консультация",
+                clientName: name,
+                phone: phone,
+                comment: comment,
+                status: "Новая заявка",
+                createdAt: Date.now()
+            }
+        );
+
+        alert("Заявка отправлена");
+
+        this.reset();
+
+    }
+    catch(error){
+
+        console.error("Ошибка Firestore:", error);
+
+        alert("Ошибка: " + error.message);
+
+    }
+
+});
+
+</script>
+
+
+<script>
+
+/* ===== БУРГЕР ===== */
+
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
+
+burger.addEventListener("click", () => {
+    nav.classList.toggle("active");
+    burger.innerHTML = nav.classList.contains("active") ? "✕" : "☰";
 });
 
 </script>
