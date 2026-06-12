@@ -23,6 +23,10 @@ rel="stylesheet">
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
 
     font-family:'Inter',sans-serif;
@@ -83,8 +87,8 @@ body{
 
 .logo a {
     text-decoration: none;
-    color: inherit; /* наследует цвет от .logo */
-    display: inline-block; /* или block, если нужно */
+    color: inherit;
+    display: inline-block;
 }
 
 .nav{
@@ -101,6 +105,13 @@ body{
     color:#222;
 
     font-weight:500;
+
+    transition:0.3s;
+}
+
+.nav a:hover{
+
+    color:#ff8c42;
 }
 
 .login-btn{
@@ -116,6 +127,21 @@ body{
     color:#222;
 
     font-weight:600;
+}
+
+.burger{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+    color:#222;
 }
 
 
@@ -263,6 +289,15 @@ body{
     padding:40px;
 
     text-align:center;
+
+    transition:0.3s;
+}
+
+.stat-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 16px 36px rgba(255,181,71,0.18);
 }
 
 .stat-card h2{
@@ -270,6 +305,8 @@ body{
     font-size:56px;
 
     margin-bottom:10px;
+
+    color:#ff8c42;
 }
 
 .stat-card p{
@@ -298,7 +335,7 @@ body{
     display:grid;
 
     grid-template-columns:
-    repeat(auto-fit,minmax(280px,1fr));
+    repeat(auto-fit,minmax(250px,1fr));
 
     gap:28px;
 }
@@ -312,20 +349,28 @@ body{
     overflow:hidden;
 
     transition:0.3s;
+
+    border:2px solid transparent;
 }
 
 .team-card:hover{
 
     transform:translateY(-8px);
+
+    border-color:#ffb547;
+
+    box-shadow:0 18px 40px rgba(255,181,71,0.18);
 }
 
 .team-image{
 
-    height:320px;
+    height:300px;
 
     background-size:cover;
 
     background-position:center;
+
+    background-color:#e9e9e9;
 }
 
 .team-content{
@@ -335,7 +380,7 @@ body{
 
 .team-content h3{
 
-    font-size:28px;
+    font-size:26px;
 
     margin-bottom:10px;
 }
@@ -350,48 +395,6 @@ body{
 }
 
 .team-content p{
-
-    color:#666;
-
-    line-height:1.8;
-}
-
-
-
-/* VALUES */
-
-.values{
-
-    margin-bottom:120px;
-}
-
-.values-grid{
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(280px,1fr));
-
-    gap:25px;
-}
-
-.value-card{
-
-    background:white;
-
-    border-radius:30px;
-
-    padding:35px;
-}
-
-.value-card h3{
-
-    font-size:28px;
-
-    margin-bottom:18px;
-}
-
-.value-card p{
 
     color:#666;
 
@@ -524,9 +527,46 @@ body{
         font-size:52px;
     }
 
+    .burger{
+
+        display:block;
+    }
+
     .nav{
 
-        display:none;
+        position:absolute;
+
+        top:90px;
+
+        left:0;
+
+        width:100%;
+
+        background:white;
+
+        flex-direction:column;
+
+        gap:0;
+
+        max-height:0;
+
+        overflow:hidden;
+
+        transition:0.3s;
+
+        border-bottom:1px solid #eee;
+    }
+
+    .nav.active{
+
+        max-height:500px;
+    }
+
+    .nav a{
+
+        padding:18px 30px;
+
+        border-bottom:1px solid #f0f0f0;
     }
 
 }
@@ -571,7 +611,11 @@ body{
     <a href="index.html">BuildHouse</a>
 </div>
 
-<nav class="nav">
+<button class="burger" id="burger">
+    ☰
+</button>
+
+<nav class="nav" id="nav">
 
 <a href="services.html">Услуги</a>
 <a href="portfolio.html">Портфолио</a>
@@ -619,11 +663,11 @@ class="login-btn">
 <p class="hero-text">
 
 BuildHouse —
-команда специалистов,
-которая уже много лет
-создает стильные,
+команда мастеров из Астрахани,
+которая создает стильные,
 качественные
-и комфортные интерьеры.
+и комфортные интерьеры
+под ключ.
 
 </p>
 
@@ -661,32 +705,39 @@ BuildHouse —
 
 <p>
 
-Компания BuildHouse
-была основана в 2016 году.
-Мы начинали как небольшая
-бригада отделочников,
-а сегодня выполняем
-полный цикл ремонта
-под ключ.
+BuildHouse — команда
+по ремонту квартир и домов
+из Астрахани. Как компания
+мы образовались в 2024 году,
+но до этого каждый из нас
+уже много лет работал
+в сфере ремонта
+самостоятельно.
 
 </p>
 
 <p>
 
-Наша команда объединяет
-дизайнеров, инженеров,
-прорабов и мастеров,
-которые работают
-как единая система.
+Поэтому, несмотря на то,
+что компании всего
+<span id="companyAge">2</span> года,
+за плечами нашей команды —
+куда больший опыт
+и сотни выполненных объектов:
+от замены электрики
+до полного ремонта под ключ.
 
 </p>
 
 <p>
 
-Мы делаем акцент
-не только на красоте,
-но и на удобстве,
-качестве и прозрачности
+Мы выполняем самые разные
+работы — электрику,
+сантехнику, отделку,
+дизайнерские проекты —
+и делаем акцент
+на качестве, удобстве
+и прозрачности
 всех процессов.
 
 </p>
@@ -703,12 +754,10 @@ BuildHouse —
 
 <div class="stat-card">
 
-<h2>
-9+
-</h2>
+<h2 id="statExperience">10+</h2>
 
 <p>
-Лет опыта
+Лет опыта команды
 </p>
 
 </div>
@@ -717,9 +766,7 @@ BuildHouse —
 
 <div class="stat-card">
 
-<h2>
-127
-</h2>
+<h2 id="statProjects">—</h2>
 
 <p>
 Завершенных проектов
@@ -731,12 +778,10 @@ BuildHouse —
 
 <div class="stat-card">
 
-<h2>
-34
-</h2>
+<h2 id="statTeam">18</h2>
 
 <p>
-Сотрудника в команде
+Сотрудников в команде
 </p>
 
 </div>
@@ -745,9 +790,7 @@ BuildHouse —
 
 <div class="stat-card">
 
-<h2>
-4.9
-</h2>
+<h2 id="statRating">—</h2>
 
 <p>
 Средняя оценка клиентов
@@ -790,15 +833,15 @@ style="background-image:url('https://images.unsplash.com/photo-1500648767791-00d
 
 <div class="team-role">
 
-Руководитель компании
+Директор
 
 </div>
 
 <p>
 
-Контролирует качество работ
-и взаимодействие
-с клиентами.
+Руководит компанией,
+контролирует качество
+и работу с клиентами.
 
 </p>
 
@@ -818,12 +861,12 @@ style="background-image:url('https://images.unsplash.com/photo-1494790108377-be9
 <div class="team-content">
 
 <h3>
-Мария
+Валентина
 </h3>
 
 <div class="team-role">
 
-Дизайнер интерьеров
+Дизайнер
 
 </div>
 
@@ -844,26 +887,27 @@ style="background-image:url('https://images.unsplash.com/photo-1494790108377-be9
 <div class="team-card">
 
 <div class="team-image"
-style="background-image:url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1200')">
+style="background-image:url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1200')">
 
 </div>
 
 <div class="team-content">
 
 <h3>
-Дмитрий
+Ангелина
 </h3>
 
 <div class="team-role">
 
-Главный инженер
+Менеджер
 
 </div>
 
 <p>
 
-Отвечает за техническую часть
-и контроль строительных норм.
+Сопровождает клиентов
+и ведет проект
+на всех этапах.
 
 </p>
 
@@ -876,27 +920,27 @@ style="background-image:url('https://images.unsplash.com/photo-1506794778202-cad
 <div class="team-card">
 
 <div class="team-image"
-style="background-image:url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1200')">
+style="background-image:url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1200')">
 
 </div>
 
 <div class="team-content">
 
 <h3>
-Екатерина
+Виталий
 </h3>
 
 <div class="team-role">
 
-Менеджер проектов
+Главный инженер
 
 </div>
 
 <p>
 
-Помогает клиентам
-и сопровождает проект
-на всех этапах.
+Отвечает за техническую
+часть и контроль
+строительных норм.
 
 </p>
 
@@ -904,95 +948,36 @@ style="background-image:url('https://images.unsplash.com/photo-1438761681033-646
 
 </div>
 
-</div>
+
+
+<div class="team-card">
+
+<div class="team-image"
+style="background-image:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200')">
 
 </div>
 
-
-
-<!-- VALUES -->
-
-<div class="values">
-
-<h2 class="section-title">
-
-Почему выбирают нас
-
-</h2>
-
-
-
-<div class="values-grid">
-
-
-
-<div class="value-card">
+<div class="team-content">
 
 <h3>
-Прозрачность
+Ринат
 </h3>
+
+<div class="team-role">
+
+Прораб
+
+</div>
 
 <p>
 
-Все этапы ремонта
-отображаются онлайн
-в личном кабинете клиента.
+Контролирует бригады
+и качество работ
+прямо на объекте.
 
 </p>
 
 </div>
-
-
-
-<div class="value-card">
-
-<h3>
-Контроль качества
-</h3>
-
-<p>
-
-Каждый объект проверяется
-прорабом и инженером
-на всех этапах работ.
-
-</p>
-
-</div>
-
-
-
-<div class="value-card">
-
-<h3>
-Современные технологии
-</h3>
-
-<p>
-
-Используем цифровые системы
-для контроля сроков,
-документов и задач.
-
-</p>
-
-</div>
-
-
-
-<div class="value-card">
-
-<h3>
-Гарантия
-</h3>
-
-<p>
-
-Предоставляем официальную
-гарантию на все виды
-ремонтных работ.
-
-</p>
 
 </div>
 
@@ -1036,15 +1021,21 @@ style="background-image:url('https://images.unsplash.com/photo-1438761681033-646
 
 
 
-<form class="cta-form">
+<form id="ctaForm" class="cta-form">
 
 <input type="text"
-placeholder="Ваше имя">
+id="ctaName"
+placeholder="Ваше имя"
+required>
 
 <input type="tel"
-placeholder="Телефон">
+id="ctaPhone"
+placeholder="Телефон"
+required>
 
-<textarea placeholder="Комментарий"></textarea>
+<textarea
+id="ctaComment"
+placeholder="Комментарий"></textarea>
 
 <button type="submit">
 
@@ -1088,11 +1079,11 @@ BuildHouse
 </h4>
 
 <p>
-+7 (999) 999-99-99
++7 903 349-11-91
 </p>
 
 <p>
-info@buildhouse.ru
+vitalikpozolotin@yandex.ru
 </p>
 
 </div>
@@ -1100,6 +1091,143 @@ info@buildhouse.ru
 </div>
 
 </footer>
+
+
+
+<script type="module">
+
+import { db } from "./js/firebase.js";
+
+import {
+    collection,
+    getDocs,
+    addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+/* ===== АВТОПОДСЧЁТ ЦИФР ===== */
+
+const FOUNDED_YEAR = 2024;
+const currentYear = new Date().getFullYear();
+
+/* возраст компании (для текста "Кто мы?") */
+const companyAge = currentYear - FOUNDED_YEAR;
+const companyAgeEl = document.getElementById("companyAge");
+if (companyAgeEl) companyAgeEl.innerText = companyAge;
+
+/* опыт команды — компании 2 года, но у мастеров больше.
+   Здесь базовый опыт команды. Меняй число 8, если нужно. */
+const teamBaseExperience = 8;
+document.getElementById("statExperience").innerText =
+    (companyAge + teamBaseExperience) + "+";
+
+
+/* ===== ЗАВЕРШЁННЫЕ ПРОЕКТЫ ИЗ FIRESTORE ===== */
+
+async function loadProjectsCount() {
+    try {
+        const snap = await getDocs(collection(db, "projects"));
+
+        let completed = 0;
+        snap.forEach((doc) => {
+            const data = doc.data();
+            // считаем только завершённые
+            if (data.status === "Завершён" || data.status === "Завершен") {
+                completed++;
+            }
+        });
+
+        document.getElementById("statProjects").innerText = completed;
+    } catch (error) {
+        console.error("Ошибка загрузки проектов:", error);
+        document.getElementById("statProjects").innerText = "—";
+    }
+}
+
+
+/* ===== СРЕДНЯЯ ОЦЕНКА ИЗ FIRESTORE ===== */
+
+async function loadAverageRating() {
+    try {
+        const snap = await getDocs(collection(db, "reviews"));
+
+        let sum = 0;
+        let count = 0;
+
+        snap.forEach((doc) => {
+            const data = doc.data();
+            const r = parseFloat(data.rating);
+            if (!isNaN(r)) {
+                sum += r;
+                count++;
+            }
+        });
+
+        if (count === 0) {
+            document.getElementById("statRating").innerText = "—";
+        } else {
+            const avg = sum / count;
+            document.getElementById("statRating").innerText =
+                avg.toFixed(1);
+        }
+    } catch (error) {
+        console.error("Ошибка загрузки отзывов:", error);
+        document.getElementById("statRating").innerText = "—";
+    }
+}
+
+loadProjectsCount();
+loadAverageRating();
+
+
+/* ===== ОТПРАВКА ЗАЯВКИ ===== */
+
+document
+.getElementById("ctaForm")
+.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const name = document.getElementById("ctaName").value;
+    const phone = document.getElementById("ctaPhone").value;
+    const comment = document.getElementById("ctaComment").value;
+
+    try {
+        await addDoc(collection(db, "projects"), {
+            service: "Консультация",
+            clientName: name,
+            phone: phone,
+            comment: comment,
+            status: "Новая заявка",
+            createdAt: Date.now()
+        });
+
+        alert("Заявка отправлена");
+        this.reset();
+    } catch (error) {
+        console.error("Ошибка Firestore:", error);
+        alert("Ошибка: " + error.message);
+    }
+
+});
+
+</script>
+
+
+
+<script>
+
+/* ===== БУРГЕР ===== */
+
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
+
+burger.addEventListener("click", () => {
+    nav.classList.toggle("active");
+    burger.innerHTML = nav.classList.contains("active") ? "✕" : "☰";
+});
+
+</script>
 
 </body>
 </html>
