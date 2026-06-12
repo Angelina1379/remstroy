@@ -6,14 +6,6 @@
   box-sizing: border-box;
 }
 
-.form-block {
-  display: none;
-}
-
-.form-block.active {
-  display: flex;
-}
-
 body {
   font-family: 'Inter', sans-serif;
   background: #f5f6fa;
@@ -27,6 +19,22 @@ body {
 
 /* ===== КАРТОЧКА ФОРМЫ ===== */
 
+.form-block {
+  display: none;
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-block.active {
+  display: flex;
+  animation: formShow 0.3s ease;
+}
 
 @keyframes formShow {
   from {
