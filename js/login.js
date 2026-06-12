@@ -1,4 +1,3 @@
-```javascript
 import { auth, db } from "./firebase.js";
 
 import {
@@ -353,4 +352,3 @@ async()=>{
     }
 
 });
-```
