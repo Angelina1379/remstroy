@@ -1,354 +1,208 @@
 import { auth, db } from "./firebase.js";
 
 import {
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    sendPasswordResetEmail
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-    doc,
-    getDoc,
-    setDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const toast =
-document.getElementById("toast");
+/* ===== TOAST ===== */
 
-function showToast(
-    message,
-    type = "success"
-){
+const toast = document.getElementById("toast");
 
-    toast.innerText = message;
-
-    toast.className = "";
-
-    toast.classList.add(
-        type === "success"
-        ? "toast-success"
-        : "toast-error"
-    );
-
-    toast.style.display = "block";
-
-    setTimeout(()=>{
-
-        toast.style.display = "none";
-
-    },3000);
-
+function showToast(message, type = "success") {
+  if (!toast) return;
+  toast.innerText = message;
+  toast.className = "";
+  toast.classList.add(type === "success" ? "toast-success" : "toast-error");
+  toast.style.display = "block";
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 3000);
 }
 
-function isValidEmail(email){
+/* ===== ВАЛИДАЦИЯ ===== */
 
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-async function redirectByRole(user){
+/* ===== ПЕРЕКЛЮЧЕНИЕ ФОРМ ===== */
 
-    const userRef =
-    doc(db,"users",user.uid);
-
-    const userSnap =
-    await getDoc(userRef);
-
-    if(!userSnap.exists()){
-
-        showToast(
-            "Профиль пользователя не найден",
-            "error"
-        );
-
-        return;
-    }
-
-    const userData =
-    userSnap.data();
-
-    if(userData.role === "manager"){
-
-        window.location.href =
-        "manager/manager-panel.html";
-
-    }else{
-
-        window.location.href =
-        "client/client-cabinet.html";
-
-    }
-
+function showForm(id) {
+  ["loginForm", "registerForm", "forgotForm"].forEach((formId) => {
+    const el = document.getElementById(formId);
+    if (el) el.style.display = formId === id ? "block" : "none";
+  });
 }
 
-/* ВХОД */
-
-document
-.getElementById("loginBtn")
-?.addEventListener(
-"click",
-async()=>{
-
-    const email =
-    document
-    .getElementById("email")
-    .value
-    .trim();
-
-    const password =
-    document
-    .getElementById("password")
-    .value
-    .trim();
-
-    if(!email){
-
-        showToast(
-            "Введите Email",
-            "error"
-        );
-
-        return;
-    }
-
-    if(!isValidEmail(email)){
-
-        showToast(
-            "Некорректный Email",
-            "error"
-        );
-
-        return;
-    }
-
-    if(password.length < 6){
-
-        showToast(
-            "Пароль должен содержать минимум 6 символов",
-            "error"
-        );
-
-        return;
-    }
-
-    try{
-
-        const userCredential =
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-
-        showToast(
-            "Вход выполнен"
-        );
-
-        await redirectByRole(
-            userCredential.user
-        );
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-        showToast(
-            "Неверный Email или пароль",
-            "error"
-        );
-
-    }
-
+document.getElementById("goRegister")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  showForm("registerForm");
 });
 
-/* ВОССТАНОВЛЕНИЕ */
+document.getElementById("goForgot")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  showForm("forgotForm");
+});
 
-document
-.getElementById("forgotPasswordBtn")
-?.addEventListener(
-"click",
-async(e)=>{
-
+document.querySelectorAll(".goLogin").forEach((link) => {
+  link.addEventListener("click", (e) => {
     e.preventDefault();
-
-    const email =
-    document
-    .getElementById("email")
-    .value
-    .trim();
-
-    if(!email){
-
-        showToast(
-            "Введите Email",
-            "error"
-        );
-
-        return;
-    }
-
-    try{
-
-        await sendPasswordResetEmail(
-            auth,
-            email
-        );
-
-        showToast(
-            "Письмо отправлено на Email"
-        );
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-        showToast(
-            "Не удалось отправить письмо",
-            "error"
-        );
-
-    }
-
+    showForm("loginForm");
+  });
 });
 
-/* РЕГИСТРАЦИЯ */
+/* ===== РЕДИРЕКТ ПО РОЛИ ===== */
 
-document
-.getElementById("registerBtn")
-?.addEventListener(
-"click",
-async()=>{
+async function redirectByRole(user) {
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
 
-    const name =
-    document
-    .getElementById("regName")
-    .value
-    .trim();
+  if (!userSnap.exists()) {
+    showToast("Профиль пользователя не найден", "error");
+    return;
+  }
 
-    const email =
-    document
-    .getElementById("regEmail")
-    .value
-    .trim();
+  const userData = userSnap.data();
 
-    const phone =
-    document
-    .getElementById("regPhone")
-    .value
-    .trim();
+  if (userData.role === "manager") {
+    window.location.href = "manager/manager-panel.html";
+  } else {
+    window.location.href = "client/client-cabinet.html";
+  }
+}
 
-    const password =
-    document
-    .getElementById("regPassword")
-    .value
-    .trim();
+/* ===== ВХОД ===== */
 
-    if(
-        !name ||
-        !email ||
-        !phone ||
-        !password
-    ){
+const loginBtn = document.getElementById("loginBtn");
 
-        showToast(
-            "Заполните все поля",
-            "error"
-        );
+loginBtn?.addEventListener("click", async () => {
+  const email = document.getElementById("email")?.value.trim() || "";
+  const password = document.getElementById("password")?.value.trim() || "";
 
-        return;
+  if (!email) {
+    showToast("Введите Email", "error");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    showToast("Некорректный Email", "error");
+    return;
+  }
+
+  if (password.length < 6) {
+    showToast("Пароль должен содержать минимум 6 символов", "error");
+    return;
+  }
+
+  loginBtn.disabled = true;
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    showToast("Вход выполнен");
+    await redirectByRole(userCredential.user);
+  } catch (error) {
+    console.log(error);
+    showToast("Неверный Email или пароль", "error");
+  } finally {
+    loginBtn.disabled = false;
+  }
+});
+
+/* ===== ВОССТАНОВЛЕНИЕ ПАРОЛЯ (по Email) ===== */
+
+const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
+
+forgotPasswordBtn?.addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("forgotEmail")?.value.trim() || "";
+
+  if (!email) {
+    showToast("Введите Email", "error");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    showToast("Некорректный Email", "error");
+    return;
+  }
+
+  forgotPasswordBtn.disabled = true;
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast("Письмо для сброса пароля отправлено на Email");
+    setTimeout(() => showForm("loginForm"), 1500);
+  } catch (error) {
+    console.log(error);
+    showToast("Не удалось отправить письмо", "error");
+  } finally {
+    forgotPasswordBtn.disabled = false;
+  }
+});
+
+/* ===== РЕГИСТРАЦИЯ ===== */
+
+const registerBtn = document.getElementById("registerBtn");
+
+registerBtn?.addEventListener("click", async () => {
+  const name = document.getElementById("regName")?.value.trim() || "";
+  const email = document.getElementById("regEmail")?.value.trim() || "";
+  const phone = document.getElementById("regPhone")?.value.trim() || "";
+  const password = document.getElementById("regPassword")?.value.trim() || "";
+
+  if (!name || !email || !phone || !password) {
+    showToast("Заполните все поля", "error");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    showToast("Некорректный Email", "error");
+    return;
+  }
+
+  if (password.length < 6) {
+    showToast("Пароль должен содержать минимум 6 символов", "error");
+    return;
+  }
+
+  registerBtn.disabled = true;
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      name: name,
+      email: email,
+      phone: phone,
+      role: "client",
+      createdAt: new Date().toISOString()
+    });
+
+    showToast("Аккаунт успешно создан");
+
+    setTimeout(() => {
+      window.location.href = "client/client-cabinet.html";
+    }, 1500);
+  } catch (error) {
+    console.log(error);
+
+    if (error.code === "auth/email-already-in-use") {
+      showToast("Email уже используется", "error");
+    } else {
+      showToast("Ошибка регистрации", "error");
     }
-
-    if(!isValidEmail(email)){
-
-        showToast(
-            "Некорректный Email",
-            "error"
-        );
-
-        return;
-    }
-
-    if(password.length < 6){
-
-        showToast(
-            "Минимум 6 символов",
-            "error"
-        );
-
-        return;
-    }
-
-    try{
-
-        const userCredential =
-        await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-
-        const user =
-        userCredential.user;
-
-        await setDoc(
-            doc(
-                db,
-                "users",
-                user.uid
-            ),
-            {
-                uid:user.uid,
-                name:name,
-                email:email,
-                phone:phone,
-                role:"client",
-                createdAt:
-                new Date()
-                .toISOString()
-            }
-        );
-
-        showToast(
-            "Аккаунт успешно создан"
-        );
-
-        setTimeout(()=>{
-
-            window.location.href =
-            "client/client-cabinet.html";
-
-        },1500);
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-        if(
-            error.code ===
-            "auth/email-already-in-use"
-        ){
-
-            showToast(
-                "Email уже используется",
-                "error"
-            );
-
-            return;
-        }
-
-        showToast(
-            "Ошибка регистрации",
-            "error"
-        );
-
-    }
-
+  } finally {
+    registerBtn.disabled = false;
+  }
 });
