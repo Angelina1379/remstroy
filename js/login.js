@@ -91,12 +91,10 @@ loginBtn?.addEventListener("click", async () => {
     showToast("Введите Email", "error");
     return;
   }
-
   if (!isValidEmail(email)) {
     showToast("Некорректный Email", "error");
     return;
   }
-
   if (password.length < 6) {
     showToast("Пароль должен содержать минимум 6 символов", "error");
     return;
@@ -129,7 +127,6 @@ forgotPasswordBtn?.addEventListener("click", async (e) => {
     showToast("Введите Email", "error");
     return;
   }
-
   if (!isValidEmail(email)) {
     showToast("Некорректный Email", "error");
     return;
@@ -163,12 +160,10 @@ registerBtn?.addEventListener("click", async () => {
     showToast("Заполните все поля", "error");
     return;
   }
-
   if (!isValidEmail(email)) {
     showToast("Некорректный Email", "error");
     return;
   }
-
   if (password.length < 6) {
     showToast("Пароль должен содержать минимум 6 символов", "error");
     return;
@@ -190,13 +185,11 @@ registerBtn?.addEventListener("click", async () => {
     });
 
     showToast("Аккаунт успешно создан");
-
     setTimeout(() => {
       window.location.href = "client/client-cabinet.html";
     }, 1500);
   } catch (error) {
     console.log(error);
-
     if (error.code === "auth/email-already-in-use") {
       showToast("Email уже используется", "error");
     } else {
@@ -206,3 +199,4 @@ registerBtn?.addEventListener("click", async () => {
     registerBtn.disabled = false;
   }
 });
+
