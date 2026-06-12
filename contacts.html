@@ -23,6 +23,10 @@ rel="stylesheet">
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
 
     font-family:'Inter',sans-serif;
@@ -83,10 +87,9 @@ body{
 
 .logo a {
     text-decoration: none;
-    color: inherit; /* наследует цвет от .logo */
-    display: inline-block; /* или block, если нужно */
+    color: inherit;
+    display: inline-block;
 }
-
 
 .nav{
 
@@ -102,6 +105,13 @@ body{
     color:#222;
 
     font-weight:500;
+
+    transition:0.3s;
+}
+
+.nav a:hover{
+
+    color:#ff8c42;
 }
 
 .login-btn{
@@ -117,6 +127,21 @@ body{
     color:#222;
 
     font-weight:600;
+}
+
+.burger{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+    color:#222;
 }
 
 
@@ -183,33 +208,14 @@ body{
 
 .contacts{
 
-    padding-bottom:120px;
-}
-
-.contacts-grid{
-
-    display:flex;
-
-    justify-content:center;
-
-    margin-bottom:60px;
+    padding-bottom:100px;
 }
 
 .contact-info{
 
-    width:100%;
-    max-width:900px;
-}
+    display:grid;
 
-
-
-/* INFO */
-
-.contact-info{
-
-    display:flex;
-
-    flex-direction:column;
+    grid-template-columns:repeat(2,1fr);
 
     gap:25px;
 }
@@ -218,87 +224,82 @@ body{
 
     background:white;
 
-    border-radius:32px;
+    border-radius:30px;
 
-    padding:35px;
+    padding:36px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    transition:0.3s;
+
+    border:2px solid transparent;
+}
+
+.info-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#ffb547;
+
+    box-shadow:0 16px 36px rgba(255,181,71,0.16);
+}
+
+.info-icon{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:18px;
+
+    background:#fff3df;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:28px;
+
+    margin-bottom:10px;
 }
 
 .info-card h3{
 
-    font-size:30px;
+    font-size:24px;
 
-    margin-bottom:16px;
+    margin-bottom:6px;
 }
 
-.info-card p{
+.info-card p,
+.info-card a{
 
     color:#666;
 
-    line-height:1.9;
-}
+    line-height:1.8;
 
-
-
-/* FORM */
-
-.contact-form{
-
-    background:white;
-
-    border-radius:36px;
-
-    padding:40px;
-}
-
-.contact-form h2{
-
-    font-size:42px;
-
-    margin-bottom:28px;
-}
-
-.contact-form input,
-.contact-form textarea{
-
-    width:100%;
-
-    padding:18px;
-
-    border:none;
-
-    border-radius:18px;
-
-    background:#f5f5f5;
-
-    margin-bottom:18px;
+    text-decoration:none;
 
     font-size:16px;
 }
 
-.contact-form textarea{
+.info-card a:hover{
 
-    min-height:180px;
-
-    resize:none;
+    color:#ff8c42;
 }
 
-.contact-form button{
+.info-card .big{
 
-    width:100%;
-
-    padding:20px;
-
-    border:none;
-
-    border-radius:20px;
-
-    background:#ffb547;
-
-    font-size:18px;
+    font-size:22px;
 
     font-weight:700;
 
-    cursor:pointer;
+    color:#222;
 }
 
 
@@ -307,7 +308,14 @@ body{
 
 .map-section{
 
-    margin-bottom:120px;
+    margin-bottom:110px;
+}
+
+.section-title{
+
+    font-size:50px;
+
+    margin-bottom:40px;
 }
 
 .map-box{
@@ -316,7 +324,7 @@ body{
 
     border-radius:36px;
 
-    height:500px;
+    height:480px;
 }
 
 .map-box iframe{
@@ -333,14 +341,7 @@ body{
 
 .socials{
 
-    margin-bottom:120px;
-}
-
-.section-title{
-
-    font-size:54px;
-
-    margin-bottom:40px;
+    margin-bottom:110px;
 }
 
 .social-grid{
@@ -362,16 +363,20 @@ body{
     padding:35px;
 
     transition:0.3s;
+
+    border:2px solid transparent;
 }
 
 .social-card:hover{
 
     transform:translateY(-8px);
+
+    border-color:#ffb547;
 }
 
 .social-card h3{
 
-    font-size:30px;
+    font-size:26px;
 
     margin-bottom:14px;
 }
@@ -395,11 +400,18 @@ body{
 
     color:#222;
 
-    padding:14px 22px;
+    padding:13px 22px;
 
     border-radius:16px;
 
     font-weight:700;
+
+    transition:0.25s;
+}
+
+.social-btn:hover{
+
+    background:#ffa530;
 }
 
 
@@ -408,30 +420,65 @@ body{
 
 .faq{
 
-    margin-bottom:120px;
+    margin-bottom:110px;
 }
 
 .faq-grid{
 
     display:grid;
 
-    gap:20px;
+    gap:18px;
 }
 
 .faq-card{
 
     background:white;
 
-    border-radius:28px;
+    border-radius:24px;
 
-    padding:30px;
+    padding:8px 30px;
+
+    transition:0.3s;
 }
 
-.faq-card h3{
+.faq-card summary{
 
-    margin-bottom:14px;
+    list-style:none;
 
-    font-size:26px;
+    cursor:pointer;
+
+    padding:22px 0;
+
+    font-size:21px;
+
+    font-weight:700;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+}
+
+.faq-card summary::-webkit-details-marker{
+
+    display:none;
+}
+
+.faq-card summary::after{
+
+    content:"+";
+
+    font-size:28px;
+
+    color:#ff8c42;
+
+    transition:0.3s;
+}
+
+.faq-card[open] summary::after{
+
+    transform:rotate(45deg);
 }
 
 .faq-card p{
@@ -439,6 +486,8 @@ body{
     color:#666;
 
     line-height:1.8;
+
+    padding-bottom:24px;
 }
 
 
@@ -469,19 +518,51 @@ body{
 
 @media(max-width:992px){
 
-    .contacts-grid{
-
-        grid-template-columns:1fr;
-    }
-
     .hero-box h1{
 
         font-size:52px;
     }
 
+    .burger{
+
+        display:block;
+    }
+
     .nav{
 
-        display:none;
+        position:absolute;
+
+        top:90px;
+
+        left:0;
+
+        width:100%;
+
+        background:white;
+
+        flex-direction:column;
+
+        gap:0;
+
+        max-height:0;
+
+        overflow:hidden;
+
+        transition:0.3s;
+
+        border-bottom:1px solid #eee;
+    }
+
+    .nav.active{
+
+        max-height:500px;
+    }
+
+    .nav a{
+
+        padding:18px 30px;
+
+        border-bottom:1px solid #f0f0f0;
     }
 
 }
@@ -500,7 +581,12 @@ body{
 
     .section-title{
 
-        font-size:42px;
+        font-size:38px;
+    }
+
+    .contact-info{
+
+        grid-template-columns:1fr;
     }
 
 }
@@ -521,7 +607,11 @@ body{
     <a href="index.html">BuildHouse</a>
 </div>
 
-<nav class="nav">
+<button class="burger" id="burger">
+    ☰
+</button>
+
+<nav class="nav" id="nav">
 
 <a href="services.html">Услуги</a>
 <a href="portfolio.html">Портфолио</a>
@@ -568,7 +658,8 @@ BuildHouse
 
 Ответим на любые вопросы,
 поможем подобрать ремонт
-и бесплатно рассчитаем стоимость проекта.
+и бесплатно рассчитаем
+стоимость проекта.
 
 </p>
 
@@ -586,87 +677,63 @@ BuildHouse
 
 <div class="container">
 
-<div class="contacts-grid">
-
-
-
-<!-- INFO -->
-
 <div class="contact-info">
-
-
 
 <div class="info-card">
 
-<h3>
-Телефон
-</h3>
+<div class="info-icon">📞</div>
 
-<p>
+<h3>Телефон</h3>
 
-<a href="tel:+79997242843">
-+7 (999) 724-28-43
+<a class="big" href="tel:+79033491191">
++7 903 349-11-91
 </a>
 
-</p>
+<p>Звоните в рабочее время</p>
 
 </div>
 
+
 <div class="info-card">
 
-<h3>
-Email
-</h3>
+<div class="info-icon">✉️</div>
 
-<p>
+<h3>Email</h3>
 
-<a href="mailto:vitalikpozolotin@yandex.ru">
+<a class="big" href="mailto:vitalikpozolotin@yandex.ru">
 vitalikpozolotin@yandex.ru
 </a>
 
-</p>
+<p>Ответим в течение дня</p>
 
 </div>
+
 
 <div class="info-card">
 
-<h3>
-Адрес офиса
-</h3>
+<div class="info-icon">📍</div>
 
-<p>
+<h3>Адрес офиса</h3>
 
-г. Астрахань,<br>
-ул. Антокольского, д. 6
-
+<p class="big" style="font-weight:700;">
+г. Астрахань
 </p>
 
+<p>ул. Антокольского, д. 6</p>
+
 </div>
+
 
 <div class="info-card">
 
-<h3>
-График работы
-</h3>
+<div class="info-icon">🕒</div>
 
-<p>
+<h3>График работы</h3>
 
-Понедельник – Пятница:
-08:00 – 20:00
+<p>Пн – Пт: 08:00 – 20:00</p>
+<p>Сб: 09:00 – 16:00</p>
+<p>Вс: выходной</p>
 
-<br><br>
-
-Суббота:
-09:00 – 16:00
-
-<br><br>
-
-Воскресенье:
-выходной
-
-</p>
-
-</div>
 </div>
 
 </div>
@@ -684,9 +751,7 @@ vitalikpozolotin@yandex.ru
 <div class="container">
 
 <h2 class="section-title">
-
 Мы на карте
-
 </h2>
 
 <div class="map-box">
@@ -702,6 +767,79 @@ src="https://maps.google.com/maps?q=%D0%90%D1%81%D1%82%D1%80%D0%B0%D1%85%D0%B0%D
 </section>
 
 
+
+<!-- SOCIALS -->
+
+<section class="socials">
+
+<div class="container">
+
+<h2 class="section-title">
+Мы в соцсетях
+</h2>
+
+<div class="social-grid">
+
+<div class="social-card">
+
+<h3>WhatsApp</h3>
+
+<p>
+Напишите нам в WhatsApp —
+ответим быстро.
+</p>
+
+<a class="social-btn"
+href="https://wa.me/79033491191"
+target="_blank">
+Написать
+</a>
+
+</div>
+
+
+<div class="social-card">
+
+<h3>Telegram</h3>
+
+<p>
+Свяжитесь с нами
+в Telegram.
+</p>
+
+<a class="social-btn"
+href="https://t.me/+79033491191"
+target="_blank">
+Открыть
+</a>
+
+</div>
+
+
+<div class="social-card">
+
+<h3>Позвонить</h3>
+
+<p>
+Предпочитаете звонок?
+Мы на связи.
+</p>
+
+<a class="social-btn"
+href="tel:+79033491191">
+Позвонить
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
 <!-- FAQ -->
 
 <section class="faq">
@@ -709,88 +847,46 @@ src="https://maps.google.com/maps?q=%D0%90%D1%81%D1%82%D1%80%D0%B0%D1%85%D0%B0%D
 <div class="container">
 
 <h2 class="section-title">
-
 Частые вопросы
-
 </h2>
-
-
 
 <div class="faq-grid">
 
-
-
-<div class="faq-card">
-
-<h3>
-Сколько стоит ремонт?
-</h3>
-
+<details class="faq-card">
+<summary>Сколько стоит ремонт?</summary>
 <p>
-
-Стоимость зависит
-от площади,
-сложности работ
-и выбранных материалов.
-
+Стоимость зависит от площади,
+сложности работ и выбранных
+материалов. Рассчитаем
+бесплатно по вашему запросу.
 </p>
+</details>
 
-</div>
-
-
-
-<div class="faq-card">
-
-<h3>
-Сколько длится ремонт?
-</h3>
-
+<details class="faq-card">
+<summary>Сколько длится ремонт?</summary>
 <p>
-
 В среднем ремонт квартиры
 занимает от 1 до 4 месяцев
 в зависимости от проекта.
-
 </p>
+</details>
 
-</div>
-
-
-
-<div class="faq-card">
-
-<h3>
-Можно ли следить за ремонтом онлайн?
-</h3>
-
+<details class="faq-card">
+<summary>Можно ли следить за ремонтом онлайн?</summary>
 <p>
-
-Да, у каждого клиента
-есть личный кабинет
-с фотоотчетами,
+Да, у каждого клиента есть
+личный кабинет с фотоотчетами,
 документами и статусами работ.
-
 </p>
+</details>
 
-</div>
-
-
-
-<div class="faq-card">
-
-<h3>
-Есть ли гарантия?
-</h3>
-
+<details class="faq-card">
+<summary>Есть ли гарантия?</summary>
 <p>
-
-Да, мы предоставляем
-официальную гарантию
-на все выполненные работы.
-
+Да, мы предоставляем официальную
+гарантию на все выполненные работы.
 </p>
-
-</div>
+</details>
 
 </div>
 
@@ -826,11 +922,11 @@ BuildHouse
 </h4>
 
 <p>
-+7 (999) 999-99-99
++7 903 349-11-91
 </p>
 
 <p>
-info@buildhouse.ru
+vitalikpozolotin@yandex.ru
 </p>
 
 </div>
@@ -843,7 +939,15 @@ info@buildhouse.ru
 
 <script>
 
+/* ===== БУРГЕР ===== */
 
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
+
+burger.addEventListener("click", () => {
+    nav.classList.toggle("active");
+    burger.innerHTML = nav.classList.contains("active") ? "✕" : "☰";
+});
 
 </script>
 
