@@ -38,7 +38,7 @@ function isValidEmail(email) {
 function showForm(id) {
   ["loginForm", "registerForm", "forgotForm"].forEach((formId) => {
     const el = document.getElementById(formId);
-    if (el) el.style.display = formId === id ? "block" : "none";
+    if (el) el.classList.toggle("active", formId === id);
   });
 }
 
