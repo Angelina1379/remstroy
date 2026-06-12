@@ -870,6 +870,68 @@ section{
 
     cursor:pointer;
 
+    color:#222;
+}
+
+
+/* ===== НОВЫЕ ФИШКИ (добавлено) ===== */
+
+/* STATS */
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:24px;
+    text-align:center;
+}
+.stat-item{
+    background:white;
+    padding:40px 20px;
+    border-radius:28px;
+}
+.stat-number{
+    font-size:52px;
+    color:#ff8c42;
+    margin-bottom:8px;
+}
+.stat-item p{
+    color:#666;
+    font-weight:500;
+}
+
+/* SCROLL TOP */
+#scrollTopBtn{
+    position:fixed;
+    bottom:30px;
+    right:30px;
+    width:54px;
+    height:54px;
+    border:none;
+    border-radius:50%;
+    background:#ffb547;
+    color:#222;
+    font-size:24px;
+    cursor:pointer;
+    display:none;
+    z-index:999;
+    box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* FADE-IN */
+.fade-in{
+    opacity:0;
+    transform:translateY(30px);
+    transition:opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* ПОКАЗ БУРГЕРА НА МОБИЛЬНОМ (в самом конце, чтобы перебить display:none) */
+@media(max-width:992px){
+    .burger{
+        display:block;
+    }
 }
 
 </style>
@@ -1124,6 +1186,40 @@ section{
 <div class="portfolio-card"></div>
 <div class="portfolio-card"></div>
 <div class="portfolio-card"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<section id="stats">
+
+<div class="container">
+
+<div class="stats-grid">
+
+<div class="stat-item">
+<h2 class="stat-number" data-target="12">0</h2>
+<p>лет на рынке</p>
+</div>
+
+<div class="stat-item">
+<h2 class="stat-number" data-target="450">0</h2>
+<p>выполненных объектов</p>
+</div>
+
+<div class="stat-item">
+<h2 class="stat-number" data-target="98">0</h2>
+<p>% довольных клиентов</p>
+</div>
+
+<div class="stat-item">
+<h2 class="stat-number" data-target="35">0</h2>
+<p>мастеров в команде</p>
+</div>
 
 </div>
 
@@ -1627,6 +1723,10 @@ info@buildhouse.ru
 </div>
 
 
+<!-- КНОПКА НАВЕРХ -->
+<button id="scrollTopBtn" aria-label="Наверх">↑</button>
+
+
 
 <script>
 
@@ -1930,6 +2030,73 @@ burger.addEventListener("click", () => {
         burger.innerHTML = "☰";
     }
 });
+
+
+/* ===== ESC ЗАКРЫВАЕТ МОДАЛКУ ===== */
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        modal.style.display = "none";
+    }
+});
+
+
+/* ===== КНОПКА НАВЕРХ ===== */
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+window.addEventListener("scroll", () => {
+    scrollTopBtn.style.display = window.scrollY > 400 ? "block" : "none";
+});
+
+scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+
+/* ===== FADE-IN ПРИ ПРОКРУТКЕ ===== */
+const fadeEls = document.querySelectorAll(
+    ".service-card, .portfolio-card, .review-card, .about-item, .stat-item"
+);
+
+fadeEls.forEach((el) => el.classList.add("fade-in"));
+
+const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+            fadeObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.15 });
+
+fadeEls.forEach((el) => fadeObserver.observe(el));
+
+
+/* ===== АНИМИРОВАННЫЕ СЧЁТЧИКИ ===== */
+const counters = document.querySelectorAll(".stat-number");
+
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.dataset.target);
+            let current = 0;
+            const step = Math.max(1, Math.ceil(target / 60));
+
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                el.innerText = current;
+            }, 25);
+
+            counterObserver.unobserve(el);
+        }
+    });
+}, { threshold: 0.5 });
+
+counters.forEach((el) => counterObserver.observe(el));
 
 </script>
 
