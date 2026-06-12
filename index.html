@@ -3,17 +3,12 @@
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<title>BuildHouse — ремонт под ключ</title>
 
-<title>BuildHouse</title>
-
-<link rel="preconnect"
-      href="https://fonts.googleapis.com">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
 
@@ -28,910 +23,734 @@ html{
 }
 
 body{
-
     font-family:'Inter',sans-serif;
-
     background:#f5f6fa;
-
     color:#222;
+    overflow-x:hidden;
 }
 
 .container{
-
     width:90%;
-
     max-width:1300px;
-
     margin:auto;
 }
-
 
 
 /* HEADER */
 
 .header{
-
     position:fixed;
-
     top:0;
     left:0;
-
     width:100%;
-
     background:rgba(255,255,255,0.95);
-
     backdrop-filter:blur(12px);
-
     z-index:1000;
-
     border-bottom:1px solid #eee;
 }
 
 .header-content{
-
     height:90px;
-
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
 }
 
 .logo{
-
     font-size:30px;
-
-    font-weight:800;
+    font-weight:900;
 }
 
-.logo a {
-    text-decoration: none;
-    color: inherit; /* наследует цвет от .logo */
-    display: inline-block; /* или block, если нужно */
+.logo a{
+    text-decoration:none;
+    color:inherit;
 }
 
 .nav{
-
     display:flex;
-
     gap:35px;
 }
 
 .nav a{
-
     text-decoration:none;
-
     color:#222;
-
     font-weight:500;
-
     transition:0.3s;
 }
 
 .nav a:hover{
-
     color:#ff8c42;
 }
 
 .login-btn{
-
     text-decoration:none;
-
     background:#ffb547;
-
     color:#222;
-
     padding:14px 24px;
-
     border-radius:16px;
-
     font-weight:600;
 }
 
+.burger{
+    display:none;
+    border:none;
+    background:none;
+    font-size:34px;
+    cursor:pointer;
+    color:#222;
+}
 
 
 /* HERO */
 
 .hero{
-
-    padding-top:170px;
-
-    padding-bottom:120px;
+    padding-top:150px;
+    padding-bottom:80px;
 }
 
-.hero-content{
-
+.hero-grid{
     display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:70px;
-
+    grid-template-columns:1.1fr 1fr;
+    gap:60px;
     align-items:center;
 }
 
-.hero-subtitle{
-
+.hero-tag{
+    display:inline-block;
+    background:#fff3df;
     color:#ff8c42;
-
-    font-weight:600;
-
-    margin-bottom:18px;
+    padding:9px 18px;
+    border-radius:14px;
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:24px;
 }
 
 .hero h1{
-
-    font-size:72px;
-
+    font-size:68px;
     line-height:1.05;
+    margin-bottom:26px;
+    font-weight:800;
+}
 
-    margin-bottom:28px;
+.hero h1 span{
+    color:#ff8c42;
 }
 
 .hero-text{
-
     font-size:19px;
-
     color:#666;
-
     line-height:1.8;
-
     margin-bottom:36px;
+    max-width:520px;
 }
 
 .hero-buttons{
-
     display:flex;
-
-    gap:18px;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:44px;
 }
 
-.main-btn{
-
+.btn-primary{
     background:#ffb547;
-
-    padding:18px 28px;
-
+    padding:18px 30px;
     border-radius:18px;
-
     text-decoration:none;
-
     color:#222;
-
     font-weight:700;
+    transition:0.25s;
 }
 
-.secondary-btn{
+.btn-primary:hover{
+    background:#ffa530;
+}
 
+.btn-ghost{
     background:white;
-
-    padding:18px 28px;
-
+    padding:18px 30px;
     border-radius:18px;
-
     text-decoration:none;
-
     color:#222;
-
     font-weight:700;
+    border:2px solid #eee;
+    transition:0.25s;
+}
+
+.btn-ghost:hover{
+    border-color:#ffb547;
+}
+
+.hero-mini{
+    display:flex;
+    gap:40px;
+    flex-wrap:wrap;
+}
+
+.hero-mini div h3{
+    font-size:34px;
+    color:#ff8c42;
+}
+
+.hero-mini div p{
+    color:#888;
+    font-size:14px;
+}
+
+/* hero visual */
+
+.hero-visual{
+    position:relative;
+    height:540px;
 }
 
 .hero-image{
-
-    height:650px;
-
-    border-radius:36px;
-
+    width:100%;
+    height:100%;
+    border-radius:40px;
     background:
-    linear-gradient(
-        rgba(0,0,0,0.2),
-        rgba(0,0,0,0.3)
-    ),
-    url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400');
-
+        linear-gradient(rgba(0,0,0,0.15),rgba(0,0,0,0.25)),
+        url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1400');
     background-size:cover;
-
     background-position:center;
-
-    position:relative;
-
-    overflow:hidden;
 }
 
-.hero-overlay{
-
+.float-card{
     position:absolute;
-
-    bottom:40px;
-
-    left:40px;
-
-    right:40px;
-
-    background:rgba(255,255,255,0.15);
-
-    backdrop-filter:blur(12px);
-
-    padding:30px;
-
-    border-radius:24px;
-
-    color:white;
+    background:white;
+    border-radius:22px;
+    padding:18px 22px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.12);
+    display:flex;
+    align-items:center;
+    gap:14px;
+    animation:float 4s ease-in-out infinite;
 }
 
+.float-card .fc-icon{
+    width:46px;
+    height:46px;
+    border-radius:14px;
+    background:#fff3df;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+}
+
+.float-card h4{
+    font-size:17px;
+}
+
+.float-card p{
+    font-size:13px;
+    color:#888;
+}
+
+.fc-1{
+    top:30px;
+    left:-30px;
+    animation-delay:0s;
+}
+
+.fc-2{
+    bottom:40px;
+    right:-25px;
+    animation-delay:1.5s;
+}
+
+.fc-3{
+    bottom:-22px;
+    left:40px;
+    animation-delay:0.8s;
+}
+
+@keyframes float{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-14px); }
+}
+
+
+/* MARQUEE */
+
+.marquee{
+    background:#ffb547;
+    padding:20px 0;
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.marquee-track{
+    display:inline-block;
+    animation:scroll 22s linear infinite;
+}
+
+.marquee-track span{
+    font-size:22px;
+    font-weight:800;
+    color:#222;
+    margin:0 30px;
+}
+
+.marquee-track span::after{
+    content:"•";
+    margin-left:60px;
+    color:rgba(0,0,0,0.3);
+}
+
+@keyframes scroll{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+}
 
 
 /* SECTION */
 
 section{
-
-    padding:110px 0;
+    padding:100px 0;
 }
 
-.section-title{
-
-    margin-bottom:60px;
+.sec-head{
+    margin-bottom:55px;
 }
 
-.section-title p{
-
+.sec-head .tag{
     color:#ff8c42;
-
-    font-weight:600;
-
-    margin-bottom:10px;
+    font-weight:700;
+    margin-bottom:12px;
 }
 
-.section-title h2{
-
-    font-size:48px;
+.sec-head h2{
+    font-size:46px;
+    font-weight:800;
+    line-height:1.1;
 }
-
 
 
 /* SERVICES */
 
 .services-grid{
-
     display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(280px,1fr));
-
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
     gap:24px;
 }
 
 .service-card{
-
     background:white;
-
     padding:36px;
-
-    border-radius:30px;
-
+    border-radius:28px;
+    border:2px solid transparent;
     transition:0.3s;
 }
 
 .service-card:hover{
-
     transform:translateY(-8px);
+    border-color:#ffb547;
+    box-shadow:0 18px 40px rgba(255,181,71,0.18);
+}
+
+.service-card .s-icon{
+    width:64px;
+    height:64px;
+    border-radius:18px;
+    background:#fff3df;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    margin-bottom:24px;
 }
 
 .service-card h3{
-
-    margin-bottom:18px;
-
-    font-size:24px;
+    font-size:23px;
+    margin-bottom:14px;
 }
 
 .service-card p{
-
     color:#666;
+    line-height:1.7;
+    margin-bottom:18px;
+}
 
+.service-card a{
+    color:#ff8c42;
+    font-weight:700;
+    text-decoration:none;
+}
+
+
+/* STEPS */
+
+.steps{
+    background:white;
+}
+
+.steps-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:26px;
+}
+
+.step-card{
+    padding:30px;
+    border-radius:26px;
+    background:#f7f7f9;
+    position:relative;
+    transition:0.3s;
+}
+
+.step-card:hover{
+    background:#fff3df;
+}
+
+.step-num{
+    font-size:60px;
+    font-weight:900;
+    color:#ffb547;
+    line-height:1;
+    margin-bottom:18px;
+}
+
+.step-card h3{
+    font-size:22px;
+    margin-bottom:12px;
+}
+
+.step-card p{
+    color:#666;
     line-height:1.7;
 }
 
 
-
-/* PORTFOLIO */
-
-.portfolio-grid{
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(280px,1fr));
-
-    gap:24px;
-}
-
-.portfolio-card{
-
-    height:340px;
-
-    border-radius:30px;
-
-    background-size:cover;
-
-    background-position:center;
-}
-
-.portfolio-card:nth-child(1){
-
-    background-image:url('https://images.unsplash.com/photo-1484154218962-a197022b5858?q=80&w=1200');
-}
-
-.portfolio-card:nth-child(2){
-
-    background-image:url('https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200');
-}
-
-.portfolio-card:nth-child(3){
-
-    background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200');
-}
-
-.portfolio-card:nth-child(4){
-
-    background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200');
-}
-
-
-
 /* CALCULATOR */
 
-.calculator-box{
-
+.calc-box{
     background:white;
-
     padding:60px;
-
     border-radius:36px;
-
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
     gap:60px;
 }
 
-.calc-subtitle{
-
-    color:#ff8c42;
-
-    margin-bottom:14px;
-
-    font-weight:600;
-}
-
-.calculator-left h2{
-
-    font-size:52px;
-
+.calc-left h2{
+    font-size:46px;
+    font-weight:800;
     line-height:1.1;
-
-    margin-bottom:24px;
+    margin-bottom:20px;
 }
 
-.calculator-left p{
-
+.calc-left p{
     color:#666;
-
     line-height:1.8;
+    margin-bottom:30px;
 }
 
-.calculator-right{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:28px;
+.calc-note{
+    background:#fff4df;
+    border-radius:20px;
+    padding:24px;
+    color:#a86500;
+    line-height:1.7;
+    font-weight:500;
 }
 
-.calc-group{
-
+.calc-right{
     display:flex;
-
     flex-direction:column;
-
-    gap:14px;
+    gap:24px;
 }
 
 .calc-group label{
-
     font-weight:600;
+    display:block;
+    margin-bottom:12px;
 }
 
 .range-top{
-
-    display:flex;
-
-    gap:8px;
-
-    font-size:30px;
-
-    font-weight:700;
+    font-size:28px;
+    font-weight:800;
+    color:#ff8c42;
+    margin-bottom:10px;
 }
 
-.calc-group input,
+.calc-group input[type="range"]{
+    width:100%;
+}
+
 .calc-group select{
-
-    padding:18px;
-
+    width:100%;
+    padding:16px;
     border:none;
-
-    border-radius:18px;
-
+    border-radius:16px;
     background:#f5f5f5;
-
     font-size:16px;
 }
 
 .result-box{
-
-    background:#fff4df;
-
+    background:#222;
     border-radius:24px;
-
     padding:30px;
+    color:white;
 }
 
 .result-box p{
-
-    color:#666;
-
-    margin-bottom:10px;
+    color:#bbb;
+    margin-bottom:8px;
 }
 
 .result-box h3{
-
-    font-size:46px;
-}
-
-.calc-btn{
-
-    padding:20px;
-
-    border:none;
-
-    border-radius:20px;
-
-    background:#ffb547;
-
-    font-size:18px;
-
-    font-weight:700;
-
-    cursor:pointer;
+    font-size:40px;
+    color:#ffb547;
 }
 
 
+/* TRUST */
 
-/* ABOUT */
-
-.about-content{
-
+.trust-grid{
     display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:60px;
-}
-
-.about-left p{
-
-    margin-top:24px;
-
-    line-height:1.9;
-
-    color:#666;
-}
-
-.about-right{
-
-    display:grid;
-
-    gap:22px;
-}
-
-.about-item{
-
-    background:white;
-
-    padding:30px;
-
-    border-radius:28px;
-}
-
-
-
-/* REVIEWS */
-
-.reviews-grid{
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(300px,1fr));
-
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:24px;
 }
 
-.review-card{
-
+.trust-card{
     background:white;
-
-    padding:34px;
-
     border-radius:28px;
+    padding:40px;
+    text-align:center;
 }
 
-.review-card p{
+.trust-card h2{
+    font-size:52px;
+    color:#ff8c42;
+    margin-bottom:8px;
+}
 
-    line-height:1.8;
-
-    margin-bottom:24px;
-
-    color:#555;
+.trust-card p{
+    color:#666;
 }
 
 
+/* QUOTE */
 
-/* CONTACT */
-
-.contact-box{
-
-    background:white;
-
-    border-radius:36px;
-
-    padding:60px;
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:50px;
+.quote{
+    background:linear-gradient(135deg,#ffb547,#ffcc73);
 }
 
-.contact-form{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:18px;
+.quote-box{
+    text-align:center;
+    max-width:850px;
+    margin:auto;
 }
 
-.contact-form input,
-.contact-form textarea{
-
-    padding:18px;
-
-    border:none;
-
-    border-radius:18px;
-
-    background:#f5f5f5;
-
-    font-size:16px;
+.quote-box .mark{
+    font-size:80px;
+    font-weight:900;
+    color:rgba(255,255,255,0.6);
+    line-height:0.5;
+    margin-bottom:20px;
 }
 
-.contact-form textarea{
-
-    min-height:160px;
-
-    resize:none;
-}
-
-.contact-form button{
-
-    padding:20px;
-
-    border:none;
-
-    border-radius:20px;
-
-    background:#ffb547;
-
+.quote-box p{
+    font-size:30px;
     font-weight:700;
-
-    cursor:pointer;
+    line-height:1.5;
+    margin-bottom:30px;
 }
 
+.quote-author{
+    font-weight:700;
+    font-size:18px;
+}
+
+.quote-author span{
+    display:block;
+    font-weight:400;
+    color:#7a5210;
+    margin-top:4px;
+}
+
+
+/* FINAL CTA */
+
+.final-cta{
+    background:#111;
+    border-radius:40px;
+    padding:80px 60px;
+    text-align:center;
+    color:white;
+}
+
+.final-cta h2{
+    font-size:50px;
+    font-weight:800;
+    margin-bottom:20px;
+    line-height:1.1;
+}
+
+.final-cta p{
+    color:#bbb;
+    font-size:18px;
+    line-height:1.7;
+    margin-bottom:36px;
+    max-width:560px;
+    margin-left:auto;
+    margin-right:auto;
+}
 
 
 /* FOOTER */
 
 .footer{
-
     background:#111;
-
     color:white;
-
     padding:60px 0;
+    border-top:1px solid #2a2a2a;
 }
 
 .footer-content{
-
     display:flex;
-
     justify-content:space-between;
-
     gap:50px;
+    flex-wrap:wrap;
 }
 
+.footer h3{
+    margin-bottom:12px;
+}
+
+.footer p{
+    color:#aaa;
+    line-height:1.8;
+}
 
 
 /* MODAL */
 
 .modal{
-
     position:fixed;
-
-    top:0;
-    left:0;
-
-    width:100%;
-    height:100%;
-
-    background:rgba(0,0,0,0.5);
-
+    inset:0;
+    background:rgba(0,0,0,0.55);
     display:none;
-
     align-items:center;
-
     justify-content:center;
-
     z-index:9999;
+    padding:20px;
+}
+
+.modal.active{
+    display:flex;
 }
 
 .modal-content{
-
-    width:90%;
-
-    max-width:500px;
-
     background:white;
-
+    width:100%;
+    max-width:480px;
     border-radius:32px;
-
-    padding:40px;
-
+    padding:44px;
     position:relative;
 }
 
 .close-modal{
-
     position:absolute;
-
     top:20px;
     right:20px;
-
+    width:44px;
+    height:44px;
     border:none;
-
-    background:none;
-
-    font-size:24px;
-
+    background:#f3f3f3;
+    border-radius:50%;
+    font-size:22px;
     cursor:pointer;
 }
 
 .modal-content h2{
-
-    margin-bottom:12px;
-
-    font-size:36px;
+    font-size:32px;
+    margin-bottom:10px;
 }
 
-.modal-subtitle{
-
+.modal-content .sub{
     color:#666;
-
-    margin-bottom:30px;
-
-    line-height:1.7;
+    margin-bottom:26px;
+    line-height:1.6;
 }
 
-#requestForm{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:18px;
-}
-
-#requestForm input{
-
-    padding:18px;
-
+.modal-content input{
+    width:100%;
+    padding:17px;
     border:none;
-
-    border-radius:18px;
-
+    border-radius:16px;
     background:#f5f5f5;
+    margin-bottom:16px;
+    font-size:16px;
 }
 
-.submit-btn{
-
-    padding:20px;
-
+.modal-content button[type="submit"]{
+    width:100%;
+    padding:18px;
     border:none;
-
-    border-radius:20px;
-
+    border-radius:18px;
     background:#ffb547;
-
-    font-size:18px;
-
+    font-size:17px;
     font-weight:700;
-
     cursor:pointer;
 }
 
+
+/* REVEAL ANIM */
+
+.reveal{
+    opacity:0;
+    transform:translateY(30px);
+    transition:opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.show{
+    opacity:1;
+    transform:translateY(0);
+}
 
 
 /* ADAPTIVE */
 
 @media(max-width:992px){
-
-    .hero-content,
-    .calculator-box,
-    .about-content,
-    .contact-box{
-
+    .hero-grid,
+    .calc-box{
         grid-template-columns:1fr;
     }
-
-    .hero h1{
-
-        font-size:52px;
-    }
-
-}
-@media(max-width:992px){
-
-    .burger{
-
-        display:block;
-    }
-
+    .hero h1{ font-size:50px; }
+    .hero-visual{ height:420px; }
+    .fc-1{ left:10px; }
+    .fc-2{ right:10px; }
+    .burger{ display:block; }
     .nav{
-
         position:absolute;
-
         top:90px;
-
         left:0;
-
         width:100%;
-
         background:white;
-
-        display:flex;
-
         flex-direction:column;
-
         gap:0;
-
         max-height:0;
-
         overflow:hidden;
-
         transition:0.3s;
-
         border-bottom:1px solid #eee;
     }
-
-    .nav.active{
-
-        max-height:500px;
-    }
-
+    .nav.active{ max-height:500px; }
     .nav a{
-
         padding:18px 30px;
-
         border-bottom:1px solid #f0f0f0;
     }
-
 }
 
 @media(max-width:768px){
-
-    .hero h1{
-
-        font-size:40px;
-    }
-
-    .hero-buttons{
-
-        flex-direction:column;
-    }
-
-    .section-title h2{
-
-        font-size:36px;
-    }
-
-}
-.burger{
-
-    display:none;
-
-    border:none;
-
-    background:none;
-
-    font-size:34px;
-
-    cursor:pointer;
-
-    color:#222;
-}
-
-
-/* ===== НОВЫЕ ФИШКИ (добавлено) ===== */
-
-/* STATS */
-.stats-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:24px;
-    text-align:center;
-}
-.stat-item{
-    background:white;
-    padding:40px 20px;
-    border-radius:28px;
-}
-.stat-number{
-    font-size:52px;
-    color:#ff8c42;
-    margin-bottom:8px;
-}
-.stat-item p{
-    color:#666;
-    font-weight:500;
-}
-
-/* SCROLL TOP */
-#scrollTopBtn{
-    position:fixed;
-    bottom:30px;
-    right:30px;
-    width:54px;
-    height:54px;
-    border:none;
-    border-radius:50%;
-    background:#ffb547;
-    color:#222;
-    font-size:24px;
-    cursor:pointer;
-    display:none;
-    z-index:999;
-    box-shadow:0 6px 20px rgba(0,0,0,0.15);
-}
-
-/* FADE-IN */
-.fade-in{
-    opacity:0;
-    transform:translateY(30px);
-    transition:opacity 0.6s ease, transform 0.6s ease;
-}
-.fade-in.show{
-    opacity:1;
-    transform:translateY(0);
-}
-
-/* ПОКАЗ БУРГЕРА НА МОБИЛЬНОМ (в самом конце, чтобы перебить display:none) */
-@media(max-width:992px){
-    .burger{
-        display:block;
-    }
+    .hero h1{ font-size:40px; }
+    .sec-head h2{ font-size:34px; }
+    .calc-box{ padding:34px; }
+    .final-cta{ padding:50px 30px; }
+    .final-cta h2{ font-size:34px; }
+    .quote-box p{ font-size:22px; }
+    .float-card{ display:none; }
 }
 
 </style>
@@ -940,1163 +759,596 @@ section{
 
 <body>
 
+
 <header class="header">
-
 <div class="container header-content">
-
-<div class="logo">
-    <a href="index.html">BuildHouse</a>
-</div>
-<button class="burger" id="burger">
-    ☰
-</button>
-
+<div class="logo"><a href="index.html">BuildHouse</a></div>
+<button class="burger" id="burger">☰</button>
 <nav class="nav" id="nav">
-
 <a href="services.html">Услуги</a>
 <a href="portfolio.html">Портфолио</a>
 <a href="prices.html">Цены</a>
 <a href="about.html">О нас</a>
 <a href="reviews.html">Отзывы</a>
 <a href="contacts.html">Контакты</a>
-
 </nav>
-
-<a href="login.html"
-   class="login-btn">
-
-Личный кабинет
-
-</a>
-
+<a href="login.html" class="login-btn">Личный кабинет</a>
 </div>
-
 </header>
 
 
+<!-- HERO -->
 
 <section class="hero">
-
-<div class="container hero-content">
+<div class="container hero-grid">
 
 <div class="hero-left">
 
-<p class="hero-subtitle">
-Ремонт квартир под ключ
-</p>
+<span class="hero-tag">Ремонт под ключ в Астрахани</span>
 
-<h1>
-
-Современный ремонт
-с полным онлайн-контролем
-
-</h1>
+<h1>Ремонт, за которым <span>удобно следить</span> онлайн</h1>
 
 <p class="hero-text">
-
-Контролируйте этапы ремонта,
-сметы, документы и календарь
-работ через личный кабинет.
-
+Берём на себя весь цикл — от замены электрики
+до дизайнерской отделки. А вы контролируете
+сметы, сроки и фотоотчёты прямо из личного кабинета.
 </p>
 
 <div class="hero-buttons">
+<a href="#calc" class="btn-primary">Рассчитать стоимость</a>
+<a href="portfolio.html" class="btn-ghost">Наши работы</a>
+</div>
 
-<a href="#calculator"
-   class="main-btn">
-
-Рассчитать стоимость
-
-</a>
-
-<a href="#portfolio"
-   class="secondary-btn">
-
-Наши работы
-
-</a>
-
+<div class="hero-mini">
+<div>
+<h3 id="heroYears">10+</h3>
+<p>лет опыта команды</p>
+</div>
+<div>
+<h3 id="heroProjects">—</h3>
+<p>объектов сдано</p>
+</div>
+<div>
+<h3 id="heroRating">—</h3>
+<p>средняя оценка</p>
+</div>
 </div>
 
 </div>
 
 
+<div class="hero-visual">
+<div class="hero-image"></div>
 
-<div class="hero-right">
+<div class="float-card fc-1">
+<div class="fc-icon">📋</div>
+<div>
+<h4>Смета онлайн</h4>
+<p>фиксируем в договоре</p>
+</div>
+</div>
 
-<div class="hero-image">
+<div class="float-card fc-2">
+<div class="fc-icon">📸</div>
+<div>
+<h4>Фотоотчёты</h4>
+<p>каждый этап работ</p>
+</div>
+</div>
 
-<div class="hero-overlay">
-
-<h3>
-Ремонт премиум-класса
-</h3>
-
-<p>
-С прозрачной системой
-контроля всех этапов.
-</p>
-
+<div class="float-card fc-3">
+<div class="fc-icon">🛡️</div>
+<div>
+<h4>Гарантия 5 лет</h4>
+<p>на все работы</p>
+</div>
 </div>
 
 </div>
 
 </div>
-
-</div>
-
 </section>
 
 
+<!-- MARQUEE -->
 
-<section id="services">
+<div class="marquee">
+<div class="marquee-track">
+<span>Электрика</span><span>Сантехника</span><span>Плитка</span><span>Натяжные потолки</span><span>Дизайн-проект</span><span>Под ключ</span><span>Электрика</span><span>Сантехника</span><span>Плитка</span><span>Натяжные потолки</span><span>Дизайн-проект</span><span>Под ключ</span>
+</div>
+</div>
 
+
+<!-- SERVICES -->
+
+<section>
 <div class="container">
 
-<div class="section-title">
-
-<p>
-Наши услуги
-</p>
-
-<h2>
-Выполняем все виды ремонта
-</h2>
-
+<div class="sec-head reveal">
+<p class="tag">Что мы делаем</p>
+<h2>Полный спектр<br>ремонтных работ</h2>
 </div>
 
 <div class="services-grid">
 
-<div class="service-card">
-
-<h3>
-Капитальный ремонт
-</h3>
-
-<p>
-Полное обновление квартиры
-или дома под ключ.
-</p>
-
+<div class="service-card reveal">
+<div class="s-icon">🏠</div>
+<h3>Ремонт под ключ</h3>
+<p>Капитальный и косметический ремонт квартир, домов и офисов с полной отделкой.</p>
+<a href="services.html">Подробнее →</a>
 </div>
 
-
-
-<div class="service-card">
-
-<h3>
-Косметический ремонт
-</h3>
-
-<p>
-Обновление интерьера
-без перепланировки.
-</p>
-
+<div class="service-card reveal">
+<div class="s-icon">🎨</div>
+<h3>Дизайн интерьера</h3>
+<p>Индивидуальный дизайн-проект с 3D-визуализацией и подбором материалов.</p>
+<a href="services.html">Подробнее →</a>
 </div>
 
-
-
-<div class="service-card">
-
-<h3>
-Дизайн интерьера
-</h3>
-
-<p>
-Создание современных
-дизайн-проектов.
-</p>
-
+<div class="service-card reveal">
+<div class="s-icon">⚡</div>
+<h3>Электромонтаж</h3>
+<p>Замена проводки, монтаж щитков, розеток и современного освещения.</p>
+<a href="services.html">Подробнее →</a>
 </div>
 
-
-
-<div class="service-card">
-
-<h3>
-Ремонт ванной
-</h3>
-
-<p>
-Плитка, сантехника
-и гидроизоляция.
-</p>
-
-</div>
-
-
-
-<div class="service-card">
-
-<h3>
-Ремонт кухни
-</h3>
-
-<p>
-Комплексные ремонтные
-работы.
-</p>
-
-</div>
-
-
-
-<div class="service-card">
-
-<h3>
-Электромонтаж
-</h3>
-
-<p>
-Замена проводки
-и освещения.
-</p>
-
+<div class="service-card reveal">
+<div class="s-icon">🚿</div>
+<h3>Сантехника</h3>
+<p>Разводка труб, установка сантехники и ремонт ванных комнат под ключ.</p>
+<a href="services.html">Подробнее →</a>
 </div>
 
 </div>
 
 </div>
-
 </section>
 
 
+<!-- STEPS -->
 
-<section class="portfolio"
-         id="portfolio">
-
+<section class="steps">
 <div class="container">
 
-<div class="section-title">
+<div class="sec-head reveal">
+<p class="tag">Как мы работаем</p>
+<h2>Четыре шага<br>до готового ремонта</h2>
+</div>
 
-<p>
-Портфолио
-</p>
+<div class="steps-grid">
 
-<h2>
-Наши выполненные работы
-</h2>
+<div class="step-card reveal">
+<div class="step-num">01</div>
+<h3>Заявка и замер</h3>
+<p>Оставляете заявку — выезжаем на объект, делаем замеры и обсуждаем задачи.</p>
+</div>
+
+<div class="step-card reveal">
+<div class="step-num">02</div>
+<h3>Смета и договор</h3>
+<p>Готовим прозрачную смету и фиксируем стоимость в договоре.</p>
+</div>
+
+<div class="step-card reveal">
+<div class="step-num">03</div>
+<h3>Ремонт</h3>
+<p>Выполняем работы по этапам, выкладываем фотоотчёты в личный кабинет.</p>
+</div>
+
+<div class="step-card reveal">
+<div class="step-num">04</div>
+<h3>Сдача и гарантия</h3>
+<p>Принимаете готовый объект и получаете гарантию до 5 лет.</p>
+</div>
 
 </div>
 
-<div class="portfolio-grid">
-
-<div class="portfolio-card"></div>
-<div class="portfolio-card"></div>
-<div class="portfolio-card"></div>
-<div class="portfolio-card"></div>
-
 </div>
-
-</div>
-
 </section>
 
 
+<!-- CALCULATOR -->
 
-<section id="stats">
-
+<section id="calc">
 <div class="container">
 
-<div class="stats-grid">
+<div class="calc-box reveal">
 
-<div class="stat-item">
-<h2 class="stat-number" data-target="12">0</h2>
-<p>лет на рынке</p>
+<div class="calc-left">
+<h2>Прикиньте стоимость за минуту</h2>
+<p>
+Двигайте площадь и выбирайте тип ремонта —
+покажем ориентировочную цену. Точную смету
+подготовим после бесплатного замера.
+</p>
+<div class="calc-note">
+💡 Это предварительный расчёт. Финальная стоимость
+зависит от состояния объекта и выбранных материалов.
+</div>
 </div>
 
-<div class="stat-item">
-<h2 class="stat-number" data-target="450">0</h2>
+<div class="calc-right">
+
+<div class="calc-group">
+<label>Площадь помещения</label>
+<div class="range-top"><span id="areaValue">50</span> м²</div>
+<input type="range" min="20" max="200" value="50" id="areaRange">
+</div>
+
+<div class="calc-group">
+<label>Тип помещения</label>
+<select id="roomType">
+<option value="1">Квартира</option>
+<option value="1.2">Дом</option>
+<option value="1.1">Офис</option>
+</select>
+</div>
+
+<div class="calc-group">
+<label>Что необходимо выполнить?</label>
+<select id="serviceType">
+<option value="full">Комплексный ремонт</option>
+<option value="wallpaper">Поклейка обоев</option>
+<option value="painting">Покраска стен</option>
+<option value="tile">Укладка плитки</option>
+<option value="laminate">Укладка ламината</option>
+<option value="ceiling">Натяжной потолок</option>
+<option value="electric">Электромонтаж</option>
+<option value="plumbing">Сантехнические работы</option>
+<option value="bathroom">Ремонт ванной</option>
+<option value="kitchen">Ремонт кухни</option>
+</select>
+</div>
+
+<div class="calc-group">
+<label>Тип ремонта</label>
+<select id="repairType">
+<option value="7000">Косметический</option>
+<option value="12000">Капитальный</option>
+<option value="18000">Дизайнерский</option>
+</select>
+</div>
+
+<div class="result-box">
+<p>Примерная стоимость:</p>
+<h3 id="totalPrice">350 000 ₽</h3>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</section>
+
+
+<!-- TRUST -->
+
+<section>
+<div class="container">
+
+<div class="sec-head reveal">
+<p class="tag">Нам доверяют</p>
+<h2>Цифры, которые<br>говорят за нас</h2>
+</div>
+
+<div class="trust-grid">
+
+<div class="trust-card reveal">
+<h2 id="statProjects" data-target="0">0</h2>
 <p>выполненных объектов</p>
 </div>
 
-<div class="stat-item">
-<h2 class="stat-number" data-target="98">0</h2>
-<p>% довольных клиентов</p>
-</div>
-
-<div class="stat-item">
-<h2 class="stat-number" data-target="35">0</h2>
+<div class="trust-card reveal">
+<h2 id="statTeam" data-target="18">0</h2>
 <p>мастеров в команде</p>
 </div>
 
+<div class="trust-card reveal">
+<h2 id="statRating">—</h2>
+<p>средняя оценка клиентов</p>
+</div>
+
+<div class="trust-card reveal">
+<h2>5</h2>
+<p>лет гарантии</p>
 </div>
 
 </div>
 
+</div>
 </section>
 
 
+<!-- QUOTE -->
 
-<section class="calculator"
-         id="calculator">
-
+<section class="quote" id="quoteSection">
 <div class="container">
-
-<div class="calculator-box">
-
-<div class="calculator-left">
-
-<p class="calc-subtitle">
-Онлайн калькулятор
-</p>
-
-<h2>
-Рассчитайте стоимость ремонта
-за 1 минуту
-</h2>
-
-<p>
-
-Выберите параметры ремонта
-и получите предварительную
-стоимость работ.
-
-</p>
-
+<div class="quote-box reveal">
+<div class="mark">“</div>
+<p id="quoteText">Заехали в квартиру ровно в срок, без сюрпризов по цене. Очень удобно было следить за этапами онлайн — всё прозрачно.</p>
+<div class="quote-author">
+<span id="quoteName">Клиент</span>
+<span>клиент BuildHouse</span>
 </div>
-
-
-
-<div class="calculator-right">
-
-<div class="calc-group">
-
-<label>
-Площадь помещения
-</label>
-
-<div class="range-top">
-
-<span id="areaValue">
-50
-</span>
-
-<span>
-м²
-</span>
-
 </div>
-
-<input type="range"
-       min="20"
-       max="200"
-       value="50"
-       id="areaRange">
-
 </div>
-
-
-
-<div class="calc-group">
-
-<label>
-Тип помещения
-</label>
-
-<select id="roomType">
-
-<option value="1">
-Квартира
-</option>
-
-<option value="1.2">
-Дом
-</option>
-
-<option value="1.1">
-Офис
-</option>
-
-</select>
-
-</div>
-
-<div class="calc-group">
-
-<label>
-Что необходимо выполнить?
-</label>
-
-<select id="serviceType">
-
-<option value="full">
-Комплексный ремонт
-</option>
-
-<option value="wallpaper">
-Поклейка обоев
-</option>
-
-<option value="painting">
-Покраска стен
-</option>
-
-<option value="tile">
-Укладка плитки
-</option>
-
-<option value="laminate">
-Укладка ламината
-</option>
-
-<option value="ceiling">
-Натяжной потолок
-</option>
-
-<option value="electric">
-Электромонтаж
-</option>
-
-<option value="plumbing">
-Сантехнические работы
-</option>
-
-<option value="bathroom">
-Ремонт ванной
-</option>
-
-<option value="kitchen">
-Ремонт кухни
-</option>
-
-</select>
-
-</div>
-
-<div class="calc-group">
-
-<label>
-Тип ремонта
-</label>
-
-<select id="repairType">
-
-<option value="7000">
-Косметический
-</option>
-
-<option value="12000">
-Капитальный
-</option>
-
-<option value="18000">
-Дизайнерский
-</option>
-
-</select>
-
-</div>
-
-
-
-<div class="result-box">
-
-<p>
-Примерная стоимость:
-</p>
-
-<h3 id="totalPrice">
-
-600 000 ₽
-
-</h3>
-
-</div>
-
-
-
-<button class="calc-btn"
-        id="openModal">
-
-Оставить заявку
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
 </section>
 
 
+<!-- FINAL CTA -->
 
-<section id="about">
-
-<div class="container about-content">
-
-<div class="about-left">
-
-<h2>
-О компании
-</h2>
-
-<p>
-
-BuildHouse —
-современная компания
-по ремонту квартир
-и домов под ключ.
-
-Мы используем цифровую
-CRM-систему, благодаря
-которой клиент может
-контролировать все
-этапы ремонта онлайн.
-
-</p>
-
-</div>
-
-
-
-<div class="about-right">
-
-<div class="about-item">
-
-<h3>
-Онлайн-контроль
-</h3>
-
-<p>
-Личный кабинет клиента
-и push-уведомления.
-</p>
-
-</div>
-
-
-
-<div class="about-item">
-
-<h3>
-Прозрачные сметы
-</h3>
-
-<p>
-Все документы доступны
-онлайн.
-</p>
-
-</div>
-
-
-
-<div class="about-item">
-
-<h3>
-Календарь работ
-</h3>
-
-<p>
-Назначение замеров
-и контроль сроков.
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-
-<section id="reviews">
-
+<section>
 <div class="container">
-
-<div class="section-title">
-
-<p>
-Отзывы
-</p>
-
-<h2>
-Что говорят наши клиенты
-</h2>
-
+<div class="final-cta reveal">
+<h2>Готовы начать ремонт?</h2>
+<p>Оставьте заявку — приедем на бесплатный замер, обсудим задачи и подготовим прозрачную смету без скрытых платежей.</p>
+<a href="#" class="btn-primary" id="openModal">Оставить заявку</a>
 </div>
-
-<div class="reviews-grid">
-
-<div class="review-card">
-
-<p>
-
-“Очень понравилась
-организация ремонта
-и возможность следить
-за этапами онлайн.”
-
-</p>
-
-<h4>
-Анна
-</h4>
-
 </div>
-
-
-
-<div class="review-card">
-
-<p>
-
-“Современный сервис
-и отличная коммуникация
-с менеджером.”
-
-</p>
-
-<h4>
-Игорь
-</h4>
-
-</div>
-
-
-
-<div class="review-card">
-
-<p>
-
-“Удобный личный кабинет
-и прозрачные сметы.”
-
-</p>
-
-<h4>
-Мария
-</h4>
-
-</div>
-
-</div>
-
-</div>
-
 </section>
-
-
-
-<section id="contacts">
-
-<div class="container">
-
-<div class="contact-box">
-
-<div>
-
-<h2>
-Свяжитесь с нами
-</h2>
-
-<p>
-
-Оставьте заявку
-и мы перезвоним вам.
-
-</p>
-
-</div>
-
-
-
-<form class="contact-form">
-
-<input type="text"
-       placeholder="Ваше имя">
-
-<input type="tel"
-       placeholder="Телефон">
-
-<textarea placeholder="Комментарий"></textarea>
-
-<button type="submit">
-Отправить
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-</section>
-
 
 
 <footer class="footer">
-
 <div class="container footer-content">
-
 <div>
-
-<h3>
-BuildHouse
-</h3>
-
-<p>
-Современный ремонт
-квартир под ключ.
-</p>
-
+<h3>BuildHouse</h3>
+<p>Современный ремонт<br>квартир под ключ.</p>
 </div>
-
-
-
 <div>
-
-<h4>
-Контакты
-</h4>
-
-<p>
-+7 (903) 349-11-91
-</p>
-
-<p>
-vitalikpozolotin@yandex.ru
-</p>
-
+<h4>Контакты</h4>
+<p>+7 903 349-11-91<br>vitalikpozolotin@yandex.ru</p>
 </div>
-
 </div>
-
 </footer>
-
 
 
 <!-- MODAL -->
 
-<div class="modal"
-     id="modal">
-
+<div class="modal" id="modal">
 <div class="modal-content">
-
-<button class="close-modal"
-        id="closeModal">
-
-✕
-
-</button>
-
-<h2>
-Оставить заявку
-</h2>
-
-<p class="modal-subtitle">
-
-Наш менеджер свяжется
-с вами в ближайшее время
-
-</p>
-
+<button class="close-modal" id="closeModal">✕</button>
+<h2>Оставить заявку</h2>
+<p class="sub">Менеджер свяжется с вами в ближайшее время.</p>
 <form id="requestForm">
-
-<input type="text"
-       id="clientName"
-       placeholder="Ваше имя"
-       required>
-
-<input type="tel"
-       id="clientPhone"
-       placeholder="Телефон"
-       required>
-
-<button type="submit"
-        class="submit-btn">
-
-Отправить заявку
-
-</button>
-
+<input type="text" id="clientName" placeholder="Ваше имя" required>
+<input type="tel" id="clientPhone" placeholder="Телефон" required>
+<button type="submit">Отправить заявку</button>
 </form>
-
+</div>
 </div>
 
-</div>
+
+<script type="module">
+
+import { db } from "./js/firebase.js";
+
+import {
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-<!-- КНОПКА НАВЕРХ -->
-<button id="scrollTopBtn" aria-label="Наверх">↑</button>
+/* ===== БУРГЕР ===== */
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
+burger.addEventListener("click", () => {
+    nav.classList.toggle("active");
+    burger.innerHTML = nav.classList.contains("active") ? "✕" : "☰";
+});
 
 
-
-<script>
-
-const areaRange =
-document.getElementById('areaRange');
-
-const areaValue =
-document.getElementById('areaValue');
-
-const roomType =
-document.getElementById('roomType');
-
-const repairType =
-document.getElementById('repairType');
-
-const serviceType =
-document.getElementById('serviceType');
-
-const totalPrice =
-document.getElementById('totalPrice');
-
+/* ===== ПОЛНЫЙ КАЛЬКУЛЯТОР ===== */
+const areaRange = document.getElementById("areaRange");
+const areaValue = document.getElementById("areaValue");
+const roomType = document.getElementById("roomType");
+const serviceType = document.getElementById("serviceType");
+const repairType = document.getElementById("repairType");
+const totalPrice = document.getElementById("totalPrice");
 
 function calculatePrice(){
-
-    const area =
-    parseInt(areaRange.value);
-
-    const room =
-    parseFloat(roomType.value);
-
+    const area = parseInt(areaRange.value);
+    const room = parseFloat(roomType.value);
     let total = 0;
 
     switch(serviceType.value){
-
         case "full":
-
-            const repair =
-            parseInt(repairType.value);
-
-            total =
-            area *
-            repair *
-            room;
-
+            total = area * parseInt(repairType.value) * room;
             break;
-
-        case "wallpaper":
-
-            total =
-            area *
-            450 *
-            room;
-
-            break;
-
-        case "painting":
-
-            total =
-            area *
-            550 *
-            room;
-
-            break;
-
-        case "tile":
-
-            total =
-            area *
-            2200 *
-            room;
-
-            break;
-
-        case "laminate":
-
-            total =
-            area *
-            900 *
-            room;
-
-            break;
-
-        case "ceiling":
-
-            total =
-            area *
-            1200 *
-            room;
-
-            break;
-
-        case "electric":
-
-            total =
-            area *
-            1500 *
-            room;
-
-            break;
-
-        case "plumbing":
-
-            total =
-            area *
-            1800 *
-            room;
-
-            break;
-
-        case "bathroom":
-
-            total =
-            area *
-            18000 *
-            room;
-
-            break;
-
-        case "kitchen":
-
-            total =
-            area *
-            14000 *
-            room;
-
-            break;
-
-        default:
-
-            total =
-            area *
-            7000 *
-            room;
-
+        case "wallpaper":  total = area * 450 * room; break;
+        case "painting":   total = area * 550 * room; break;
+        case "tile":       total = area * 2200 * room; break;
+        case "laminate":   total = area * 900 * room; break;
+        case "ceiling":    total = area * 1200 * room; break;
+        case "electric":   total = area * 1500 * room; break;
+        case "plumbing":   total = area * 1800 * room; break;
+        case "bathroom":   total = area * 18000 * room; break;
+        case "kitchen":    total = area * 14000 * room; break;
+        default:           total = area * 7000 * room;
     }
 
-    totalPrice.innerText =
-    Math.round(total)
-    .toLocaleString('ru-RU')
-    + ' ₽';
-
+    totalPrice.innerText = Math.round(total).toLocaleString("ru-RU") + " ₽";
 }
 
-
-areaRange.addEventListener(
-    'input',
-    () => {
-
-        areaValue.innerText =
-        areaRange.value;
-
-        calculatePrice();
-
-    }
-);
-
-roomType.addEventListener(
-    'change',
-    calculatePrice
-);
-
-repairType.addEventListener(
-    'change',
-    calculatePrice
-);
-
-serviceType.addEventListener(
-    'change',
-    () => {
-
-        if(
-            serviceType.value === "full"
-        ){
-
-            repairType.disabled =
-            false;
-
-        }else{
-
-            repairType.disabled =
-            true;
-
-        }
-
-        calculatePrice();
-
-    }
-);
-
-
+areaRange.addEventListener("input", () => {
+    areaValue.innerText = areaRange.value;
+    calculatePrice();
+});
+roomType.addEventListener("change", calculatePrice);
+repairType.addEventListener("change", calculatePrice);
+serviceType.addEventListener("change", () => {
+    // тип ремонта актуален только для комплексного
+    repairType.disabled = serviceType.value !== "full";
+    calculatePrice();
+});
 calculatePrice();
 
 
-const modal =
-document.getElementById('modal');
-
-const openModal =
-document.getElementById('openModal');
-
-const closeModal =
-document.getElementById('closeModal');
-
-
-openModal.addEventListener(
-    'click',
-    () => {
-
-        modal.style.display =
-        'flex';
-
-    }
-);
-
-
-closeModal.addEventListener(
-    'click',
-    () => {
-
-        modal.style.display =
-        'none';
-
-    }
-);
-
-
-window.addEventListener(
-    'click',
-    (e) => {
-
-        if(
-            e.target === modal
-        ){
-
-            modal.style.display =
-            'none';
-
-        }
-
-    }
-);
-
-
-const requestForm =
-document.getElementById('requestForm');
-
-
-requestForm.addEventListener(
-    'submit',
-    (e) => {
-
-        e.preventDefault();
-
-        const name =
-        document.getElementById(
-            'clientName'
-        ).value;
-
-        const phone =
-        document.getElementById(
-            'clientPhone'
-        ).value;
-
-        const service =
-        serviceType.options[
-            serviceType.selectedIndex
-        ].text;
-
-        const price =
-        totalPrice.innerText;
-
-        alert(
-
-`Заявка отправлена!
-
-Имя: ${name}
-
-Телефон: ${phone}
-
-Услуга: ${service}
-
-Стоимость: ${price}`
-
-        );
-
-        modal.style.display =
-        'none';
-
-        requestForm.reset();
-
-    }
-);
-const burger = document.getElementById("burger");
-const nav = document.getElementById("nav");
-
-burger.addEventListener("click", () => {
-    nav.classList.toggle("active");
-
-    if (nav.classList.contains("active")) {
-        burger.innerHTML = "✕";
-    } else {
-        burger.innerHTML = "☰";
-    }
+/* ===== МОДАЛКА + ОТПРАВКА ЗАЯВКИ В FIRESTORE ===== */
+const modal = document.getElementById("modal");
+document.getElementById("openModal").addEventListener("click", (e) => {
+    e.preventDefault();
+    modal.classList.add("active");
 });
-
-
-/* ===== ESC ЗАКРЫВАЕТ МОДАЛКУ ===== */
+document.getElementById("closeModal").addEventListener("click", () => {
+    modal.classList.remove("active");
+});
+modal.addEventListener("click", (e) => {
+    if(e.target === modal) modal.classList.remove("active");
+});
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-        modal.style.display = "none";
+    if(e.key === "Escape") modal.classList.remove("active");
+});
+
+document.getElementById("requestForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("clientName").value;
+    const phone = document.getElementById("clientPhone").value;
+
+    try {
+        await addDoc(collection(db, "projects"), {
+            service: "Заявка с главной",
+            clientName: name,
+            phone: phone,
+            status: "Новая заявка",
+            createdAt: Date.now()
+        });
+        alert("Заявка отправлена! Мы свяжемся с вами.");
+        modal.classList.remove("active");
+        e.target.reset();
+    } catch (error) {
+        console.error("Ошибка Firestore:", error);
+        alert("Ошибка: " + error.message);
     }
 });
 
 
-/* ===== КНОПКА НАВЕРХ ===== */
-const scrollTopBtn = document.getElementById("scrollTopBtn");
-
-window.addEventListener("scroll", () => {
-    scrollTopBtn.style.display = window.scrollY > 400 ? "block" : "none";
-});
-
-scrollTopBtn.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-});
+/* ===== ОПЫТ КОМАНДЫ (авто, не из базы) ===== */
+const founded = 2024;
+const years = (new Date().getFullYear() - founded) + 8;
+document.getElementById("heroYears").innerText = years + "+";
 
 
-/* ===== FADE-IN ПРИ ПРОКРУТКЕ ===== */
-const fadeEls = document.querySelectorAll(
-    ".service-card, .portfolio-card, .review-card, .about-item, .stat-item"
-);
-
-fadeEls.forEach((el) => el.classList.add("fade-in"));
-
-const fadeObserver = new IntersectionObserver((entries) => {
+/* ===== REVEAL ПРИ ПРОКРУТКЕ ===== */
+const revealEls = document.querySelectorAll(".reveal");
+const revObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-        if (entry.isIntersecting) {
+        if(entry.isIntersecting){
             entry.target.classList.add("show");
-            fadeObserver.unobserve(entry.target);
+            revObserver.unobserve(entry.target);
         }
     });
-}, { threshold: 0.15 });
+}, { threshold:0.12 });
+revealEls.forEach((el) => revObserver.observe(el));
 
-fadeEls.forEach((el) => fadeObserver.observe(el));
+
+/* ===== АНИМАЦИЯ СЧЁТЧИКА ===== */
+function animateCounter(el, target){
+    let cur = 0;
+    const step = Math.max(1, Math.ceil(target / 50));
+    const t = setInterval(() => {
+        cur += step;
+        if(cur >= target){ cur = target; clearInterval(t); }
+        el.innerText = cur;
+    }, 28);
+}
+
+/* запускаем анимацию счётчика, когда блок виден */
+function observeCounter(el){
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if(entry.isIntersecting){
+                animateCounter(el, parseInt(el.dataset.target) || 0);
+                obs.unobserve(el);
+            }
+        });
+    }, { threshold:0.5 });
+    obs.observe(el);
+}
 
 
-/* ===== АНИМИРОВАННЫЕ СЧЁТЧИКИ ===== */
-const counters = document.querySelectorAll(".stat-number");
+/* ===== ДАННЫЕ ИЗ БАЗЫ: проекты, оценка, отзыв ===== */
 
-const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-            const el = entry.target;
-            const target = parseInt(el.dataset.target);
-            let current = 0;
-            const step = Math.max(1, Math.ceil(target / 60));
+const elProjects = document.getElementById("statProjects");
+const elTeam = document.getElementById("statTeam");        // всегда 18
+const elRating = document.getElementById("statRating");
+const heroRating = document.getElementById("heroRating");
 
-            const timer = setInterval(() => {
-                current += step;
-                if (current >= target) {
-                    current = target;
-                    clearInterval(timer);
-                }
-                el.innerText = current;
-            }, 25);
+/* мастера — фиксировано 18 */
+if(elTeam){
+    elTeam.dataset.target = 18;
+    observeCounter(elTeam);
+}
 
-            counterObserver.unobserve(el);
+/* завершённые проекты из коллекции projects */
+async function loadProjects(){
+    try {
+        const snap = await getDocs(collection(db, "projects"));
+        let completed = 0;
+        snap.forEach((d) => {
+            const s = d.data().status;
+            if(s === "Завершён" || s === "Завершен") completed++;
+        });
+        if(elProjects){
+            elProjects.dataset.target = completed;
+            observeCounter(elProjects);
         }
-    });
-}, { threshold: 0.5 });
+        // та же цифра в герое
+        const heroProjects = document.getElementById("heroProjects");
+        if(heroProjects) heroProjects.innerText = completed + "+";
+    } catch(err){
+        console.error("Ошибка загрузки проектов:", err);
+        if(elProjects) elProjects.innerText = "—";
+    }
+}
 
-counters.forEach((el) => counterObserver.observe(el));
+/* отзывы: средняя оценка + свежая цитата */
+async function loadReviews(){
+    try {
+        const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+
+        let sum = 0, count = 0, latest = null;
+
+        snap.forEach((d) => {
+            const data = d.data();
+            const r = parseFloat(data.rating);
+            if(!isNaN(r)){ sum += r; count++; }
+            if(!latest && data.text){ latest = data; }
+        });
+
+        // средняя оценка (в герое и в блоке доверия)
+        if(count > 0){
+            const avg = (sum / count).toFixed(1);
+            if(heroRating) heroRating.innerText = avg;
+            if(elRating) elRating.innerText = avg;
+        } else {
+            if(heroRating) heroRating.innerText = "—";
+            if(elRating) elRating.innerText = "—";
+        }
+
+        // свежий реальный отзыв в цитату
+        const quoteSection = document.getElementById("quoteSection");
+        if(latest){
+            document.getElementById("quoteText").innerText = latest.text;
+            document.getElementById("quoteName").innerText = latest.name || "Клиент";
+        } else if(quoteSection){
+            // нет отзывов — прячем секцию цитаты
+            quoteSection.style.display = "none";
+        }
+
+    } catch(err){
+        console.error("Ошибка загрузки отзывов:", err);
+        if(heroRating) heroRating.innerText = "—";
+        if(elRating) elRating.innerText = "—";
+    }
+}
+
+loadProjects();
+loadReviews();
 
 </script>
 
