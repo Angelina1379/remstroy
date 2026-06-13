@@ -9,6 +9,12 @@
 <!-- генерация Word и сохранение -->
 <script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+// если docx не загрузился с unpkg — пробуем запасной CDN
+if(!window.docx){
+    document.write('<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"><\/script>');
+}
+</script>
 
 <style>
 :root{
@@ -396,7 +402,15 @@ function docMeta(){
 }
 
 /* ===== ГЕНЕРАЦИЯ WORD ===== */
-const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle } = window.docx;
+let Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle;
+function docxLib(){
+    if(!window.docx || !window.docx.Document){
+        alert("Библиотека для Word ещё не загрузилась.\n\nПроверьте интернет и обновите страницу (F5). Если не помогает — в сетевых настройках должен быть разрешён домен unpkg.com или cdn.jsdelivr.net");
+        return false;
+    }
+    ({Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle}=window.docx);
+    return true;
+}
 
 function P(text,opts={}){
     return new Paragraph({
@@ -438,11 +452,21 @@ function estimateTable(items){
 }
 
 function download(docFile,name){
-    Packer.toBlob(docFile).then(blob=>saveAs(blob,name));
+    Packer.toBlob(docFile).then(blob=>{
+        if(window.saveAs){ window.saveAs(blob,name); return; }
+        // запасной способ — без file-saver
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url; a.download=name;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }).catch(e=>alert("Ошибка генерации документа: "+e.message));
 }
 
 /* СМЕТА */
 function buildEstimate(){
+    if(!docxLib())return;
     const m=docMeta(); const items=collectItems();
     const total=items.reduce((s,i)=>s+i.sum,0);
     const doc=new Document({sections:[{children:[
@@ -464,6 +488,7 @@ function buildEstimate(){
 
 /* ДОГОВОР */
 function buildContract(){
+    if(!docxLib())return;
     const m=docMeta(); const items=collectItems();
     const total=items.reduce((s,i)=>s+i.sum,0);
     const doc=new Document({sections:[{children:[
@@ -505,6 +530,7 @@ function buildContract(){
 
 /* АКТ */
 function buildAct(){
+    if(!docxLib())return;
     const m=docMeta(); const items=collectItems();
     const total=items.reduce((s,i)=>s+i.sum,0);
     const doc=new Document({sections:[{children:[
