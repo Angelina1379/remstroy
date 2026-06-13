@@ -7,9 +7,367 @@
 
     <title>Личный кабинет | BuildHouse</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:#f5f6fa;
+    color:#111;
+}
+
+/* LAYOUT */
+.dashboard{ min-height:100vh; }
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:260px;
+    height:100vh;
+    background:#0b1220;
+    padding:30px 20px;
+    display:flex;
+    flex-direction:column;
+    z-index:100;
+}
+
+.main-content{
+    margin-left:260px;
+    padding:36px;
+}
+
+/* LOGO */
+.logo h2{
+    color:#ffb547;
+    font-size:28px;
+    font-weight:900;
+}
+.logo p{
+    color:#8a93a6;
+    margin-top:6px;
+    font-size:14px;
+}
+
+/* MENU */
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:36px;
+    flex-grow:1;
+}
+.menu a{
+    text-decoration:none;
+    color:#aab2c5;
+    padding:14px 18px;
+    border-radius:14px;
+    transition:0.25s;
+    cursor:pointer;
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+.menu a .m-ic{ font-size:19px; }
+.menu a:hover{ background:#1d2638; color:white; }
+.menu .active{ background:#ffb547; color:#111; font-weight:700; }
+
+/* BUTTONS */
+button{
+    border:none;
+    background:#ffb547;
+    color:#111;
+    padding:16px 20px;
+    border-radius:16px;
+    cursor:pointer;
+    font-weight:600;
+    font-family:'Inter',sans-serif;
+    transition:0.25s;
+}
+button:hover{ background:#ffa51f; transform:translateY(-2px); }
+#logoutBtn{ margin-top:auto; }
+
+/* TOP BAR */
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+    gap:20px;
+}
+.top-left{ display:flex; align-items:center; gap:16px; }
+.top-bar h1{ font-size:32px; margin-bottom:6px; }
+.top-bar p{ color:#777; }
+
+.burger{
+    display:none;
+    background:none;
+    color:#111;
+    font-size:28px;
+    padding:0;
+    width:auto;
+}
+.burger:hover{ background:none; transform:none; }
+
+/* PROFILE CARD */
+.profile-card{
+    background:white;
+    border-radius:20px;
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.04);
+    flex-shrink:0;
+}
+.profile-avatar{
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    background:#ffb547;
+    color:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:22px;
+}
+.profile-card h4{ font-size:16px; }
+.profile-card p{ color:#888; font-size:14px; }
+
+/* PROJECT CARD */
+.project-card{
+    background:linear-gradient(135deg,#ffb547,#ffcc73);
+    border-radius:28px;
+    padding:34px;
+    margin-bottom:30px;
+    color:#222;
+    box-shadow:0 16px 40px rgba(255,181,71,0.25);
+}
+.project-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+}
+.project-top h2{ font-size:32px; margin-top:4px; }
+.progress-circle{
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    font-weight:800;
+    flex-shrink:0;
+}
+.project-info{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:24px;
+    margin-top:28px;
+}
+.project-info h3{ font-size:20px; }
+.card-label{ opacity:0.7; margin-bottom:8px; font-size:14px; }
+.progress-bar{
+    width:100%;
+    height:14px;
+    background:rgba(255,255,255,0.4);
+    border-radius:999px;
+    overflow:hidden;
+    margin-top:28px;
+}
+.progress-fill{
+    width:0%;
+    height:100%;
+    background:white;
+    border-radius:999px;
+    transition:width 1s ease;
+}
+
+/* TWO COLUMNS */
+.two-col{
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:24px;
+    margin-bottom:30px;
+}
+
+/* STAGES */
+.status-section{
+    background:white;
+    border-radius:24px;
+    padding:28px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.04);
+}
+.status-section h2{ margin-bottom:22px; font-size:22px; }
+.stages-list{ display:flex; flex-direction:column; gap:14px; }
+.stage-item{
+    background:#f8f8fb;
+    border-radius:18px;
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    transition:0.2s;
+}
+.stage-item:hover{ background:#fff3df; }
+.stage-icon{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#e6e6ea;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    flex-shrink:0;
+}
+.stage-item.done .stage-icon{ background:#2ecc71; color:white; }
+.stage-item.active .stage-icon{ background:#ffb547; color:#111; }
+.stage-text b{ display:block; font-size:16px; }
+.stage-text span{ font-size:13px; color:#999; }
+
+/* NOTIFICATIONS */
+.notif-section{ display:flex; flex-direction:column; gap:14px; }
+.notif-wrapper{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:white;
+    padding:16px 18px;
+    border-radius:18px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.04);
+    font-weight:700;
+    font-size:16px;
+}
+.badge{
+    background:#ff8c42;
+    color:white;
+    border-radius:999px;
+    padding:3px 10px;
+    font-size:12px;
+    margin-left:auto;
+}
+.notifications-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    max-height:360px;
+    overflow-y:auto;
+}
+.notification-item{
+    background:white;
+    padding:16px 18px;
+    border-radius:16px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.04);
+    border-left:4px solid #ffb547;
+}
+.notification-item p{ line-height:1.5; margin-bottom:6px; }
+.notification-item span{ font-size:12px; opacity:0.6; }
+
+/* GRID CARDS */
+.cabinet-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:22px;
+    margin-bottom:30px;
+}
+.cabinet-card{
+    background:white;
+    border-radius:24px;
+    padding:26px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.04);
+}
+.card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+.card-top h3{ font-size:19px; }
+.card-top a{ text-decoration:none; color:#ff8c42; font-weight:700; font-size:14px; }
+
+/* PREVIEW BLOCKS */
+.message-preview,
+.calendar-work,
+.document-item{
+    background:#f8f8fb;
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:12px;
+}
+.message-preview:last-child,
+.calendar-work:last-child,
+.document-item:last-child{ margin-bottom:0; }
+.message-user{ font-weight:700; margin-bottom:6px; }
+.message-preview p{ line-height:1.5; margin-bottom:8px; color:#555; }
+.message-preview span{ font-size:13px; color:#888; }
+.document-item{ display:flex; justify-content:space-between; align-items:center; }
+.document-item a{ color:#ff8c42; font-weight:700; text-decoration:none; }
+.muted{ color:#999; padding:10px 0; }
+
+/* SETTINGS */
+.profile-settings{
+    background:white;
+    border-radius:24px;
+    padding:28px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.04);
+}
+.profile-settings h2{ margin-bottom:20px; font-size:22px; }
+.settings-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+    align-items:center;
+}
+.settings-grid input{
+    border:none;
+    background:#f5f5f5;
+    padding:16px;
+    border-radius:16px;
+    font-size:15px;
+    font-family:'Inter',sans-serif;
+}
+.settings-grid input:focus{
+    outline:none;
+    background:white;
+    box-shadow:0 0 0 3px rgba(255,181,71,0.25);
+}
+
+/* OVERLAY */
+.overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.4);
+    z-index:99;
+}
+
+/* MOBILE */
+@media(max-width:1050px){
+    .two-col{ grid-template-columns:1fr; }
+}
+@media(max-width:900px){
+    .sidebar{ transform:translateX(-100%); transition:0.3s; }
+    .sidebar.open{ transform:translateX(0); }
+    .overlay.show{ display:block; }
+    .main-content{ margin-left:0; padding:24px; }
+    .burger{ display:block; }
+    .top-bar{ flex-direction:column; align-items:flex-start; }
+    .cabinet-grid{ grid-template-columns:1fr; }
+}
+</style>
 
 </head>
 
@@ -18,7 +376,7 @@
 <div class="dashboard">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
 
         <div class="logo">
             <h2>BuildHouse</h2>
@@ -26,38 +384,19 @@
         </div>
 
         <nav class="menu">
-
-            <a href="cabinet.html" class="active">
-                Главная
-            </a>
-
-            <a href="orders.html">
-                Заказы
-            </a>
-
-            <a href="messages.html">
-                Сообщения
-            </a>
-
-            <a href="calendar.html">
-                Календарь
-            </a>
-
-            <a href="documents.html">
-                Документы
-            </a>
-
-            <a href="settings.html">
-                Настройки
-            </a>
-
+            <a href="cabinet.html" class="active"><span class="m-ic">🏠</span> Главная</a>
+            <a href="orders.html"><span class="m-ic">📦</span> Заказы</a>
+            <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
+            <a href="calendar.html"><span class="m-ic">📅</span> Календарь</a>
+            <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
+            <a href="settings.html"><span class="m-ic">⚙️</span> Настройки</a>
         </nav>
 
-        <button id="logoutBtn">
-            Выйти
-        </button>
+        <button id="logoutBtn">Выйти</button>
 
     </aside>
+
+    <div class="overlay" id="overlay"></div>
 
     <!-- MAIN -->
     <main class="main-content">
@@ -65,234 +404,402 @@
         <!-- TOP BAR -->
         <div class="top-bar">
 
-            <div>
-
-                <h1>
-                    Добро пожаловать 👋
-                </h1>
-
-                <p>
-                    Ваш личный кабинет клиента
-                </p>
-
+            <div class="top-left">
+                <button class="burger" id="burger">☰</button>
+                <div>
+                    <h1>Добро пожаловать 👋</h1>
+                    <p>Ваш личный кабинет клиента</p>
+                </div>
             </div>
 
             <div class="profile-card">
-
-                <div class="profile-avatar"></div>
-
+                <div class="profile-avatar" id="profileAvatar">К</div>
                 <div>
-
-                    <h4 id="clientName">
-                        Клиент
-                    </h4>
-
-                    <p id="clientPhone">
-                        —
-                    </p>
-
+                    <h4 id="clientName">Клиент</h4>
+                    <p id="clientPhone">—</p>
                 </div>
-
             </div>
 
         </div>
 
-        <!-- NOTIFICATIONS -->
+        <!-- PROJECT (hero card) -->
+        <div class="project-card" id="projectCard">
 
-        <div class="notif-wrapper">
-
-            🔔 Уведомления
-
-            <span id="notifBadge" class="badge">
-                0
-            </span>
-
-        </div>
-
-        <div
-            id="notificationsList"
-            class="notifications-list"
-        ></div>
-
-        <!-- PROFILE SETTINGS -->
-
-        <div class="profile-settings">
-
-            <h2>
-                Личные данные
-            </h2>
-
-            <div class="settings-grid">
-
-                <input
-                    type="text"
-                    id="editName"
-                    placeholder="Введите имя"
-                >
-
-                <input
-                    type="text"
-                    id="editPhone"
-                    placeholder="+7 (___) ___-__-__"
-                >
-
-                <button id="saveProfileBtn">
-                    Сохранить изменения
-                </button>
-
-            </div>
-
-        </div>
-
-        <!-- PROJECT -->
-
-        <div
-            class="project-card"
-            id="projectCard"
-        >
-
-            <div>
-
-                <p class="card-label">
-                    Статус проекта
-                </p>
-
-                <h2 id="projectStatus">
-                    —
-                </h2>
-
+            <div class="project-top">
+                <div>
+                    <p class="card-label">Статус проекта</p>
+                    <h2 id="projectStatus">—</h2>
+                </div>
+                <div class="progress-circle" id="progressCircle">0%</div>
             </div>
 
             <div class="project-info">
-
                 <div>
-
-                    <p class="card-label">
-                        Адрес объекта
-                    </p>
-
-                    <h3 id="projectAddress">
-                        —
-                    </h3>
-
+                    <p class="card-label">Адрес объекта</p>
+                    <h3 id="projectAddress">—</h3>
                 </div>
-
                 <div>
-
-                    <p class="card-label">
-                        Менеджер
-                    </p>
-
-                    <h3 id="projectManager">
-                        —
-                    </h3>
-
+                    <p class="card-label">Менеджер</p>
+                    <h3 id="projectManager">—</h3>
                 </div>
-
                 <div>
-
-                    <p class="card-label">
-                        Срок сдачи
-                    </p>
-
-                    <h3 id="projectDeadline">
-                        —
-                    </h3>
-
+                    <p class="card-label">Срок сдачи</p>
+                    <h3 id="projectDeadline">—</h3>
                 </div>
+            </div>
 
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
 
         </div>
 
-        <!-- STAGES -->
+        <!-- TWO COLUMNS: stages + notifications -->
+        <div class="two-col">
 
-        <div
-            class="status-section"
-            id="statusSection"
-        >
+            <div class="status-section" id="statusSection">
+                <h2>Этапы ремонта</h2>
+                <div class="stages-list" id="stagesList"></div>
+            </div>
 
-            <h2>
-                Этапы ремонта
-            </h2>
-
-            <div
-                class="stages-list"
-                id="stagesList"
-            ></div>
+            <div class="notif-section">
+                <div class="notif-wrapper">
+                    🔔 Уведомления
+                    <span id="notifBadge" class="badge">0</span>
+                </div>
+                <div id="notificationsList" class="notifications-list"></div>
+            </div>
 
         </div>
 
         <!-- DASHBOARD CARDS -->
-
         <div class="cabinet-grid">
 
-            <!-- MESSAGES -->
-
             <div class="cabinet-card">
-
                 <div class="card-top">
-
-                    <h3>
-                        Сообщения
-                    </h3>
-
-                    <a href="messages.html">
-                        Открыть
-                    </a>
-
+                    <h3>Сообщения</h3>
+                    <a href="messages.html">Открыть</a>
                 </div>
-
                 <div id="messagesPreview"></div>
-
             </div>
 
-            <!-- WORKS -->
-
             <div class="cabinet-card">
-
                 <div class="card-top">
-
-                    <h3>
-                        Ближайшие работы
-                    </h3>
-
+                    <h3>Ближайшие работы</h3>
                 </div>
-
                 <div id="worksList"></div>
-
             </div>
-
-            <!-- DOCUMENTS -->
 
             <div class="cabinet-card">
-
                 <div class="card-top">
-
-                    <h3>
-                        Документы
-                    </h3>
-
-                    <a href="documents.html">
-                        Открыть
-                    </a>
-
+                    <h3>Документы</h3>
+                    <a href="documents.html">Открыть</a>
                 </div>
-
                 <div id="documentsList"></div>
-
             </div>
 
+        </div>
+
+        <!-- PROFILE SETTINGS -->
+        <div class="profile-settings">
+            <h2>Личные данные</h2>
+            <div class="settings-grid">
+                <input type="text" id="editName" placeholder="Введите имя">
+                <input type="text" id="editPhone" placeholder="+7 (___) ___-__-__">
+                <button id="saveProfileBtn">Сохранить изменения</button>
+            </div>
         </div>
 
     </main>
 
 </div>
 
-<script
-    type="module"
-    src="js/cabinet.js"
-></script>
+
+<script type="module">
+import { auth, db } from "./js/firebase.js";
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  setDoc,
+  onSnapshot,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+// ===== БУРГЕР =====
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const burger = document.getElementById("burger");
+if (burger) {
+  burger.addEventListener("click", () => {
+    sidebar.classList.add("open");
+    overlay.classList.add("show");
+  });
+}
+if (overlay) {
+  overlay.addEventListener("click", () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  });
+}
+
+
+// ===== LOGOUT =====
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
+}
+
+
+// ===== AUTH CHECK =====
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+  loadProject(user.uid);
+  loadNotifications(user.uid);
+  loadProfile(user.uid);
+});
+
+
+// ===== PROJECT =====
+function loadProject(uid) {
+  const ref = doc(db, "projects", uid);
+  onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      renderProject(snap.data());
+    } else {
+      findProjectByField(uid);
+    }
+  });
+}
+
+async function findProjectByField(uid) {
+  try {
+    const q = query(collection(db, "projects"), where("uid", "==", uid));
+    const snap = await getDocs(q);
+    let projects = [];
+    snap.forEach((d) => projects.push(d.data()));
+    if (projects.length === 0) { renderEmptyProject(); return; }
+    projects.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    renderProject(projects[0]);
+  } catch (e) {
+    console.error(e);
+    renderEmptyProject();
+  }
+}
+
+function renderProject(data) {
+  setText("projectStatus", data.status);
+  setText("projectAddress", data.address);
+  setText("projectManager", data.manager);
+  setText("projectDeadline", data.deadline);
+
+  const progress = data.progress != null ? data.progress : statusToProgress(data.status);
+  const circle = document.getElementById("progressCircle");
+  const fill = document.getElementById("progressFill");
+  if (circle) circle.textContent = progress + "%";
+  if (fill) fill.style.width = progress + "%";
+
+  renderStages(data.stages || [], progress);
+  renderPreviewBlocks(data);
+}
+
+function renderEmptyProject() {
+  setText("projectStatus", "Нет активного проекта");
+  setText("projectAddress", "—");
+  setText("projectManager", "—");
+  setText("projectDeadline", "—");
+  const circle = document.getElementById("progressCircle");
+  const fill = document.getElementById("progressFill");
+  if (circle) circle.textContent = "0%";
+  if (fill) fill.style.width = "0%";
+  const list = document.getElementById("stagesList");
+  if (list) list.innerHTML = '<p class="muted">Этапы появятся, когда менеджер начнёт ваш проект.</p>';
+  renderPreviewBlocks({});
+}
+
+function statusToProgress(status) {
+  const map = { "Новая заявка": 5, "В работе": 50, "Завершён": 100, "Завершен": 100 };
+  return map[status] || 0;
+}
+
+
+// ===== STAGES =====
+function renderStages(stages, progress) {
+  const container = document.getElementById("stagesList");
+  if (!container) return;
+  container.innerHTML = "";
+
+  let list = stages;
+  if (!list || list.length === 0) {
+    const def = ["Замер и смета", "Демонтаж", "Черновые работы", "Чистовая отделка", "Сдача объекта"];
+    list = def.map((name, i) => ({ name, done: progress >= (i + 1) * 20 }));
+  } else {
+    list = list.map((s, i) => {
+      if (typeof s === "string") {
+        return { name: s, done: progress >= ((i + 1) / stages.length) * 100 };
+      }
+      return s;
+    });
+  }
+
+  let activeMarked = false;
+  list.forEach((stage, i) => {
+    const done = !!stage.done;
+    let cls = "stage-item";
+    let label = "Ожидает";
+    if (done) { cls += " done"; label = "Завершено"; }
+    else if (!activeMarked) { cls += " active"; label = "В работе"; activeMarked = true; }
+
+    const item = document.createElement("div");
+    item.className = cls;
+    item.innerHTML = `
+      <div class="stage-icon">${done ? "✓" : (i + 1)}</div>
+      <div class="stage-text">
+        <b>${stage.name}</b>
+        <span>${label}</span>
+      </div>`;
+    container.appendChild(item);
+  });
+}
+
+
+// ===== PREVIEW BLOCKS =====
+function renderPreviewBlocks(data) {
+  const msg = document.getElementById("messagesPreview");
+  const works = document.getElementById("worksList");
+  const docs = document.getElementById("documentsList");
+
+  if (msg) {
+    if (data.lastMessage) {
+      msg.innerHTML = `
+        <div class="message-preview">
+          <div class="message-user">${data.lastMessage.from || "Менеджер"}</div>
+          <p>${data.lastMessage.text || ""}</p>
+          <span>${data.lastMessage.time || ""}</span>
+        </div>`;
+    } else {
+      msg.innerHTML = '<p class="muted">Сообщений пока нет</p>';
+    }
+  }
+
+  if (works) {
+    if (data.works && data.works.length) {
+      works.innerHTML = data.works.map(w =>
+        `<div class="calendar-work"><b>${w.title || ""}</b><br><span style="color:#888;font-size:13px;">${w.date || ""}</span></div>`
+      ).join("");
+    } else {
+      works.innerHTML = '<p class="muted">Работы не назначены</p>';
+    }
+  }
+
+  if (docs) {
+    if (data.documents && data.documents.length) {
+      docs.innerHTML = data.documents.map(d =>
+        `<div class="document-item"><span>${d.name || "Документ"}</span>${d.url ? `<a href="${d.url}" target="_blank">Скачать</a>` : ""}</div>`
+      ).join("");
+    } else {
+      docs.innerHTML = '<p class="muted">Документы отсутствуют</p>';
+    }
+  }
+}
+
+
+// ===== NOTIFICATIONS =====
+function loadNotifications(uid) {
+  const container = document.getElementById("notificationsList");
+  const badge = document.getElementById("notifBadge");
+  if (!container || !badge) return;
+
+  const ref = query(
+    collection(db, "notifications", uid, "items"),
+    orderBy("time", "desc")
+  );
+
+  onSnapshot(ref, (snap) => {
+    container.innerHTML = "";
+    let unread = 0;
+    if (snap.empty) {
+      container.innerHTML = '<p class="muted">Новых уведомлений нет</p>';
+    }
+    snap.forEach((docSnap) => {
+      const n = docSnap.data();
+      if (!n.read) unread++;
+      const time = n.time?.toDate ? n.time.toDate() : new Date(n.time);
+      const div = document.createElement("div");
+      div.className = "notification-item";
+      div.innerHTML = `
+        <p>${n.text || "Без текста"}</p>
+        <span>${isNaN(time) ? "" : time.toLocaleString("ru-RU")}</span>`;
+      container.appendChild(div);
+    });
+    badge.textContent = unread;
+    badge.style.display = unread > 0 ? "inline-block" : "none";
+  }, (err) => {
+    console.error(err);
+    container.innerHTML = '<p class="muted">Новых уведомлений нет</p>';
+    badge.style.display = "none";
+  });
+}
+
+
+// ===== PROFILE =====
+function loadProfile(uid) {
+  const ref = doc(db, "users", uid);
+  onSnapshot(ref, (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    const name = data.name || "Клиент";
+    setText("clientName", name);
+    setText("clientPhone", data.phone || "—");
+    const avatar = document.getElementById("profileAvatar");
+    if (avatar) avatar.textContent = name.charAt(0).toUpperCase();
+    const en = document.getElementById("editName");
+    const ep = document.getElementById("editPhone");
+    if (en) en.value = data.name || "";
+    if (ep) ep.value = data.phone || "";
+  });
+
+  const saveBtn = document.getElementById("saveProfileBtn");
+  if (saveBtn && !saveBtn.dataset.listenerAdded) {
+    saveBtn.dataset.listenerAdded = "true";
+    saveBtn.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) { alert("Пользователь не авторизован"); return; }
+      const name = document.getElementById("editName").value.trim();
+      const phone = document.getElementById("editPhone").value.trim();
+      if (!name || !phone) { alert("Заполните все поля"); return; }
+      try {
+        await setDoc(doc(db, "users", uid), { name, phone }, { merge: true });
+        alert("Сохранено!");
+      } catch (e) {
+        alert("Ошибка: " + e.message);
+      }
+    });
+  }
+}
+
+
+// ===== HELPERS =====
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value || "—";
+}
+</script>
 
 </body>
 </html>
