@@ -1,304 +1,508 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Календарь | BuildHouse</title>
-
-<link rel="stylesheet" href="css/calendar.css">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-rel="stylesheet">
+<style>
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --accent:#ff8c42;
+    --sidebar:#0b1220;
+    --bg:#f4f7fb;
+    --white:#fff;
+    --border:#e6ebf2;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --shadow:0 10px 35px rgba(0,0,0,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+a{text-decoration:none;}
+.dashboard{display:flex;min-height:100vh;}
 
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--sidebar);padding:30px 20px;display:flex;flex-direction:column;z-index:1000;}
+.logo h2{color:var(--primary);font-size:28px;font-weight:900;}
+.logo p{color:#8f9aad;margin-top:6px;font-size:14px;}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex-grow:1;}
+.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;font-weight:500;}
+.menu a .m-ic{font-size:19px;}
+.menu a:hover{background:#1d2638;color:white;}
+.menu .active{background:var(--primary);color:#111;font-weight:700;}
+#logoutBtn{width:100%;border:none;padding:14px;border-radius:14px;background:#1d2638;color:#ff9b9b;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:auto;}
+#logoutBtn:hover{background:#26344a;}
+
+/* CONTENT */
+.content{margin-left:260px;width:calc(100% - 260px);padding:40px;}
+.page-header{margin-bottom:28px;display:flex;align-items:center;gap:16px;}
+.burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
+.page-header h1{font-size:32px;margin-bottom:6px;}
+.page-header p{color:var(--muted);}
+.role-pill{margin-left:auto;background:#fff3df;color:var(--accent);padding:8px 16px;border-radius:12px;font-weight:700;font-size:13px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:28px;}
+.stat-card{background:white;border-radius:22px;padding:24px;box-shadow:var(--shadow);}
+.stat-card h3{font-size:14px;color:var(--muted);margin-bottom:10px;}
+.stat-card .value{font-size:30px;font-weight:800;}
+
+/* CALENDAR */
+.calendar-card{background:white;border-radius:24px;padding:30px;box-shadow:var(--shadow);margin-bottom:28px;}
+.cal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;}
+.cal-top h2{font-size:22px;text-transform:capitalize;}
+.cal-nav{display:flex;gap:10px;}
+.cal-nav button{width:44px;height:44px;border:none;border-radius:12px;background:#f4f7fb;font-size:18px;cursor:pointer;font-family:inherit;transition:.2s;}
+.cal-nav button:hover{background:var(--primary);}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+.day-name{text-align:center;font-weight:600;color:var(--muted);padding:8px;font-size:14px;}
+.day{min-height:84px;border:1px solid var(--border);border-radius:16px;padding:8px;background:#fafbfd;transition:.2s;cursor:pointer;display:flex;flex-direction:column;gap:4px;}
+.day:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.day.empty{background:transparent;border:none;cursor:default;}
+.day.today{border:2px solid var(--primary);background:#fff9ef;}
+.day-number{font-weight:700;font-size:14px;}
+.day-tag{font-size:10px;color:white;border-radius:6px;padding:2px 6px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* SCHEDULE + STAGES */
+.schedule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:28px;}
+.schedule-card{background:white;border-radius:24px;padding:26px;box-shadow:var(--shadow);}
+.schedule-card h3{margin-bottom:18px;font-size:20px;}
+.event-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);gap:12px;}
+.event-item:last-child{border-bottom:none;}
+.event-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.event-left{display:flex;align-items:center;gap:12px;}
+.event-title{font-weight:600;}
+.event-date{color:var(--muted);font-size:14px;white-space:nowrap;}
+.muted-row{color:var(--muted);padding:10px 0;}
+
+/* PROCESS LIST */
+.process{background:white;border-radius:24px;padding:30px;box-shadow:var(--shadow);}
+.process h2{margin-bottom:20px;font-size:22px;}
+.proc-item{display:flex;align-items:center;gap:16px;padding:16px;border-radius:16px;background:#fafbfd;margin-bottom:12px;border-left:5px solid var(--primary);}
+.proc-item:last-child{margin-bottom:0;}
+.proc-info h4{font-size:16px;margin-bottom:4px;}
+.proc-info p{color:var(--muted);font-size:14px;}
+.proc-period{margin-left:auto;text-align:right;font-weight:600;white-space:nowrap;}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:9999;padding:20px;}
+.modal.open{display:flex;}
+.modal-content{width:100%;max-width:520px;background:white;border-radius:26px;padding:34px;box-shadow:0 25px 60px rgba(0,0,0,.2);max-height:92vh;overflow-y:auto;position:relative;}
+.modal-content h2{margin-bottom:6px;font-size:26px;}
+.modal-date{color:var(--muted);margin-bottom:22px;}
+.close-x{position:absolute;top:20px;right:20px;width:40px;height:40px;border:none;background:#f3f3f3;border-radius:50%;font-size:20px;cursor:pointer;}
+.day-events-list{margin-bottom:22px;}
+.dev-item{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:#fafbfd;margin-bottom:10px;}
+.dev-item .event-dot{width:14px;height:14px;}
+.dev-item b{display:block;}
+.dev-item span{color:var(--muted);font-size:13px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;margin-bottom:7px;font-weight:600;font-size:14px;}
+.form-group input,.form-group select{width:100%;padding:13px;border:1px solid var(--border);border-radius:13px;font-family:inherit;font-size:15px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-primary{width:100%;border:none;padding:16px;border-radius:14px;background:var(--primary);color:#111;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:6px;}
+.btn-primary:hover{background:var(--primary-dark);}
+.mgr-form-title{font-size:16px;font-weight:700;margin:20px 0 14px;padding-top:18px;border-top:1px solid var(--border);}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
+.overlay.show{display:block;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:#d6dce5;border-radius:20px;}
+
+@media(max-width:1100px){
+    .sidebar{transform:translateX(-100%);transition:.3s;}
+    .sidebar.open{transform:translateX(0);}
+    .content{margin-left:0;width:100%;padding:24px;}
+    .burger{display:block;}
+    .stats-grid{grid-template-columns:1fr;}
+    .schedule-grid{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+    .day{min-height:64px;}
+    .day-tag{display:none;}
+    .day.has-work .day-number::after{content:"•";color:var(--accent);margin-left:3px;}
+}
+</style>
 </head>
 
 <body>
-
 <div class="dashboard">
 
-    <!-- SIDEBAR -->
-
-    <aside class="sidebar">
-
-        <div>
-
-            <div class="logo">
-
-                <h2>BuildHouse</h2>
-
-                <p>Личный кабинет</p>
-
-            </div>
-
-            <nav class="menu">
-
-                <a href="client-cabinet.html">
-                    Главная
-                </a>
-
-                <a href="orders.html">
-                    Заказы
-                </a>
-
-                <a href="messages.html">
-                    Сообщения
-                </a>
-
-                <a class="active">
-                    Календарь
-                </a>
-
-                <a href="documents.html">
-                    Документы
-                </a>
-
-                <a href="settings.html">
-                    Настройки
-                </a>
-
-                <button id="logoutBtn">
-                    Выйти
-                </button>
-
-            </nav>
-
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>BuildHouse</h2>
+            <p>Личный кабинет</p>
         </div>
-
+        <nav class="menu">
+            <a href="client-cabinet.html"><span class="m-ic">🏠</span> Главная</a>
+            <a href="orders.html"><span class="m-ic">📦</span> Заказы</a>
+            <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
+            <a class="active"><span class="m-ic">📅</span> Календарь</a>
+            <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
+            <a href="settings.html"><span class="m-ic">⚙️</span> Настройки</a>
+        </nav>
+        <button id="logoutBtn">Выйти</button>
     </aside>
 
-    <!-- CONTENT -->
+    <div class="overlay" id="overlay"></div>
 
     <main class="content">
 
         <div class="page-header">
-
-            <h1>
-                Календарь работ
-            </h1>
-
-            <p>
-                Планирование и контроль этапов ремонта
-            </p>
-
+            <button class="burger" id="burger">☰</button>
+            <div>
+                <h1>Календарь работ</h1>
+                <p>Планирование и контроль этапов ремонта</p>
+            </div>
+            <div class="role-pill" id="rolePill" style="display:none;">Режим менеджера</div>
         </div>
-
-        <!-- СТАТИСТИКА -->
 
         <div class="stats-grid">
-
-            <div class="stat-card">
-
-                <h3>
-                    Дата начала работ
-                </h3>
-
-                <div
-                    class="value"
-                    id="startDate"
-                >
-                    —
-                </div>
-
-            </div>
-
-            <div class="stat-card">
-
-                <h3>
-                    Плановая сдача
-                </h3>
-
-                <div
-                    class="value"
-                    id="finishDate"
-                >
-                    —
-                </div>
-
-            </div>
-
-            <div class="stat-card">
-
-                <h3>
-                    Выполнение проекта
-                </h3>
-
-                <div
-                    class="value"
-                    id="progressValue"
-                >
-                    0%
-                </div>
-
-            </div>
-
+            <div class="stat-card"><h3>Дата начала работ</h3><div class="value" id="startDate">—</div></div>
+            <div class="stat-card"><h3>Плановая сдача</h3><div class="value" id="finishDate">—</div></div>
+            <div class="stat-card"><h3>Выполнение проекта</h3><div class="value" id="progressValue">0%</div></div>
         </div>
-
-        <!-- КАЛЕНДАРЬ -->
 
         <div class="calendar-card">
-
-            <h2>
-                Календарь
-            </h2>
-
-            <div class="calendar-grid">
-
-                <div class="day-name">Пн</div>
-                <div class="day-name">Вт</div>
-                <div class="day-name">Ср</div>
-                <div class="day-name">Чт</div>
-                <div class="day-name">Пт</div>
-                <div class="day-name">Сб</div>
-                <div class="day-name">Вс</div>
-
-                <!-- Пустые ячейки.
-                     Потом JS заполнит их автоматически -->
-
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-
+            <div class="cal-top">
+                <h2 id="monthTitle">—</h2>
+                <div class="cal-nav">
+                    <button id="prevMonth">‹</button>
+                    <button id="nextMonth">›</button>
+                </div>
             </div>
-
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="day-name">Пн</div><div class="day-name">Вт</div><div class="day-name">Ср</div>
+                <div class="day-name">Чт</div><div class="day-name">Пт</div><div class="day-name">Сб</div><div class="day-name">Вс</div>
+            </div>
         </div>
-
-        <!-- БЛИЖАЙШИЕ РАБОТЫ -->
 
         <div class="schedule-grid">
-
             <div class="schedule-card">
-
-                <h3>
-                    Ближайшие работы
-                </h3>
-
-                <div id="upcomingWorks">
-
-                    <div class="event-item">
-
-                        <div>
-
-                            <div class="event-title">
-                                Работы не назначены
-                            </div>
-
-                            <div class="event-date">
-                                —
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+                <h3>Ближайшие работы</h3>
+                <div id="upcomingWorks"><div class="muted-row">Работы не назначены</div></div>
             </div>
-
             <div class="schedule-card">
-
-                <h3>
-                    Этапы ремонта
-                </h3>
-
-                <div id="projectStages">
-
-                    <div class="event-item">
-
-                        <div>
-
-                            <div class="event-title">
-                                Этапы отсутствуют
-                            </div>
-
-                            <div class="event-date">
-                                —
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+                <h3>Типы работ</h3>
+                <div id="workTypes"><div class="muted-row">Пока нет данных</div></div>
             </div>
-
         </div>
 
-        <!-- СЛЕДУЮЩИЕ ВЫЕЗДЫ -->
-
-        <div class="upcoming">
-
-            <h2>
-                Запланированные выезды
-            </h2>
-
-            <div id="visitsContainer">
-
-                <div class="work-card">
-
-                    <div class="work-info">
-
-                        <h4>
-                            Нет запланированных выездов
-                        </h4>
-
-                        <p>
-                            Информация появится после назначения работ
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="process">
+            <h2>Весь процесс ремонта</h2>
+            <div id="processList"><div class="muted-row">Этапы появятся, когда менеджер заполнит график</div></div>
         </div>
 
     </main>
-
 </div>
 
-<script type="module" src="js/calendar.js"></script>
+
+<!-- МОДАЛКА ДНЯ -->
+<div id="dayModal" class="modal">
+    <div class="modal-content">
+        <button class="close-x" data-close>✕</button>
+        <h2 id="dayModalTitle">Работы на день</h2>
+        <p class="modal-date" id="dayModalDate">—</p>
+
+        <div class="day-events-list" id="dayEventsList"></div>
+
+        <!-- форма видна только менеджеру -->
+        <div id="mgrForm" style="display:none;">
+            <div class="mgr-form-title">Добавить работы на период</div>
+            <div class="form-group">
+                <label>Клиент</label>
+                <select id="evClient"></select>
+            </div>
+            <div class="form-group">
+                <label>Тип работ</label>
+                <input type="text" id="evType" placeholder="Например: Электрика">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>С какого числа</label>
+                    <input type="date" id="evStart">
+                </div>
+                <div class="form-group">
+                    <label>По какое</label>
+                    <input type="date" id="evEnd">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Комментарий</label>
+                <input type="text" id="evComment" placeholder="Необязательно">
+            </div>
+            <button class="btn-primary" id="saveEventBtn">Сохранить в график</button>
+        </div>
+    </div>
+</div>
+
+
+<script type="module">
+import { auth, db } from "./js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    collection, getDocs, addDoc, doc, getDoc, query, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $ = (id)=>document.getElementById(id);
+
+/* палитра для разных заказов */
+const COLORS = ["#ff8c42","#2563c0","#22c55e","#9b59b6","#e74c3c","#16a085","#e67e22","#2c3e50"];
+function colorFor(key){
+    let h=0; const s=String(key||"");
+    for(let i=0;i<s.length;i++) h=s.charCodeAt(i)+((h<<5)-h);
+    return COLORS[Math.abs(h)%COLORS.length];
+}
+
+let currentUser=null;
+let isManager=false;
+let events=[];          // события календаря
+let clientsList=[];     // для менеджера — список клиентов
+let viewDate=new Date();
+
+/* БУРГЕР */
+const sidebar=$("sidebar"), overlay=$("overlay");
+$("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
+overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
+
+/* LOGOUT */
+$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="login.html";});
+
+/* МОДАЛКА */
+const dayModal=$("dayModal");
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>dayModal.classList.remove("open")));
+window.addEventListener("click",e=>{if(e.target===dayModal)dayModal.classList.remove("open");});
+
+/* AUTH + роль */
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){window.location.href="login.html";return;}
+    currentUser=user;
+    try{
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists() && snap.data().role==="manager"){
+            isManager=true;
+            $("rolePill").style.display="inline-block";
+        }
+    }catch(e){}
+    if(isManager) await loadClients();
+    await loadEvents();
+});
+
+/* загрузка клиентов (для формы менеджера) */
+async function loadClients(){
+    try{
+        const snap=await getDocs(collection(db,"users"));
+        clientsList=[];
+        snap.forEach(d=>{const u=d.data();if(u.role!=="manager")clientsList.push(u);});
+        const sel=$("evClient");
+        sel.innerHTML=clientsList.map(c=>`<option value="${c.uid}">${c.name||c.email}</option>`).join("");
+    }catch(e){console.error(e);}
+}
+
+/* загрузка событий */
+async function loadEvents(){
+    try{
+        const snap=await getDocs(collection(db,"calendarEvents"));
+        events=[];
+        snap.forEach(d=>{
+            const ev={id:d.id,...d.data()};
+            // клиент видит только свои, менеджер — все
+            if(isManager || ev.uid===currentUser.uid) events.push(ev);
+        });
+    }catch(e){console.error("Ошибка календаря:",e);}
+    renderCalendar();
+    renderSchedule();
+    renderProcess();
+    renderStats();
+}
+
+/* ===== СЕТКА МЕСЯЦА ===== */
+function renderCalendar(){
+    const grid=$("calendarGrid");
+    // убираем старые дни, оставляем заголовки (7 шт)
+    while(grid.children.length>7) grid.removeChild(grid.lastChild);
+
+    const year=viewDate.getFullYear();
+    const month=viewDate.getMonth();
+    $("monthTitle").textContent=viewDate.toLocaleDateString("ru-RU",{month:"long",year:"numeric"});
+
+    const first=new Date(year,month,1);
+    let startDay=first.getDay(); // 0=вс
+    startDay=startDay===0?6:startDay-1; // делаем понедельник первым
+    const daysInMonth=new Date(year,month+1,0).getDate();
+    const today=new Date();
+
+    for(let i=0;i<startDay;i++){
+        const e=document.createElement("div");e.className="day empty";grid.appendChild(e);
+    }
+
+    for(let d=1;d<=daysInMonth;d++){
+        const cell=document.createElement("div");
+        cell.className="day";
+        const dateObj=new Date(year,month,d);
+        const iso=toISO(dateObj);
+
+        if(dateObj.toDateString()===today.toDateString()) cell.classList.add("today");
+
+        // события, попадающие в этот день
+        const dayEvents=events.filter(ev=>inRange(iso,ev.dateStart,ev.dateEnd));
+        if(dayEvents.length) cell.classList.add("has-work");
+
+        let tags="";
+        dayEvents.slice(0,2).forEach(ev=>{
+            const c=colorFor(ev.orderId||ev.uid||ev.workType);
+            tags+=`<div class="day-tag" style="background:${c}">${ev.workType||"Работа"}</div>`;
+        });
+        if(dayEvents.length>2) tags+=`<div class="day-tag" style="background:#aaa">+${dayEvents.length-2}</div>`;
+
+        cell.innerHTML=`<div class="day-number">${d}</div>${tags}`;
+        cell.addEventListener("click",()=>openDay(dateObj,dayEvents));
+        grid.appendChild(cell);
+    }
+}
+
+/* ===== МОДАЛКА ДНЯ ===== */
+function openDay(dateObj,dayEvents){
+    $("dayModalTitle").textContent="Работы на день";
+    $("dayModalDate").textContent=dateObj.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
+
+    const list=$("dayEventsList");
+    if(dayEvents.length){
+        list.innerHTML=dayEvents.map(ev=>{
+            const c=colorFor(ev.orderId||ev.uid||ev.workType);
+            return `<div class="dev-item">
+                <div class="event-dot" style="background:${c}"></div>
+                <div><b>${ev.workType||"Работа"}</b>
+                <span>${fmt(ev.dateStart)} — ${fmt(ev.dateEnd)}${ev.comment?" · "+ev.comment:""}</span></div>
+            </div>`;
+        }).join("");
+    }else{
+        list.innerHTML='<div class="muted-row">На этот день работ не запланировано</div>';
+    }
+
+    // форма только для менеджера
+    if(isManager){
+        $("mgrForm").style.display="block";
+        const iso=toISO(dateObj);
+        $("evStart").value=iso;
+        $("evEnd").value=iso;
+    }else{
+        $("mgrForm").style.display="none";
+    }
+
+    dayModal.classList.add("open");
+}
+
+/* сохранение события (менеджер) */
+$("saveEventBtn")?.addEventListener("click",async()=>{
+    const uid=$("evClient").value;
+    const workType=$("evType").value.trim();
+    const dateStart=$("evStart").value;
+    const dateEnd=$("evEnd").value||dateStart;
+    const comment=$("evComment").value.trim();
+    if(!uid||!workType||!dateStart){alert("Заполните клиента, тип работ и дату начала");return;}
+
+    try{
+        await addDoc(collection(db,"calendarEvents"),{
+            uid, workType, dateStart, dateEnd, comment,
+            orderId: workType+"_"+uid,  // для стабильного цвета по типу+клиенту
+            createdAt: Date.now()
+        });
+        $("evType").value="";$("evComment").value="";
+        dayModal.classList.remove("open");
+        alert("Добавлено в график");
+        loadEvents();
+    }catch(e){alert("Ошибка: "+e.message);}
+});
+
+/* ===== БЛИЖАЙШИЕ РАБОТЫ + ТИПЫ ===== */
+function renderSchedule(){
+    const up=$("upcomingWorks");
+    const today=toISO(new Date());
+    const future=[...events].filter(e=>e.dateEnd>=today).sort((a,b)=>(a.dateStart>b.dateStart?1:-1));
+
+    if(future.length){
+        up.innerHTML=future.slice(0,6).map(ev=>{
+            const c=colorFor(ev.orderId||ev.uid||ev.workType);
+            return `<div class="event-item">
+                <div class="event-left"><div class="event-dot" style="background:${c}"></div>
+                <div class="event-title">${ev.workType||"Работа"}</div></div>
+                <div class="event-date">${fmt(ev.dateStart)} — ${fmt(ev.dateEnd)}</div>
+            </div>`;
+        }).join("");
+    }else{
+        up.innerHTML='<div class="muted-row">Работы не назначены</div>';
+    }
+
+    // уникальные типы работ с цветами
+    const types=$("workTypes");
+    const uniq={};
+    events.forEach(e=>{if(e.workType)uniq[e.workType]=colorFor(e.orderId||e.uid||e.workType);});
+    const keys=Object.keys(uniq);
+    if(keys.length){
+        types.innerHTML=keys.map(t=>`<div class="event-item"><div class="event-left"><div class="event-dot" style="background:${uniq[t]}"></div><div class="event-title">${t}</div></div></div>`).join("");
+    }else{
+        types.innerHTML='<div class="muted-row">Пока нет данных</div>';
+    }
+}
+
+/* ===== ВЕСЬ ПРОЦЕСС ===== */
+function renderProcess(){
+    const list=$("processList");
+    const sorted=[...events].sort((a,b)=>(a.dateStart>b.dateStart?1:-1));
+    if(!sorted.length){
+        list.innerHTML='<div class="muted-row">Этапы появятся, когда менеджер заполнит график</div>';
+        return;
+    }
+    list.innerHTML=sorted.map(ev=>{
+        const c=colorFor(ev.orderId||ev.uid||ev.workType);
+        return `<div class="proc-item" style="border-left-color:${c}">
+            <div class="proc-info"><h4>${ev.workType||"Работа"}</h4><p>${ev.comment||"Этап работ"}</p></div>
+            <div class="proc-period">${fmt(ev.dateStart)}<br>— ${fmt(ev.dateEnd)}</div>
+        </div>`;
+    }).join("");
+}
+
+/* ===== СТАТИСТИКА ===== */
+function renderStats(){
+    if(!events.length){
+        $("startDate").textContent="—";
+        $("finishDate").textContent="—";
+        $("progressValue").textContent="0%";
+        return;
+    }
+    const starts=events.map(e=>e.dateStart).filter(Boolean).sort();
+    const ends=events.map(e=>e.dateEnd).filter(Boolean).sort();
+    $("startDate").textContent=fmt(starts[0]);
+    $("finishDate").textContent=fmt(ends[ends.length-1]);
+
+    const today=toISO(new Date());
+    const done=events.filter(e=>e.dateEnd<today).length;
+    $("progressValue").textContent=Math.round((done/events.length)*100)+"%";
+}
+
+/* НАВИГАЦИЯ ПО МЕСЯЦАМ */
+$("prevMonth").addEventListener("click",()=>{viewDate.setMonth(viewDate.getMonth()-1);renderCalendar();});
+$("nextMonth").addEventListener("click",()=>{viewDate.setMonth(viewDate.getMonth()+1);renderCalendar();});
+
+/* ХЕЛПЕРЫ */
+function toISO(d){return d.toISOString().slice(0,10);}
+function inRange(iso,start,end){
+    if(!start)return false;
+    const e=end||start;
+    return iso>=start && iso<=e;
+}
+function fmt(iso){
+    if(!iso)return "—";
+    const d=new Date(iso);
+    if(isNaN(d))return "—";
+    return d.toLocaleDateString("ru-RU");
+}
+</script>
 
 </body>
 </html>
