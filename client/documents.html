@@ -1,132 +1,374 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Документы | BuildHouse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/documents.css">
+<style>
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --accent:#ff8c42;
+    --sidebar:#0b1220;
+    --bg:#f4f7fb;
+    --white:#fff;
+    --border:#e6ebf2;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --shadow:0 10px 35px rgba(0,0,0,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+a{text-decoration:none;}
+.dashboard{display:flex;min-height:100vh;}
 
-<link rel="preconnect"
-      href="https://fonts.googleapis.com">
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--sidebar);padding:30px 20px;display:flex;flex-direction:column;z-index:1000;}
+.logo h2{color:var(--primary);font-size:28px;font-weight:900;}
+.logo p{color:#8f9aad;margin-top:6px;font-size:14px;}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex-grow:1;}
+.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;font-weight:500;}
+.menu a .m-ic{font-size:19px;}
+.menu a:hover{background:#1d2638;color:white;}
+.menu .active{background:var(--primary);color:#111;font-weight:700;}
+#logoutBtn{width:100%;border:none;padding:14px;border-radius:14px;background:#1d2638;color:#ff9b9b;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:auto;}
+#logoutBtn:hover{background:#26344a;}
 
-<link rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin>
+/* CONTENT */
+.content{margin-left:260px;width:calc(100% - 260px);min-height:100vh;padding:40px;}
+.page-header{margin-bottom:28px;display:flex;align-items:center;gap:16px;}
+.burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
+.page-header h1{font-size:32px;margin-bottom:6px;}
+.page-header p{color:var(--muted);max-width:640px;line-height:1.5;}
+.add-doc-btn{margin-left:auto;border:none;background:var(--primary);color:#111;padding:14px 22px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;white-space:nowrap;}
+.add-doc-btn:hover{background:var(--primary-dark);}
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet">
+/* FILTER TABS */
+.doc-tabs{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:26px;}
+.doc-tab{border:2px solid transparent;background:white;padding:11px 20px;border-radius:14px;cursor:pointer;font-weight:600;font-size:14px;color:#555;transition:.2s;font-family:inherit;}
+.doc-tab:hover{border-color:var(--primary);}
+.doc-tab.active{background:var(--primary);color:#111;}
 
+/* GRID */
+.documents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:24px;}
+.document-card{background:white;border-radius:22px;padding:26px;box-shadow:var(--shadow);transition:.25s;border:2px solid transparent;display:flex;flex-direction:column;}
+.document-card:hover{transform:translateY(-5px);border-color:var(--primary);}
+.doc-top{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.document-icon{width:56px;height:56px;border-radius:16px;background:#fff3df;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.doc-type-badge{display:inline-block;padding:5px 12px;border-radius:10px;font-size:12px;font-weight:700;}
+.tb-contract{background:#eef4ff;color:#2563c0;}
+.tb-estimate{background:#fff3df;color:#a86500;}
+.tb-act{background:#eafaf0;color:#1e7c3a;}
+.tb-other{background:#f3f3f3;color:#555;}
+.document-title{font-size:18px;font-weight:700;margin-bottom:6px;}
+.document-desc{color:var(--muted);line-height:1.5;font-size:14px;margin-bottom:16px;flex-grow:1;}
+.document-info{display:flex;justify-content:space-between;margin-bottom:16px;font-size:13px;color:var(--muted);}
+.document-btn{display:block;text-align:center;padding:13px;background:var(--primary);color:#111;border-radius:13px;font-weight:700;transition:.2s;}
+.document-btn:hover{background:var(--primary-dark);}
+.doc-del{margin-top:10px;text-align:center;color:var(--danger,#ef4444);font-weight:600;font-size:13px;cursor:pointer;}
+
+/* EMPTY */
+.empty-state{background:white;padding:60px 40px;border-radius:24px;text-align:center;box-shadow:var(--shadow);grid-column:1/-1;}
+.empty-icon{font-size:64px;margin-bottom:18px;}
+.empty-state h3{margin-bottom:12px;font-size:22px;}
+.empty-state p{color:var(--muted);line-height:1.6;max-width:480px;margin:0 auto;}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:9999;padding:20px;}
+.modal.open{display:flex;}
+.modal-content{width:100%;max-width:520px;background:white;border-radius:26px;padding:34px;box-shadow:0 25px 60px rgba(0,0,0,.2);max-height:92vh;overflow-y:auto;position:relative;}
+.modal-content h2{margin-bottom:22px;font-size:26px;}
+.close-x{position:absolute;top:20px;right:20px;width:40px;height:40px;border:none;background:#f3f3f3;border-radius:50%;font-size:20px;cursor:pointer;}
+.form-group{margin-bottom:15px;}
+.form-group label{display:block;margin-bottom:7px;font-weight:600;font-size:14px;}
+.form-group input,.form-group select{width:100%;padding:14px;border:1px solid var(--border);border-radius:13px;font-family:inherit;font-size:15px;}
+.hint{font-size:13px;color:var(--muted);margin-top:6px;}
+.or-divider{text-align:center;color:var(--muted);margin:10px 0;font-size:13px;}
+.btn-primary{width:100%;border:none;padding:16px;border-radius:14px;background:var(--primary);color:#111;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:8px;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-primary:disabled{background:#ffd699;cursor:not-allowed;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
+.overlay.show{display:block;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:#d6dce5;border-radius:20px;}
+
+@media(max-width:1100px){
+    .sidebar{transform:translateX(-100%);transition:.3s;}
+    .sidebar.open{transform:translateX(0);}
+    .content{margin-left:0;width:100%;padding:24px;}
+    .burger{display:block;}
+}
+@media(max-width:768px){
+    .page-header{flex-wrap:wrap;}
+    .add-doc-btn{margin-left:0;width:100%;}
+    .documents-grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
 
 <body>
-
 <div class="dashboard">
 
-    <!-- SIDEBAR -->
-
-    <aside class="sidebar">
-
-        <div>
-
-            <div class="logo">
-
-                <h2>BuildHouse</h2>
-
-                <p>Личный кабинет</p>
-
-            </div>
-
-            <nav class="menu">
-
-                <a href="client-cabinet.html">
-                    Главная
-                </a>
-
-                <a href="orders.html">
-                    Заказы
-                </a>
-
-                <a href="messages.html">
-                    Сообщения
-                </a>
-
-                <a href="calendar.html">
-                    Календарь
-                </a>
-
-                <a class="active">
-                    Документы
-                </a>
-
-                <a href="settings.html">
-                    Настройки
-                </a>
-
-                <button id="logoutBtn">
-                    Выйти
-                </button>
-
-            </nav>
-
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>BuildHouse</h2>
+            <p>Личный кабинет</p>
         </div>
-
+        <nav class="menu">
+            <a href="client-cabinet.html"><span class="m-ic">🏠</span> Главная</a>
+            <a href="orders.html"><span class="m-ic">📦</span> Заказы</a>
+            <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
+            <a href="calendar.html"><span class="m-ic">📅</span> Календарь</a>
+            <a class="active"><span class="m-ic">📄</span> Документы</a>
+            <a href="settings.html"><span class="m-ic">⚙️</span> Настройки</a>
+        </nav>
+        <button id="logoutBtn">Выйти</button>
     </aside>
 
-    <!-- CONTENT -->
+    <div class="overlay" id="overlay"></div>
 
     <main class="content">
 
         <div class="page-header">
-
-            <h1>
-                Документы проекта
-            </h1>
-
-            <p>
-                Здесь будут храниться все документы,
-                связанные с вашим ремонтом.
-            </p>
-
+            <button class="burger" id="burger">☰</button>
+            <div>
+                <h1>Документы проекта</h1>
+                <p>Договоры, сметы и акты по вашему ремонту.</p>
+            </div>
+            <button class="add-doc-btn" id="addDocBtn" style="display:none;">+ Добавить документ</button>
         </div>
 
-        <div
-            id="documentsContainer"
-            class="documents-grid"
-        >
+        <div class="doc-tabs">
+            <button class="doc-tab active" data-type="all">Все</button>
+            <button class="doc-tab" data-type="Договор">Договоры</button>
+            <button class="doc-tab" data-type="Смета">Сметы</button>
+            <button class="doc-tab" data-type="Акт">Акты</button>
+            <button class="doc-tab" data-type="Прочее">Прочее</button>
+        </div>
 
+        <div id="documentsContainer" class="documents-grid">
             <div class="empty-state">
-
-                <div class="empty-icon">
-                    📄
-                </div>
-
-                <h3>
-                    Документы пока отсутствуют
-                </h3>
-
-                <p>
-                    После загрузки менеджером
-                    документы появятся здесь.
-                </p>
-
+                <div class="empty-icon">📄</div>
+                <h3>Загрузка...</h3>
             </div>
-
         </div>
 
     </main>
-
 </div>
 
-<script
-    type="module"
-    src="js/documents.js">
+
+<!-- МОДАЛКА ДОБАВЛЕНИЯ (только менеджер) -->
+<div id="docModal" class="modal">
+    <div class="modal-content">
+        <button class="close-x" data-close>✕</button>
+        <h2>Добавить документ</h2>
+
+        <div class="form-group">
+            <label>Клиент</label>
+            <select id="docClient"></select>
+        </div>
+        <div class="form-group">
+            <label>Название документа</label>
+            <input type="text" id="docTitle" placeholder="Например: Договор подряда №12">
+        </div>
+        <div class="form-group">
+            <label>Тип</label>
+            <select id="docType">
+                <option value="Договор">Договор</option>
+                <option value="Смета">Смета</option>
+                <option value="Акт">Акт выполненных работ</option>
+                <option value="Прочее">Прочее</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Загрузить файл</label>
+            <input type="file" id="docFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png">
+            <div class="hint">PDF, Word, Excel или фото</div>
+        </div>
+
+        <div class="or-divider">— или —</div>
+
+        <div class="form-group">
+            <label>Вставить ссылку (Google Диск, облако)</label>
+            <input type="text" id="docLink" placeholder="https://...">
+            <div class="hint">Если файл уже где-то загружен — просто вставьте ссылку</div>
+        </div>
+
+        <button class="btn-primary" id="saveDocBtn">Сохранить документ</button>
+    </div>
+</div>
+
+
+<script type="module">
+import { auth, db, storage } from "./js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    collection, getDocs, addDoc, deleteDoc, doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+    ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const $ = (id)=>document.getElementById(id);
+const container = $("documentsContainer");
+
+let currentUser=null;
+let isManager=false;
+let allDocs=[];
+let clientsList=[];
+let activeType="all";
+
+const icons={"Договор":"📑","Смета":"🧮","Акт":"✅","Прочее":"📁"};
+const badgeClass={"Договор":"tb-contract","Смета":"tb-estimate","Акт":"tb-act","Прочее":"tb-other"};
+
+/* БУРГЕР */
+const sidebar=$("sidebar"), overlay=$("overlay");
+$("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
+overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
+
+/* LOGOUT */
+$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="login.html";});
+
+/* МОДАЛКА */
+const docModal=$("docModal");
+$("addDocBtn").addEventListener("click",()=>docModal.classList.add("open"));
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>docModal.classList.remove("open")));
+window.addEventListener("click",e=>{if(e.target===docModal)docModal.classList.remove("open");});
+
+/* ТАБЫ */
+document.querySelectorAll(".doc-tab").forEach(t=>{
+    t.addEventListener("click",()=>{
+        document.querySelectorAll(".doc-tab").forEach(x=>x.classList.remove("active"));
+        t.classList.add("active");
+        activeType=t.dataset.type;
+        render();
+    });
+});
+
+/* AUTH + роль */
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){window.location.href="login.html";return;}
+    currentUser=user;
+    try{
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists() && snap.data().role==="manager"){
+            isManager=true;
+            $("addDocBtn").style.display="inline-block";
+        }
+    }catch(e){}
+    if(isManager) await loadClients();
+    await loadDocuments();
+});
+
+async function loadClients(){
+    try{
+        const snap=await getDocs(collection(db,"users"));
+        clientsList=[];
+        snap.forEach(d=>{const u=d.data();if(u.role!=="manager")clientsList.push(u);});
+        $("docClient").innerHTML=clientsList.map(c=>`<option value="${c.uid}">${c.name||c.email}</option>`).join("");
+    }catch(e){console.error(e);}
+}
+
+async function loadDocuments(){
+    try{
+        const snap=await getDocs(collection(db,"documents"));
+        allDocs=[];
+        snap.forEach(d=>{
+            const doc={id:d.id,...d.data()};
+            if(isManager || doc.uid===currentUser.uid) allDocs.push(doc);
+        });
+        allDocs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    }catch(e){console.error("Ошибка загрузки документов:",e);}
+    render();
+}
+
+function render(){
+    const list = activeType==="all" ? allDocs : allDocs.filter(d=>d.type===activeType);
+
+    if(!list.length){
+        container.innerHTML=`
+            <div class="empty-state">
+                <div class="empty-icon">📄</div>
+                <h3>Документов пока нет</h3>
+                <p>${isManager?"Нажмите «Добавить документ», чтобы загрузить договор, смету или акт.":"После загрузки менеджером документы появятся здесь."}</p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML="";
+    list.forEach(d=>{
+        const date=d.createdAt?new Date(d.createdAt).toLocaleDateString("ru-RU"):"—";
+        const ic=icons[d.type]||"📁";
+        const bc=badgeClass[d.type]||"tb-other";
+        const card=document.createElement("div");
+        card.className="document-card";
+        card.innerHTML=`
+            <div class="doc-top">
+                <div class="document-icon">${ic}</div>
+                <span class="doc-type-badge ${bc}">${d.type||"Документ"}</span>
+            </div>
+            <div class="document-title">${d.title||"Документ"}</div>
+            <div class="document-desc">${d.fileName||"Документ по вашему проекту"}</div>
+            <div class="document-info"><span>Добавлен</span><span>${date}</span></div>
+            <a class="document-btn" href="${d.url}" target="_blank">Открыть / Скачать</a>
+            ${isManager?`<div class="doc-del" data-id="${d.id}">Удалить</div>`:""}
+        `;
+        container.appendChild(card);
+    });
+
+    if(isManager){
+        container.querySelectorAll(".doc-del").forEach(el=>{
+            el.addEventListener("click",async()=>{
+                if(!confirm("Удалить документ?"))return;
+                try{await deleteDoc(doc(db,"documents",el.dataset.id));loadDocuments();}
+                catch(e){alert("Ошибка: "+e.message);}
+            });
+        });
+    }
+}
+
+/* СОХРАНЕНИЕ (менеджер) */
+$("saveDocBtn").addEventListener("click",async()=>{
+    const uid=$("docClient").value;
+    const title=$("docTitle").value.trim();
+    const type=$("docType").value;
+    const link=$("docLink").value.trim();
+    const file=$("docFile").files[0];
+
+    if(!uid||!title){alert("Выберите клиента и укажите название");return;}
+    if(!file && !link){alert("Загрузите файл или вставьте ссылку");return;}
+
+    const btn=$("saveDocBtn");
+    btn.disabled=true;btn.textContent="Сохраняем...";
+
+    try{
+        let url=link, fileName="";
+        if(file){
+            const storageRef=ref(storage,`documents/${uid}_${Date.now()}_${file.name}`);
+            await uploadBytes(storageRef,file);
+            url=await getDownloadURL(storageRef);
+            fileName=file.name;
+        }
+        await addDoc(collection(db,"documents"),{
+            uid, title, type, url, fileName,
+            createdBy:currentUser.uid,
+            createdAt:Date.now()
+        });
+        $("docTitle").value="";$("docLink").value="";$("docFile").value="";
+        docModal.classList.remove("open");
+        alert("Документ добавлен");
+        loadDocuments();
+    }catch(e){
+        alert("Ошибка: "+e.message);
+    }
+    btn.disabled=false;btn.textContent="Сохранить документ";
+});
 </script>
 
 </body>
 </html>
-
