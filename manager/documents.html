@@ -6,15 +6,8 @@
 <title>Документы | BuildHouse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<!-- генерация Word и сохранение -->
-<script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
-<script>
-// если docx не загрузился с unpkg — пробуем запасной CDN
-if(!window.docx){
-    document.write('<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"><\/script>');
-}
-</script>
+<!-- генерация Word — локальная библиотека (положить рядом с этим файлом) -->
+<script src="docx.js"></script>
 
 <style>
 :root{
@@ -405,7 +398,7 @@ function docMeta(){
 let Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle;
 function docxLib(){
     if(!window.docx || !window.docx.Document){
-        alert("Библиотека для Word ещё не загрузилась.\n\nПроверьте интернет и обновите страницу (F5). Если не помогает — в сетевых настройках должен быть разрешён домен unpkg.com или cdn.jsdelivr.net");
+        alert("Библиотека для Word не найдена.\n\nУбедитесь, что файл docx.js лежит в папке js рядом с сайтом, и обновите страницу (F5).");
         return false;
     }
     ({Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle}=window.docx);
