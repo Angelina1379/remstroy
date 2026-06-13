@@ -56,6 +56,7 @@ a{text-decoration:none;}
 .ci-body{flex:1;min-width:0;}
 .client-name{font-weight:600;}
 .client-last{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.unread-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-left:auto;align-self:center;}
 
 /* CHAT MAIN */
 .chat-main{flex:1;display:flex;flex-direction:column;min-width:0;background:#eef1f6;}
@@ -119,8 +120,8 @@ a{text-decoration:none;}
 }
 @media(max-width:768px){
     /* на телефоне список и чат — на весь экран, переключаются */
-    .chat-sidebar{width:100%;border-right:none;}
-    .chat-main{display:none;width:100%;}
+    .chat-sidebar{width:100%;border-right:none;height:100vh;}
+    .chat-main{display:none;width:100%;height:100vh;}
     .messenger.chat-open .chat-sidebar{display:none;}
     .messenger.chat-open .chat-main{display:flex;}
     .back-btn{display:block;}
@@ -215,7 +216,7 @@ a{text-decoration:none;}
 <script type="module">
 import { auth, db, storage } from "../js/firebase.js";
 import {
-    collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, getDoc, deleteDoc
+    collection, collectionGroup, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, getDoc, getDocs, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
     ref, uploadBytes, getDownloadURL
@@ -265,36 +266,83 @@ onAuthStateChanged(auth,async(user)=>{
 });
 
 /* СПИСОК КЛИЕНТОВ */
+let clientsData=[];        // все клиенты
+let lastMsgMap={};         // uid -> {text, time, sender}
+
 function loadClients(){
+    // 1) грузим клиентов
     onSnapshot(collection(db,"users"),(snapshot)=>{
-        clientsList.innerHTML="";
+        clientsData=[];
         snapshot.forEach((docSnap)=>{
             const user={id:docSnap.id,...docSnap.data()};
             if(user.role==="manager")return;
-            const initial=(user.name||"К").charAt(0).toUpperCase();
-            const item=document.createElement("div");
-            item.className="client-item";
-            item.innerHTML=`
-                <div class="ci-avatar">${initial}</div>
-                <div class="ci-body">
-                    <div class="client-name">${user.name||"Клиент"}</div>
-                    <div class="client-last">${user.email||""}</div>
-                </div>`;
-            item.addEventListener("click",()=>{
-                document.querySelectorAll(".client-item").forEach(el=>el.classList.remove("active"));
-                item.classList.add("active");
-                currentClient=user;
-                currentChat=user.uid||user.id;
-                $("chatUsername").textContent=user.name||"Клиент";
-                $("chatStatus").textContent=user.email||"";
-                $("chatAvatar").textContent=initial;
-                loadMessages(currentChat);
-                document.querySelector(".messenger").classList.add("chat-open");
-                sidebar.classList.remove("open");overlay.classList.remove("show");
-            });
-            clientsList.appendChild(item);
+            clientsData.push(user);
         });
+        renderClientList();
     },(error)=>{console.error("Ошибка Firestore:",error);});
+
+    // 2) следим за ВСЕМИ сообщениями сразу — чтобы пересортировывать вживую
+    try{
+        const allMsgs=query(collectionGroup(db,"items"),orderBy("time","desc"));
+        onSnapshot(allMsgs,(snap)=>{
+            lastMsgMap={};
+            snap.forEach(d=>{
+                // путь messages/{uid}/items/{msgId} — берём uid из родителя
+                const uid=d.ref.parent.parent?.id;
+                if(!uid)return;
+                // первая (самая свежая) запись для этого uid и есть последняя
+                if(!lastMsgMap[uid]){
+                    const m=d.data();
+                    lastMsgMap[uid]={
+                        text:m.text|| (m.imageUrl?"📷 Фото":(m.voiceUrl?"🎤 Голосовое":(m.fileUrl?"📎 Файл":""))),
+                        time:m.time?.toMillis?m.time.toMillis():0,
+                        sender:m.sender||"client"
+                    };
+                }
+            });
+            renderClientList();
+        },(e)=>{console.warn("collectionGroup недоступен:",e);});
+    }catch(e){console.warn(e);}
+}
+
+function renderClientList(){
+    // сортируем: у кого свежее сообщение — выше; без сообщений — в конце
+    const sorted=[...clientsData].sort((a,b)=>{
+        const ta=lastMsgMap[a.uid]?.time||0;
+        const tb=lastMsgMap[b.uid]?.time||0;
+        return tb-ta;
+    });
+
+    clientsList.innerHTML="";
+    sorted.forEach((user)=>{
+        const initial=(user.name||"К").charAt(0).toUpperCase();
+        const last=lastMsgMap[user.uid];
+        const preview=last?(last.sender==="manager"?"Вы: "+last.text:last.text):(user.email||"");
+        // непрочитано: последнее сообщение от клиента и это не открытый сейчас чат
+        const unread=last && last.sender==="client" && currentChat!==user.uid;
+
+        const item=document.createElement("div");
+        item.className="client-item"+(currentChat===user.uid?" active":"");
+        item.innerHTML=`
+            <div class="ci-avatar">${initial}</div>
+            <div class="ci-body">
+                <div class="client-name">${user.name||"Клиент"}</div>
+                <div class="client-last">${preview}</div>
+            </div>
+            ${unread?'<span class="unread-dot"></span>':""}`;
+        item.addEventListener("click",()=>{
+            currentClient=user;
+            currentChat=user.uid||user.id;
+            $("chatUsername").textContent=user.name||"Клиент";
+            $("chatStatus").textContent=user.email||"";
+            $("chatAvatar").textContent=initial;
+            loadMessages(currentChat);
+            document.querySelector(".messenger").classList.add("chat-open");
+            sidebar.classList.remove("open");overlay.classList.remove("show");
+            renderClientList(); // снять точку непрочитанного
+        });
+        clientsList.appendChild(item);
+    });
 }
 
 /* ПОИСК */
