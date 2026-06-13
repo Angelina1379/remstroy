@@ -262,10 +262,38 @@ a{text-decoration:none;}
 </div>
 
 
+<!-- МОДАЛКА ОТЗЫВА -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <button class="close-x" data-close>✕</button>
+        <h2>Оставить отзыв</h2>
+        <p style="color:var(--muted);margin-bottom:20px;" id="reviewForOrder">О выполненном заказе</p>
+
+        <div class="form-group">
+            <label>Ваша оценка</label>
+            <div id="starsInput" style="display:flex;gap:8px;font-size:36px;cursor:pointer;">
+                <span class="rstar" data-value="1" style="color:#ddd;transition:.15s;">★</span>
+                <span class="rstar" data-value="2" style="color:#ddd;transition:.15s;">★</span>
+                <span class="rstar" data-value="3" style="color:#ddd;transition:.15s;">★</span>
+                <span class="rstar" data-value="4" style="color:#ddd;transition:.15s;">★</span>
+                <span class="rstar" data-value="5" style="color:#ddd;transition:.15s;">★</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Ваш отзыв</label>
+            <input type="text" id="reviewText" placeholder="Поделитесь впечатлением о ремонте">
+        </div>
+
+        <button id="sendReviewBtn" class="btn btn-primary btn-full">Опубликовать отзыв</button>
+    </div>
+</div>
+
+
 <script type="module">
 import { auth, db } from "./js/firebase.js";
 import {
-    collection, getDocs, addDoc, query, where
+    collection, getDocs, addDoc, doc, updateDoc, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
     onAuthStateChanged, signOut
@@ -371,6 +399,17 @@ function renderOrders(orders){
         const date=o.createdAt?new Date(o.createdAt).toLocaleDateString("ru-RU"):"—";
         const card=document.createElement("div");
         card.className="order-card";
+
+        // блок отзыва только для завершённых
+        let reviewBlock="";
+        if(st==="Завершён"){
+            if(o.reviewed){
+                reviewBlock=`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);color:var(--success);font-weight:700;">✓ Спасибо за отзыв!</div>`;
+            }else{
+                reviewBlock=`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);"><button class="btn btn-primary btn-full review-btn" data-id="${o.id}" data-service="${(o.service||o.title||"заказ").replace(/"/g,'')}">★ Оставить отзыв</button></div>`;
+            }
+        }
+
         card.innerHTML=`
             <div class="order-top">
                 <div class="order-number">${o.service||o.title||"Заказ"}</div>
@@ -384,8 +423,14 @@ function renderOrders(orders){
             <div class="order-footer">
                 <span class="order-label">Стоимость</span>
                 <span class="order-price">${o.budget?Number(o.budget).toLocaleString("ru-RU")+" ₽":"уточняется"}</span>
-            </div>`;
+            </div>
+            ${reviewBlock}`;
         ordersList.appendChild(card);
+    });
+
+    // навешиваем обработчики на кнопки отзыва
+    document.querySelectorAll(".review-btn").forEach(btn=>{
+        btn.addEventListener("click",()=>openReview(btn.dataset.id,btn.dataset.service));
     });
 }
 
@@ -472,6 +517,67 @@ $("calcOrderBtn").addEventListener("click",async()=>{
         loadOrders();
     }catch(e){alert("Ошибка: "+e.message);}
 });
+
+
+/* ===== ОТЗЫВ О ЗАВЕРШЁННОМ ЗАКАЗЕ ===== */
+const reviewModal=$("reviewModal");
+let reviewRating=5;
+let reviewOrderId=null;
+
+function paintStars(v){
+    document.querySelectorAll("#starsInput .rstar").forEach(s=>{
+        s.style.color=Number(s.dataset.value)<=v?"#ffb547":"#ddd";
+    });
+}
+document.querySelectorAll("#starsInput .rstar").forEach(s=>{
+    s.addEventListener("click",()=>{reviewRating=Number(s.dataset.value);paintStars(reviewRating);});
+    s.addEventListener("mouseover",()=>paintStars(Number(s.dataset.value)));
+});
+$("starsInput").addEventListener("mouseleave",()=>paintStars(reviewRating));
+
+function openReview(orderId,service){
+    reviewOrderId=orderId;
+    reviewRating=5;
+    paintStars(5);
+    $("reviewText").value="";
+    $("reviewForOrder").textContent="О заказе: "+service;
+    openModal(reviewModal);
+}
+window.addEventListener("click",e=>{if(e.target===reviewModal)closeModal(reviewModal);});
+
+$("sendReviewBtn").addEventListener("click",async()=>{
+    const text=$("reviewText").value.trim();
+    if(!text){alert("Напишите текст отзыва");return;}
+    if(!reviewOrderId)return;
+
+    const btn=$("sendReviewBtn");
+    btn.disabled=true;
+    btn.textContent="Публикуем...";
+
+    try{
+        // 1) публикуем отзыв в reviews (его читает сайт и страница отзывов)
+        await addDoc(collection(db,"reviews"),{
+            uid:currentUser.uid,
+            name:currentName,
+            text:text,
+            rating:reviewRating,
+            photoURL:"",
+            orderId:reviewOrderId,
+            createdAt:Date.now()
+        });
+        // 2) помечаем заказ, чтобы кнопка больше не появлялась
+        await updateDoc(doc(db,"projects",reviewOrderId),{reviewed:true});
+
+        closeModal(reviewModal);
+        alert("Спасибо! Ваш отзыв опубликован на сайте.");
+        loadOrders();
+    }catch(e){
+        alert("Ошибка: "+e.message);
+    }
+    btn.disabled=false;
+    btn.textContent="Опубликовать отзыв";
+});
+
 </script>
 
 </body>
