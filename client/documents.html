@@ -68,6 +68,20 @@ a{text-decoration:none;}
 .document-info{display:flex;justify-content:space-between;margin-bottom:16px;font-size:13px;color:var(--muted);}
 .document-btn{display:block;text-align:center;padding:13px;background:var(--primary);color:#111;border-radius:13px;font-weight:700;transition:.2s;}
 .document-btn:hover{background:var(--primary-dark);}
+.no-file{text-align:center;padding:12px;color:var(--muted);font-size:13px;background:#f8f9fc;border-radius:12px;}
+.est-meta{color:var(--muted);font-size:13px;margin-bottom:12px;}
+.est-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px;}
+.est-table th{text-align:left;padding:8px 6px;color:var(--muted);font-size:12px;border-bottom:2px solid var(--border);}
+.est-table td{padding:8px 6px;border-bottom:1px solid #f2f4f8;}
+.est-sect td{font-weight:700;color:var(--accent);background:#fff8ef;font-size:12px;text-transform:uppercase;letter-spacing:.3px;}
+.est-total{display:flex;justify-content:space-between;align-items:center;background:#fff4df;border-radius:14px;padding:14px 18px;margin-bottom:14px;}
+.est-total b{font-size:22px;color:var(--accent);}
+.pay-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+.pay-status{font-weight:700;font-size:14px;}
+.pay-status.paid{color:var(--success,#22c55e);}
+.pay-status.unpaid{color:#e67e22;}
+.pay-btn{border:none;background:#111;color:white;padding:11px 18px;border-radius:12px;font-weight:700;cursor:pointer;font-family:inherit;font-size:13px;}
+.pay-btn:hover{background:#333;}
 .doc-del{margin-top:10px;text-align:center;color:var(--danger,#ef4444);font-weight:600;font-size:13px;cursor:pointer;}
 
 /* EMPTY */
@@ -208,7 +222,7 @@ a{text-decoration:none;}
 import { auth, db, storage } from "./js/firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-    collection, getDocs, addDoc, deleteDoc, doc, getDoc
+    collection, getDocs, addDoc, deleteDoc, doc, getDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
     ref, uploadBytes, getDownloadURL
@@ -307,18 +321,60 @@ function render(){
         const bc=badgeClass[d.type]||"tb-other";
         const card=document.createElement("div");
         card.className="document-card";
+
+        // смета с данными — показываем таблицей
+        const hasEstimate = d.type==="Смета" && (Array.isArray(d.estimate)||Array.isArray(d.materials));
+
+        let bodyHtml="";
+        if(hasEstimate){
+            const works=d.estimate||[];
+            const mats=d.materials||[];
+            const fmt=(n)=>Number(n||0).toLocaleString("ru-RU");
+            const rows=(arr)=>arr.map(it=>`<tr><td>${it.name}</td><td style="text-align:center;">${it.area} м²</td><td style="text-align:right;">${fmt(it.unit)} ₽</td><td style="text-align:right;font-weight:600;">${fmt(it.sum)} ₽</td></tr>`).join("");
+            bodyHtml=`
+                <div class="est-meta">${d.area?d.area+" м² · ":""}${d.className||""}</div>
+                <table class="est-table">
+                    <thead><tr><th>Наименование</th><th style="text-align:center;">Кол-во</th><th style="text-align:right;">Цена</th><th style="text-align:right;">Сумма</th></tr></thead>
+                    <tbody>
+                        ${works.length?`<tr class="est-sect"><td colspan="4">Работы</td></tr>${rows(works)}`:""}
+                        ${mats.length?`<tr class="est-sect"><td colspan="4">Материалы</td></tr>${rows(mats)}`:""}
+                    </tbody>
+                </table>
+                <div class="est-total"><span>Итого:</span><b>${fmt(d.total)} ₽</b></div>
+                <div class="pay-row">
+                    <span class="pay-status ${d.paid?'paid':'unpaid'}">${d.paid?'✓ Оплачено':'● Ожидает оплаты'}</span>
+                    ${!isManager && !d.paid?`<button class="pay-btn" data-pay="${d.id}">Отметить «Оплачено»</button>`:""}
+                </div>`;
+        }else{
+            // обычный документ — кнопка только если есть файл
+            bodyHtml=`
+                <div class="document-desc">${d.fileName||"Документ по вашему проекту"}</div>
+                <div class="document-info"><span>Добавлен</span><span>${date}</span></div>
+                ${d.url?`<a class="document-btn" href="${d.url}" target="_blank">Открыть / Скачать</a>`:`<div class="no-file">Файл не прикреплён</div>`}`;
+        }
+
         card.innerHTML=`
             <div class="doc-top">
                 <div class="document-icon">${ic}</div>
                 <span class="doc-type-badge ${bc}">${d.type||"Документ"}</span>
             </div>
             <div class="document-title">${d.title||"Документ"}</div>
-            <div class="document-desc">${d.fileName||"Документ по вашему проекту"}</div>
-            <div class="document-info"><span>Добавлен</span><span>${date}</span></div>
-            <a class="document-btn" href="${d.url}" target="_blank">Открыть / Скачать</a>
+            ${hasEstimate?`<div class="document-info"><span>Добавлена</span><span>${date}</span></div>`:""}
+            ${bodyHtml}
             ${isManager?`<div class="doc-del" data-id="${d.id}">Удалить</div>`:""}
         `;
         container.appendChild(card);
+    });
+
+    // отметка оплаты (клиент)
+    container.querySelectorAll(".pay-btn").forEach(btn=>{
+        btn.addEventListener("click",async()=>{
+            if(!confirm("Подтвердить, что вы оплатили по этой смете?"))return;
+            try{
+                await updateDoc(doc(db,"documents",btn.dataset.pay),{paid:true,paidAt:Date.now()});
+                loadDocuments();
+            }catch(e){alert("Ошибка: "+e.message);}
+        });
     });
 
     if(isManager){
