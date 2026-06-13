@@ -270,7 +270,7 @@ let clientsData=[];        // все клиенты
 let lastMsgMap={};         // uid -> {text, time, sender}
 
 function loadClients(){
-    // 1) грузим клиентов
+    // грузим клиентов, и на каждого вешаем слушатель его последнего сообщения
     onSnapshot(collection(db,"users"),(snapshot)=>{
         clientsData=[];
         snapshot.forEach((docSnap)=>{
@@ -279,30 +279,33 @@ function loadClients(){
             clientsData.push(user);
         });
         renderClientList();
+        // для каждого клиента — следим за последним сообщением
+        clientsData.forEach(u=>watchLastMessage(u.uid));
     },(error)=>{console.error("Ошибка Firestore:",error);});
+}
 
-    // 2) следим за ВСЕМИ сообщениями сразу — чтобы пересортировывать вживую
-    try{
-        const allMsgs=query(collectionGroup(db,"items"),orderBy("time","desc"));
-        onSnapshot(allMsgs,(snap)=>{
-            lastMsgMap={};
-            snap.forEach(d=>{
-                // путь messages/{uid}/items/{msgId} — берём uid из родителя
-                const uid=d.ref.parent.parent?.id;
-                if(!uid)return;
-                // первая (самая свежая) запись для этого uid и есть последняя
-                if(!lastMsgMap[uid]){
-                    const m=d.data();
-                    lastMsgMap[uid]={
-                        text:m.text|| (m.imageUrl?"📷 Фото":(m.voiceUrl?"🎤 Голосовое":(m.fileUrl?"📎 Файл":""))),
-                        time:m.time?.toMillis?m.time.toMillis():0,
-                        sender:m.sender||"client"
-                    };
-                }
-            });
+const watched={}; // чтобы не подписываться дважды
+function watchLastMessage(uid){
+    if(!uid || watched[uid])return;
+    watched[uid]=true;
+    // следим за всеми сообщениями клиента, последнее вычисляем сами (без индексов)
+    onSnapshot(collection(db,"messages",uid,"items"),(snap)=>{
+        if(snap.empty)return;
+        let last=null,lastTime=-1;
+        snap.forEach(d=>{
+            const m=d.data();
+            const t=m.time?.toMillis?m.time.toMillis():(m.time?.seconds?m.time.seconds*1000:0);
+            if(t>=lastTime){lastTime=t;last=m;}
+        });
+        if(last){
+            lastMsgMap[uid]={
+                text:last.text||(last.imageUrl?"📷 Фото":(last.voiceUrl?"🎤 Голосовое":(last.fileUrl?"📎 Файл":""))),
+                time:lastTime,
+                sender:last.sender||"client"
+            };
             renderClientList();
-        },(e)=>{console.warn("collectionGroup недоступен:",e);});
-    }catch(e){console.warn(e);}
+        }
+    },(e)=>{/* нет сообщений — норм */});
 }
 
 function renderClientList(){
