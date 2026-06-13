@@ -193,11 +193,19 @@ a{text-decoration:none;}
                     </div>
                     <div class="works-grid" id="worksGrid"></div>
 
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin:24px 0 14px;flex-wrap:wrap;gap:10px;">
+                        <h2 style="font-size:19px;">Материалы</h2>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;font-size:14px;">
+                            <input type="checkbox" id="useMaterials" style="width:20px;height:20px;accent-color:var(--primary);"> Включить материалы в смету
+                        </label>
+                    </div>
+                    <div class="works-grid" id="materialsGrid" style="opacity:.5;pointer-events:none;"></div>
+
                     <div class="total-bar">
                         <b>Итого по смете:</b>
                         <span id="totalPrice">0 ₽</span>
                     </div>
-                    <p class="hint">Цены рассчитываются от площади и класса ремонта. Отметьте нужные работы — смета соберётся сама.</p>
+                    <p class="hint">Цены рассчитываются от площади и класса ремонта. Отметьте работы и при необходимости включите материалы — смета соберётся сама.</p>
                 </div>
 
                 <div class="panel">
@@ -245,6 +253,15 @@ const WORKS=[
     {id:"ceiling", name:"Натяжной потолок", price:600},
     {id:"laminate", name:"Укладка ламината", price:500},
     {id:"doors", name:"Установка дверей", price:550},
+];
+
+/* МАТЕРИАЛЫ — ориентировочная стоимость за м² (зависит от класса ремонта) */
+const MATERIALS=[
+    {id:"m_rough", name:"Черновые материалы (смеси, грунтовка, профиль)", price:1200},
+    {id:"m_finish", name:"Чистовые материалы (краска, обои, плитка)", price:2500},
+    {id:"m_floor", name:"Напольные покрытия", price:900},
+    {id:"m_electric", name:"Электрика (кабель, розетки, автоматы)", price:600},
+    {id:"m_plumb", name:"Сантехника (трубы, фитинги)", price:700},
 ];
 
 /* БУРГЕР */
@@ -323,6 +340,44 @@ function renderWorks(){
 }
 renderWorks();
 
+/* ЧЕК-ЛИСТ МАТЕРИАЛОВ */
+function renderMaterials(){
+    const grid=$("materialsGrid");
+    grid.innerHTML="";
+    MATERIALS.forEach(w=>{
+        const div=document.createElement("label");
+        div.className="work-check";
+        div.dataset.id="mat-"+w.id;
+        div.innerHTML=`
+            <input type="checkbox" data-mat="${w.id}">
+            <div class="wc-body">
+                <div class="wc-name">${w.name}</div>
+                <div class="wc-price">${w.price} ₽/м²</div>
+            </div>
+            <div class="wc-sum" data-matsum="${w.id}">—</div>`;
+        const cb=div.querySelector("input");
+        cb.addEventListener("change",()=>{div.classList.toggle("on",cb.checked);calcTotal();});
+        grid.appendChild(div);
+    });
+}
+renderMaterials();
+
+/* переключатель материалов */
+$("useMaterials").addEventListener("change",function(){
+    const grid=$("materialsGrid");
+    if(this.checked){
+        grid.style.opacity="1";
+        grid.style.pointerEvents="auto";
+        // по умолчанию отметим все материалы
+        document.querySelectorAll('#materialsGrid input').forEach(cb=>{cb.checked=true;cb.closest(".work-check").classList.add("on");});
+    }else{
+        grid.style.opacity=".5";
+        grid.style.pointerEvents="none";
+        document.querySelectorAll('#materialsGrid input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+    }
+    calcTotal();
+});
+
 function getRate(){return parseFloat($("repairClass").value)||1;}
 function getArea(){return Number($("area").value)||0;}
 
@@ -337,6 +392,18 @@ function calcTotal(){
             const sum=Math.round(w.price*rate*area);
             total+=sum;
             sumEl.textContent=sum.toLocaleString("ru-RU")+" ₽";
+        }else if(sumEl){
+            sumEl.textContent="—";
+        }
+    });
+    // материалы
+    MATERIALS.forEach(w=>{
+        const cb=document.querySelector(`input[data-mat="${w.id}"]`);
+        const sumEl=document.querySelector(`[data-matsum="${w.id}"]`);
+        if(cb&&cb.checked){
+            const sum=Math.round(w.price*rate*area);
+            total+=sum;
+            if(sumEl)sumEl.textContent=sum.toLocaleString("ru-RU")+" ₽";
         }else if(sumEl){
             sumEl.textContent="—";
         }
@@ -363,6 +430,20 @@ function collectItems(){
     const items=[];
     WORKS.forEach(w=>{
         const cb=document.querySelector(`input[data-id="${w.id}"]`);
+        if(cb&&cb.checked){
+            const unit=Math.round(w.price*rate);
+            items.push({name:w.name, area, unit, sum:unit*area});
+        }
+    });
+    return items;
+}
+
+/* собрать выбранные материалы */
+function collectMaterials(){
+    const area=getArea(), rate=getRate();
+    const items=[];
+    MATERIALS.forEach(w=>{
+        const cb=document.querySelector(`input[data-mat="${w.id}"]`);
         if(cb&&cb.checked){
             const unit=Math.round(w.price*rate);
             items.push({name:w.name, area, unit, sum:unit*area});
@@ -461,21 +542,35 @@ function download(docFile,name){
 function buildEstimate(){
     if(!docxLib())return;
     const m=docMeta(); const items=collectItems();
-    const total=items.reduce((s,i)=>s+i.sum,0);
-    const doc=new Document({sections:[{children:[
+    const materials=collectMaterials();
+    const workTotal=items.reduce((s,i)=>s+i.sum,0);
+    const matTotal=materials.reduce((s,i)=>s+i.sum,0);
+    const total=workTotal+matTotal;
+
+    const children=[
         P("СМЕТА № "+m.num,{bold:true,size:30,center:true,after:80}),
         P("на ремонтно-отделочные работы",{center:true,size:24}),
         P("от "+m.today,{center:true,after:200}),
         P("Заказчик: "+m.client+", тел. "+m.phone),
         P("Объект: "+m.address+", площадь "+m.area+" м²"),
         P("Класс ремонта: "+m.className,{after:200}),
+        P("РАЗДЕЛ 1. РАБОТЫ",{bold:true,size:24}),
         estimateTable(items),
-        P("",{after:120}),
-        P("Итого к оплате: "+total.toLocaleString("ru-RU")+" руб.",{bold:true,size:26}),
-        P("Срок выполнения работ: "+m.deadline,{after:200}),
-        P("Исполнитель: ООО «BuildHouse» / "+m.manager),
-        P("Заказчик: _______________ / "+m.client)
-    ]}]});
+        P("Стоимость работ: "+workTotal.toLocaleString("ru-RU")+" руб.",{bold:true,after:160})
+    ];
+
+    if(materials.length){
+        children.push(P("РАЗДЕЛ 2. МАТЕРИАЛЫ",{bold:true,size:24}));
+        children.push(estimateTable(materials));
+        children.push(P("Стоимость материалов: "+matTotal.toLocaleString("ru-RU")+" руб.",{bold:true,after:160}));
+    }
+
+    children.push(P("ИТОГО К ОПЛАТЕ: "+total.toLocaleString("ru-RU")+" руб.",{bold:true,size:28,after:200}));
+    children.push(P("Срок выполнения работ: "+m.deadline,{after:200}));
+    children.push(P("Исполнитель: ООО «BuildHouse» / "+m.manager));
+    children.push(P("Заказчик: _______________ / "+m.client));
+
+    const doc=new Document({sections:[{children}]});
     download(doc,"Смета_"+m.client.replace(/\s/g,"_")+".docx");
 }
 
@@ -549,21 +644,31 @@ $("actBtn").addEventListener("click",()=>{if(validate())buildAct();});
 /* СОХРАНИТЬ КЛИЕНТУ — запись в documents (клиент увидит в кабинете) */
 $("saveBtn").addEventListener("click",async()=>{
     if(!validate())return;
-    const m=docMeta(); const items=collectItems();
-    const total=items.reduce((s,i)=>s+i.sum,0);
+    const m=docMeta();
+    const items=collectItems();
+    const materials=collectMaterials();
+    const workTotal=items.reduce((s,i)=>s+i.sum,0);
+    const matTotal=materials.reduce((s,i)=>s+i.sum,0);
+    const total=workTotal+matTotal;
     try{
         await addDoc(collection(db,"documents"),{
             uid:currentClient.uid,
-            title:"Смета № "+m.num+" ("+total.toLocaleString("ru-RU")+" ₽)",
+            title:"Смета № "+m.num,
             type:"Смета",
             url:"",
             fileName:"Смета на "+m.area+" м², "+m.className,
             estimate:items,
+            materials:materials,
+            workTotal:workTotal,
+            matTotal:matTotal,
             total:total,
+            area:m.area,
+            className:m.className,
+            paid:false,
             createdBy:m.manager,
             createdAt:Date.now()
         });
-        alert("Смета сохранена в кабинет клиента (раздел «Документы»). Word-файлы скачиваются кнопками выше.");
+        alert("Смета сохранена в кабинет клиента. Клиент увидит её таблицей в разделе «Документы».");
     }catch(e){alert("Ошибка: "+e.message);}
 });
 </script>
