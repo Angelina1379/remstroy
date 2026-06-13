@@ -1,391 +1,462 @@
 <!DOCTYPE html>
-
 <html lang="ru">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>
-BuildHouse CRM
-</title>
-
-<link rel="stylesheet"
-href="css/style.css">
-
-<link rel="preconnect"
-href="https://fonts.googleapis.com">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildHouse CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<style>
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --accent:#ff8c42;
+    --sidebar:#0b1220;
+    --bg:#f5f6fa;
+    --white:#fff;
+    --border:#e6ebf2;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --success:#22c55e;
+    --danger:#ef4444;
+    --info:#3b82f6;
+    --shadow:0 4px 14px rgba(0,0,0,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+a{text-decoration:none;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--sidebar);padding:30px 20px;display:flex;flex-direction:column;z-index:1000;}
+.logo h2{color:var(--primary);font-size:28px;font-weight:900;}
+.logo p{color:#8f9aad;margin-top:6px;font-size:14px;}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex-grow:1;}
+.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;font-weight:500;cursor:pointer;}
+.menu a .m-ic{font-size:19px;}
+.menu a:hover{background:#1d2638;color:white;}
+.menu .active{background:var(--primary);color:#111;font-weight:700;}
+#logoutBtn{width:100%;border:none;padding:14px;border-radius:14px;background:#1d2638;color:#ff9b9b;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:auto;}
+#logoutBtn:hover{background:#26344a;}
+
+/* MAIN */
+.main-content{margin-left:260px;padding:36px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;gap:20px;}
+.top-left{display:flex;align-items:center;gap:16px;}
+.topbar h1{font-size:32px;margin-bottom:6px;}
+.topbar p{color:var(--muted);}
+.burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
+.manager-profile{display:flex;align-items:center;gap:12px;background:white;padding:10px 16px;border-radius:18px;box-shadow:var(--shadow);}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--primary);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
+#managerName{font-weight:700;}
+
+/* KPI */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-bottom:28px;}
+.card{background:white;border-radius:24px;padding:26px;box-shadow:var(--shadow);transition:.25s;border:2px solid transparent;}
+.card:hover{transform:translateY(-5px);border-color:var(--primary);}
+.card .ic{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;}
+.ic.orange{background:#fff3df;}.ic.green{background:#e3f9ea;}.ic.red{background:#fdecea;}.ic.blue{background:#e6f0ff;}
+.card h3{color:var(--muted);font-size:14px;margin-bottom:8px;font-weight:500;}
+.card .value{font-size:34px;font-weight:800;}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:22px;margin-bottom:22px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:22px;}
+.panel{background:white;border-radius:24px;padding:28px;box-shadow:var(--shadow);}
+.panel h2{font-size:20px;margin-bottom:20px;}
+.panel-flex{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.panel-flex h2{margin-bottom:0;}
+.panel-flex a{color:var(--accent);font-weight:700;font-size:14px;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:14px;color:var(--muted);font-size:13px;font-weight:600;border-bottom:1px solid var(--border);}
+td{padding:15px 14px;border-bottom:1px solid #f2f4f8;font-size:14px;font-weight:500;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr{transition:.2s;}
+tbody tr:hover{background:#fffaf1;}
+.status-badge{display:inline-block;padding:6px 13px;border-radius:999px;font-size:12px;font-weight:700;}
+.st-new{background:#fff3df;color:#a86500;}
+.st-work{background:#e6f0ff;color:#2563c0;}
+.st-done{background:#e3f9ea;color:#1e7c3a;}
+
+/* CHART */
+.chart-wrap{position:relative;height:300px;}
+
+/* FUNNEL */
+.funnel-item{margin-bottom:16px;}
+.funnel-top{display:flex;justify-content:space-between;margin-bottom:7px;font-size:14px;}
+.funnel-top b{font-weight:600;}
+.funnel-top span{color:var(--muted);}
+.funnel-bar{height:12px;border-radius:999px;background:#f0f0f0;overflow:hidden;}
+.funnel-fill{height:100%;border-radius:999px;transition:width .8s ease;}
+
+/* REVENUE BARS */
+.rev-chart{display:flex;align-items:flex-end;gap:12px;height:200px;padding-top:10px;}
+.rev-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;}
+.rev-bar{width:100%;background:linear-gradient(180deg,var(--primary),var(--accent));border-radius:10px 10px 0 0;transition:height .8s ease;min-height:4px;}
+.rev-label{font-size:12px;color:var(--muted);}
+
+/* TOP SERVICES + reviews rows */
+.serv-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f2f4f8;}
+.serv-item:last-child{border-bottom:none;}
+.serv-rank{width:30px;height:30px;border-radius:9px;background:#fff3df;color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
+.serv-name{font-weight:600;flex-grow:1;}
+.serv-count{color:var(--muted);font-size:14px;}
+
+/* FINANCE */
+.finance-card{background:linear-gradient(135deg,#0b1220,#172133);color:white;border-radius:24px;padding:28px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.finance-card::before{content:"";position:absolute;top:-80px;right:-80px;width:200px;height:200px;border-radius:50%;background:rgba(255,181,71,.12);}
+.finance-card h2{color:white;}
+.money{margin-bottom:22px;}
+.money small{color:#9aa6b8;display:block;margin-bottom:4px;}
+.money span{font-size:36px;font-weight:800;color:var(--primary);}
+
+.empty{color:var(--muted);text-align:center;padding:30px;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
+.overlay.show{display:block;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:#d6dce5;border-radius:20px;}
+
+@media(max-width:1300px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .grid-2,.grid-3{grid-template-columns:1fr;}
+}
+@media(max-width:900px){
+    .sidebar{transform:translateX(-100%);transition:.3s;}
+    .sidebar.open{transform:translateX(0);}
+    .main-content{margin-left:0;padding:24px;}
+    .burger{display:block;}
+    .topbar{flex-direction:column;align-items:flex-start;}
+    .stats{grid-template-columns:1fr;}
+}
+</style>
 </head>
 
 <body>
 
-<div class="dashboard">
-
-<!-- SIDEBAR -->
-
-<aside class="sidebar">
-
-<div class="logo">
-
-<h2>
-BuildHouse
-</h2>
-
-<p>
-CRM система
-</p>
-
-</div>
-
-<nav class="menu">
-
-<a class="active">
-Главная
-</a>
-
-<a href="projects.html">
-Заказы
-</a>
-
-<a href="klients.html">
-Клиенты
-</a>
-
-<a href="messages.html">
-Сообщения
-</a>
-
-<a href="calendar.html">
-Замеры
-</a>
-
-<a href="documents.html">
-Документы
-</a>
-
-<a href="setting.html">
-Настройки
-</a>
-
-<button id="logoutBtn">
-Выйти
-</button>
-
-</nav>
-
+<aside class="sidebar" id="sidebar">
+    <div class="logo">
+        <h2>BuildHouse</h2>
+        <p>CRM система</p>
+    </div>
+    <nav class="menu">
+        <a class="active"><span class="m-ic">📊</span> Главная</a>
+        <a href="projects.html"><span class="m-ic">📦</span> Заказы</a>
+        <a href="klients.html"><span class="m-ic">👥</span> Клиенты</a>
+        <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
+        <a href="calendar.html"><span class="m-ic">📅</span> Замеры</a>
+        <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
+        <a href="setting.html"><span class="m-ic">⚙️</span> Настройки</a>
+    </nav>
+    <button id="logoutBtn">Выйти</button>
 </aside>
 
-<!-- MAIN -->
+<div class="overlay" id="overlay"></div>
 
 <main class="main-content">
 
-<!-- TOPBAR -->
-
-<header class="topbar">
-
-<div>
-
-<h1>
-Панель менеджера
-</h1>
-
-<p>
-Управление проектами компании
-</p>
-
-</div>
-
-<div class="top-actions">
-
-<button>
-🔔
-</button>
-
-<button>
-📩
-</button>
-
-<div class="manager-profile">
-
-<div class="avatar"></div>
-
-<span id="managerName">
-Менеджер
-</span>
-
-</div>
-
-</div>
-
-</header>
-
-<!-- KPI -->
-
-<section class="stats">
-
-<div class="card">
-
-<h3>
-Активные проекты
-</h3>
-
-<span id="activeProjects">
-0
-</span>
-
-</div>
-
-<div class="card">
-
-<h3>
-Завершённые
-</h3>
-
-<span id="completedProjects">
-0
-</span>
-
-</div>
-
-<div class="card">
-
-<h3>
-Просроченные
-</h3>
-
-<span id="lateProjects">
-0
-</span>
-
-</div>
-
-<div class="card">
-
-<h3>
-Повторные клиенты
-</h3>
-
-<span id="repeatClients">
-0
-</span>
-
-</div>
-
-</section>
-
-<!-- GRID -->
-
-<section class="dashboard-grid">
-
-<!-- ПРОЕКТЫ -->
-
-<div class="orders-card">
-
-<div class="card-top">
-
-<h2>
-Последние проекты
-</h2>
-
-</div>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>
-Проект
-</th>
-
-<th>
-Клиент
-</th>
-
-<th>
-Статус
-</th>
-
-<th>
-Срок
-</th>
-
-</tr>
-
-</thead>
-
-<tbody id="ordersTable">
-
-</tbody>
-
-</table>
-
-</div>
-
-<!-- КАЛЕНДАРЬ -->
-
-<section class="calendar-section">
-
-<div class="calendar-card">
-
-<h2>Календарь</h2>
-
-<div id="calendar"></div>
-
-</div>
-
-<div class="events-card">
-
-<h2>Ближайшие события</h2>
-
-<div id="eventsList"></div>
-
-</div>
-
-</section>
-
-<!-- ЗАДАЧИ -->
-
-<div class="tasks-card">
-
-<h2>
-Задачи
-</h2>
-
-<div id="tasksList">
-
-<p>
-Нет задач
-</p>
-
-</div>
-
-</div>
-
-<!-- ДИАГРАММА -->
-
-<div class="chart-card">
-
-<h2>
-Статистика проектов
-</h2>
-
-<canvas id="profitChart">
-
-</canvas>
-
-</div>
-
-<!-- УВЕДОМЛЕНИЯ -->
-
-<div class="notifications-card">
-
-<h2>
-Уведомления
-</h2>
-
-<div id="notificationsList">
-
-<p>
-Уведомлений нет
-</p>
-
-</div>
-
-</div>
-
-<!-- ДОКУМЕНТЫ -->
-
-<div class="documents-card">
-
-<h2>
-Последние документы
-</h2>
-
-<div id="documentsList">
-
-<p>
-Документы отсутствуют
-</p>
-
-</div>
-
-</div>
-
-<!-- ПРИБЫЛЬ -->
-
-<div class="finance-card">
-
-<h2>
-Прибыль за месяц
-</h2>
-
-<div class="money">
-
-<span id="monthProfit">
-0 ₽
-</span>
-
-</div>
-
-<h2>
-Прибыль за год
-</h2>
-
-<div class="money">
-
-<span id="yearProfit">
-0 ₽
-</span>
-
-</div>
-
-</div>
-
-<!-- ПРОГНОЗ -->
-
-<div class="forecast-card">
-
-<h2>
-Прогноз сроков ремонта
-</h2>
-
-<div id="forecastList">
-
-<p>
-Нет данных
-</p>
-
-</div>
-
-</div>
-
-</section>
+    <header class="topbar">
+        <div class="top-left">
+            <button class="burger" id="burger">☰</button>
+            <div>
+                <h1>Панель менеджера</h1>
+                <p>Аналитика и управление проектами</p>
+            </div>
+        </div>
+        <div class="manager-profile">
+            <div class="avatar" id="managerAvatar">М</div>
+            <span id="managerName">Менеджер</span>
+        </div>
+    </header>
+
+    <!-- KPI -->
+    <section class="stats">
+        <div class="card">
+            <div class="ic orange">📦</div>
+            <h3>Активные проекты</h3>
+            <div class="value" id="activeProjects">0</div>
+        </div>
+        <div class="card">
+            <div class="ic green">✅</div>
+            <h3>Завершённые</h3>
+            <div class="value" id="completedProjects">0</div>
+        </div>
+        <div class="card">
+            <div class="ic red">📥</div>
+            <h3>Новые заявки</h3>
+            <div class="value" id="newProjects">0</div>
+        </div>
+        <div class="card">
+            <div class="ic blue">👥</div>
+            <h3>Всего клиентов</h3>
+            <div class="value" id="totalClients">0</div>
+        </div>
+    </section>
+
+    <!-- ПРОЕКТЫ + ДИАГРАММА -->
+    <section class="grid-2">
+        <div class="panel">
+            <div class="panel-flex">
+                <h2>Последние заявки</h2>
+                <a href="projects.html">Все заказы →</a>
+            </div>
+            <table>
+                <thead><tr><th>Услуга</th><th>Клиент</th><th>Статус</th><th>Дата</th></tr></thead>
+                <tbody id="ordersTable"></tbody>
+            </table>
+        </div>
+        <div class="panel">
+            <h2>Статусы проектов</h2>
+            <div class="chart-wrap"><canvas id="statusChart"></canvas></div>
+        </div>
+    </section>
+
+    <!-- ВОРОНКА + ВЫРУЧКА + ТОП -->
+    <section class="grid-3">
+        <div class="panel">
+            <h2>Воронка по этапам</h2>
+            <div id="funnelList"></div>
+        </div>
+        <div class="panel">
+            <h2>Выручка по месяцам</h2>
+            <div class="rev-chart" id="revChart"></div>
+        </div>
+        <div class="panel">
+            <h2>Топ услуг</h2>
+            <div id="topServices"></div>
+        </div>
+    </section>
+
+    <!-- ФИНАНСЫ + ОТЗЫВЫ -->
+    <section class="grid-2">
+        <div class="finance-card">
+            <h2>Финансы</h2>
+            <div class="money">
+                <small>Выручка за текущий месяц</small>
+                <span id="monthProfit">0 ₽</span>
+            </div>
+            <div class="money">
+                <small>Выручка за всё время</small>
+                <span id="yearProfit">0 ₽</span>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-flex">
+                <h2>Последние отзывы</h2>
+                <span id="avgRating" style="color:var(--accent);font-weight:800;"></span>
+            </div>
+            <div id="reviewsList"></div>
+        </div>
+    </section>
 
 </main>
 
-</div>
+<script type="module">
+import { auth, db } from "../js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    collection, getDocs, getDoc, doc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<script
-type="module"
-src="../js/logout.js">
-</script>
+const $ = (id)=>document.getElementById(id);
 
-<script
-type="module"
-src="js/manager.js">
+/* БУРГЕР */
+const sidebar=$("sidebar"), overlay=$("overlay");
+$("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
+overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
+
+/* LOGOUT */
+$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="../login.html";});
+
+/* AUTH + роль */
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){window.location.href="../login.html";return;}
+    try{
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists()){
+            const d=snap.data();
+            if(d.role!=="manager"){window.location.href="../client-cabinet.html";return;}
+            $("managerName").textContent=d.name||"Менеджер";
+            $("managerAvatar").textContent=(d.name||"М").charAt(0).toUpperCase();
+        }
+    }catch(e){console.error(e);}
+    loadClients();
+    loadProjects();
+    loadReviews();
+});
+
+function normStatus(s){
+    if(s==="В работе")return "В работе";
+    if(s==="Завершён"||s==="Завершен")return "Завершён";
+    return "Новая заявка";
+}
+function statusClass(s){
+    const n=normStatus(s);
+    if(n==="В работе")return "st-work";
+    if(n==="Завершён")return "st-done";
+    return "st-new";
+}
+
+async function loadClients(){
+    try{
+        const snap=await getDocs(collection(db,"users"));
+        let count=0;
+        snap.forEach(d=>{if(d.data().role!=="manager")count++;});
+        $("totalClients").textContent=count;
+    }catch(e){console.error(e);}
+}
+
+function loadProjects(){
+    onSnapshot(collection(db,"projects"),(snap)=>{
+        let projects=[];
+        snap.forEach(d=>projects.push({id:d.id,...d.data()}));
+        projects.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+
+        let active=0,done=0,nw=0;
+        let monthProfit=0,totalProfit=0;
+        const statuses={"Новая заявка":0,"В работе":0,"Завершён":0};
+        const serviceCount={};
+        const monthly={};
+        const now=new Date();
+
+        projects.forEach(p=>{
+            const st=normStatus(p.status);
+            statuses[st]++;
+            if(st==="Завершён")done++;
+            else if(st==="В работе")active++;
+            else nw++;
+
+            const budget=Number(p.budget||0);
+            totalProfit+=budget;
+
+            let date=null;
+            if(p.createdAt){
+                date=typeof p.createdAt==="number"?new Date(p.createdAt):(p.createdAt.toDate?p.createdAt.toDate():new Date(p.createdAt));
+            }
+            if(date && !isNaN(date)){
+                if(date.getMonth()===now.getMonth() && date.getFullYear()===now.getFullYear()) monthProfit+=budget;
+                const key=date.toLocaleDateString("ru-RU",{month:"short"});
+                monthly[key]=(monthly[key]||0)+budget;
+            }
+
+            const svc=(p.service||p.title||"Прочее").split("(")[0].trim();
+            serviceCount[svc]=(serviceCount[svc]||0)+1;
+        });
+
+        $("activeProjects").textContent=active;
+        $("completedProjects").textContent=done;
+        $("newProjects").textContent=nw;
+        $("monthProfit").textContent=monthProfit.toLocaleString("ru-RU")+" ₽";
+        $("yearProfit").textContent=totalProfit.toLocaleString("ru-RU")+" ₽";
+
+        const tbody=$("ordersTable");
+        if(!projects.length){
+            tbody.innerHTML='<tr><td colspan="4" class="empty">Заявок пока нет</td></tr>';
+        }else{
+            tbody.innerHTML="";
+            projects.slice(0,6).forEach(p=>{
+                let dd="—";
+                if(p.createdAt){
+                    const dt=typeof p.createdAt==="number"?new Date(p.createdAt):(p.createdAt.toDate?p.createdAt.toDate():new Date(p.createdAt));
+                    if(!isNaN(dt))dd=dt.toLocaleDateString("ru-RU");
+                }
+                tbody.innerHTML+=`<tr>
+                    <td>${p.service||p.title||"—"}</td>
+                    <td>${p.clientName||"—"}</td>
+                    <td><span class="status-badge ${statusClass(p.status)}">${normStatus(p.status)}</span></td>
+                    <td>${dd}</td></tr>`;
+            });
+        }
+
+        drawChart(statuses);
+        drawFunnel(statuses, projects.length);
+        drawRevenue(monthly);
+        drawTopServices(serviceCount);
+    });
+}
+
+let chart=null;
+function drawChart(statuses){
+    const ctx=$("statusChart");
+    if(!ctx)return;
+    if(chart)chart.destroy();
+    chart=new Chart(ctx,{
+        type:"doughnut",
+        data:{labels:Object.keys(statuses),datasets:[{data:Object.values(statuses),backgroundColor:["#ffb547","#3b82f6","#22c55e"],borderWidth:0}]},
+        options:{responsive:true,maintainAspectRatio:false,cutout:"65%",plugins:{legend:{position:"bottom",labels:{padding:18,usePointStyle:true,pointStyle:"circle"}}}}
+    });
+}
+
+function drawFunnel(statuses,total){
+    const list=$("funnelList");
+    const steps=[
+        {name:"Новые заявки",val:statuses["Новая заявка"],color:"#ffb547"},
+        {name:"В работе",val:statuses["В работе"],color:"#3b82f6"},
+        {name:"Завершённые",val:statuses["Завершён"],color:"#22c55e"}
+    ];
+    const max=Math.max(total,1);
+    list.innerHTML=steps.map(s=>`
+        <div class="funnel-item">
+            <div class="funnel-top"><b>${s.name}</b><span>${s.val}</span></div>
+            <div class="funnel-bar"><div class="funnel-fill" style="width:${(s.val/max)*100}%;background:${s.color}"></div></div>
+        </div>`).join("");
+}
+
+function drawRevenue(monthly){
+    const c=$("revChart");
+    const keys=Object.keys(monthly);
+    if(!keys.length){c.innerHTML='<div class="empty">Нет данных</div>';return;}
+    const max=Math.max(...Object.values(monthly),1);
+    c.innerHTML=keys.slice(-6).map(k=>{
+        const h=(monthly[k]/max)*100;
+        return `<div class="rev-col"><div class="rev-bar" style="height:${h}%" title="${monthly[k].toLocaleString('ru-RU')} ₽"></div><div class="rev-label">${k}</div></div>`;
+    }).join("");
+}
+
+function drawTopServices(serviceCount){
+    const list=$("topServices");
+    const arr=Object.entries(serviceCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    if(!arr.length){list.innerHTML='<div class="empty">Нет данных</div>';return;}
+    list.innerHTML=arr.map((s,i)=>`
+        <div class="serv-item">
+            <div class="serv-rank">${i+1}</div>
+            <div class="serv-name">${s[0]}</div>
+            <div class="serv-count">${s[1]} зак.</div>
+        </div>`).join("");
+}
+
+async function loadReviews(){
+    const list=$("reviewsList");
+    try{
+        const snap=await getDocs(collection(db,"reviews"));
+        let reviews=[];
+        snap.forEach(d=>reviews.push(d.data()));
+        reviews.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+
+        if(!reviews.length){list.innerHTML='<div class="empty">Отзывов пока нет</div>';return;}
+
+        let sum=0,cnt=0;
+        reviews.forEach(r=>{const v=parseFloat(r.rating);if(!isNaN(v)){sum+=v;cnt++;}});
+        if(cnt)$("avgRating").textContent="★ "+(sum/cnt).toFixed(1);
+
+        list.innerHTML=reviews.slice(0,4).map(r=>{
+            const stars="★".repeat(r.rating||0)+"☆".repeat(5-(r.rating||0));
+            const txt=(r.text||"");
+            return `<div class="serv-item">
+                <div class="serv-rank">${(r.name||"К").charAt(0)}</div>
+                <div class="serv-name">${r.name||"Клиент"}<div style="color:var(--muted);font-size:13px;font-weight:400;">${txt.slice(0,40)}${txt.length>40?"...":""}</div></div>
+                <div style="color:var(--primary);font-size:13px;">${stars}</div>
+            </div>`;
+        }).join("");
+    }catch(e){
+        console.error(e);
+        list.innerHTML='<div class="empty">Не удалось загрузить</div>';
+    }
+}
 </script>
 
 </body>
-
 </html>
