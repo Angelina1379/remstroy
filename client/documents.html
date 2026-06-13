@@ -6,6 +6,8 @@
 <title>Документы | BuildHouse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- генерация Word (локальная библиотека) -->
+<script src="js/docx.js"></script>
 
 <style>
 :root{
@@ -341,6 +343,7 @@ function render(){
                     </tbody>
                 </table>
                 <div class="est-total"><span>Итого:</span><b>${fmt(d.total)} ₽</b></div>
+                <a class="document-btn" data-dl="${d.id}" style="cursor:pointer;margin-bottom:14px;">📄 Скачать смету (Word)</a>
                 <div class="pay-row">
                     <span class="pay-status ${d.paid?'paid':'unpaid'}">${d.paid?'✓ Оплачено':'● Ожидает оплаты'}</span>
                     ${!isManager && !d.paid?`<button class="pay-btn" data-pay="${d.id}">Отметить «Оплачено»</button>`:""}
@@ -374,6 +377,14 @@ function render(){
                 await updateDoc(doc(db,"documents",btn.dataset.pay),{paid:true,paidAt:Date.now()});
                 loadDocuments();
             }catch(e){alert("Ошибка: "+e.message);}
+        });
+    });
+
+    // скачать смету в Word
+    container.querySelectorAll("[data-dl]").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            const d=allDocs.find(x=>x.id===btn.dataset.dl);
+            if(d)downloadEstimate(d);
         });
     });
 
@@ -424,6 +435,75 @@ $("saveDocBtn").addEventListener("click",async()=>{
     }
     btn.disabled=false;btn.textContent="Сохранить документ";
 });
+
+/* ===== СКАЧАТЬ СМЕТУ В WORD ===== */
+function downloadEstimate(d){
+    if(!window.docx || !window.docx.Document){
+        alert("Библиотека для Word не найдена.\nУбедитесь, что файл docx.js лежит в папке js, и обновите страницу (F5).");
+        return;
+    }
+    const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType}=window.docx;
+    const fmt=(n)=>Number(n||0).toLocaleString("ru-RU");
+    const works=d.estimate||[];
+    const mats=d.materials||[];
+
+    const P=(text,o={})=>new Paragraph({
+        alignment:o.center?AlignmentType.CENTER:AlignmentType.LEFT,
+        spacing:{after:o.after!=null?o.after:120},
+        children:[new TextRun({text,bold:!!o.bold,size:o.size||24,font:"Times New Roman"})]
+    });
+    const cell=(t,o={})=>new TableCell({
+        width:{size:o.w||25,type:WidthType.PERCENTAGE},
+        children:[new Paragraph({alignment:o.center?AlignmentType.CENTER:AlignmentType.LEFT,children:[new TextRun({text:String(t),bold:!!o.bold,size:22,font:"Times New Roman"})]})]
+    });
+    const tableFor=(arr)=>{
+        const rows=[new TableRow({children:[
+            cell("№",{w:8,bold:true,center:true}),
+            cell("Наименование",{w:46,bold:true}),
+            cell("Кол-во, м²",{w:16,bold:true,center:true}),
+            cell("Цена",{w:15,bold:true,center:true}),
+            cell("Сумма",{w:15,bold:true,center:true})
+        ]})];
+        arr.forEach((it,i)=>rows.push(new TableRow({children:[
+            cell(i+1,{w:8,center:true}),
+            cell(it.name,{w:46}),
+            cell(it.area,{w:16,center:true}),
+            cell(fmt(it.unit),{w:15,center:true}),
+            cell(fmt(it.sum),{w:15,center:true})
+        ]})));
+        return new Table({width:{size:100,type:WidthType.PERCENTAGE},rows});
+    };
+
+    const children=[
+        P("СМЕТА",{bold:true,size:30,center:true,after:80}),
+        P("на ремонтно-отделочные работы",{center:true,size:24}),
+        P("от "+(d.createdAt?new Date(d.createdAt).toLocaleDateString("ru-RU"):""),{center:true,after:200}),
+        P("Объект: "+(d.area?d.area+" м², ":"")+(d.className||""),{after:160})
+    ];
+    if(works.length){
+        children.push(P("РАЗДЕЛ 1. РАБОТЫ",{bold:true,size:24}));
+        children.push(tableFor(works));
+        children.push(P("",{after:120}));
+    }
+    if(mats.length){
+        children.push(P("РАЗДЕЛ 2. МАТЕРИАЛЫ",{bold:true,size:24}));
+        children.push(tableFor(mats));
+        children.push(P("",{after:120}));
+    }
+    children.push(P("ИТОГО к оплате: "+fmt(d.total)+" руб.",{bold:true,size:26,after:60}));
+    children.push(P("Статус оплаты: "+(d.paid?"оплачено":"ожидает оплаты"),{after:200}));
+    children.push(P("ООО «BuildHouse», г. Астрахань, ул. Антокольского, д. 6"));
+    children.push(P("Тел.: +7 903 349-11-91"));
+
+    const docFile=new Document({sections:[{children}]});
+    Packer.toBlob(docFile).then(blob=>{
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url; a.download="Смета_BuildHouse.docx";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }).catch(e=>alert("Ошибка: "+e.message));
+}
 </script>
 
 </body>
