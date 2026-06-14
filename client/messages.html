@@ -251,15 +251,15 @@ function loadMessages(uid){
             messagesContainer.innerHTML='<div class="empty-chat">Сообщений пока нет.<br>Напишите менеджеру — он ответит здесь.</div>';
             return;
         }
-        // собираем и сортируем сами: без времени (только отправленные) — в конец
+        // собираем и сортируем сами по времени (надёжно: serverTime или clientTime)
         const msgs=[];
         snapshot.forEach((docSnap)=>{
             const m=docSnap.data();
-            const t=m.time?.toMillis?m.time.toMillis():(m.time?.seconds?m.time.seconds*1000:null);
+            let t=m.time?.toMillis?m.time.toMillis():(m.time?.seconds?m.time.seconds*1000:null);
+            if(t==null)t=m.clientTime||null; // пока сервер не проставил — берём время отправки
             msgs.push({m,t});
         });
         msgs.sort((a,b)=>{
-            // null (ещё нет серверного времени) считается «сейчас» — внизу
             const ta=a.t==null?Date.now()+1:a.t;
             const tb=b.t==null?Date.now()+1:b.t;
             return ta-tb;
@@ -315,7 +315,7 @@ sendBtn?.addEventListener("click",async()=>{
             }
         }
         await addDoc(collection(db,"messages",currentUser.uid,"items"),{
-            text,sender:"client",fileUrl,imageUrl,fileName,read:false,time:serverTimestamp()
+            text,sender:"client",fileUrl,imageUrl,fileName,read:false,time:serverTimestamp(),clientTime:Date.now()
         });
         messageInput.value="";fileInput.value="";filePreview.innerHTML="";selectedFile=null;
     }catch(e){sendBtn.disabled=false;alert("Ошибка отправки: "+e.message);}
@@ -346,7 +346,7 @@ voiceBtn?.addEventListener("click",async()=>{
                 }else{
                     const voiceUrl=await blobToBase64(blob);
                     await addDoc(collection(db,"messages",currentUser.uid,"items"),{
-                        sender:"client",voiceUrl,read:false,time:serverTimestamp()
+                        sender:"client",voiceUrl,read:false,time:serverTimestamp(),clientTime:Date.now()
                     });
                 }
             }catch(e){alert("Ошибка записи: "+e.message);}
