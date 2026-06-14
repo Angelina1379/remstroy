@@ -68,16 +68,35 @@ a{text-decoration:none;}
 
 /* FullCalendar тюнинг */
 .fc{font-family:'Inter',sans-serif;}
-.fc .fc-button-primary{background:var(--navy);border:none;border-radius:10px;font-weight:600;text-transform:capitalize;padding:8px 14px;}
-.fc .fc-button-primary:hover{background:#1d2638;}
-.fc .fc-button-primary:disabled{background:#aab2c5;}
-.fc .fc-button-active{background:var(--primary)!important;color:#111!important;}
-.fc .fc-toolbar-title{font-size:22px;font-weight:800;text-transform:capitalize;}
-.fc .fc-daygrid-day.fc-day-today{background:#fff9ef;}
-.fc .fc-daygrid-day:hover{background:#f8f9fc;cursor:pointer;}
-.fc-event{border:none;border-radius:8px;padding:2px 6px;font-size:12px;font-weight:600;cursor:pointer;}
-.fc .fc-col-header-cell-cushion{color:var(--muted);font-weight:600;padding:10px;}
-.fc .fc-daygrid-day-number{padding:8px;font-weight:600;}
+.fc .fc-toolbar.fc-header-toolbar{margin-bottom:22px;}
+.fc .fc-button-primary{background:#f5f6fa;color:#1b2430;border:none;border-radius:12px;font-weight:600;text-transform:capitalize;padding:9px 16px;box-shadow:none;transition:.2s;}
+.fc .fc-button-primary:hover{background:#e9edf3;color:#111;}
+.fc .fc-button-primary:disabled{background:#f0f2f6;color:#b8c0cc;opacity:1;}
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-active{background:var(--primary)!important;color:#111!important;box-shadow:0 4px 12px rgba(255,181,71,.4);}
+.fc .fc-button-primary:focus{box-shadow:none!important;}
+.fc .fc-today-button{background:var(--navy);color:#fff;}
+.fc .fc-today-button:hover{background:#1d2638;color:#fff;}
+.fc .fc-toolbar-title{font-size:24px;font-weight:800;white-space:nowrap;letter-spacing:-.3px;}
+.fc .fc-toolbar-title::first-letter{text-transform:uppercase;}
+
+/* сетка */
+.fc .fc-scrollgrid{border:none;}
+.fc .fc-scrollgrid td,.fc .fc-scrollgrid th{border-color:#eef1f6;}
+.fc .fc-col-header-cell{background:#fafbfd;}
+.fc .fc-col-header-cell-cushion{color:var(--muted);font-weight:700;padding:12px;text-transform:capitalize;font-size:13px;}
+.fc .fc-daygrid-day{transition:.18s;}
+.fc .fc-daygrid-day:hover{background:#fff8eb;cursor:pointer;}
+.fc .fc-daygrid-day.fc-day-today{background:#fff4dd;}
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{background:var(--primary);color:#111;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;margin:4px;font-weight:800;}
+.fc .fc-daygrid-day-number{padding:8px;font-weight:600;color:#3a4452;}
+.fc .fc-day-sun .fc-daygrid-day-number,.fc .fc-day-sat .fc-daygrid-day-number{color:#c0392b;}
+
+/* события */
+.fc-event{border:none!important;border-radius:8px;padding:3px 8px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.08);transition:.15s;}
+.fc-event:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15);}
+.fc .fc-daygrid-event-dot{display:none;}
+.fc .fc-more-link{font-weight:700;color:var(--accent);font-size:12px;}
 
 /* MODAL */
 .modal{position:fixed;inset:0;background:rgba(11,18,32,.6);display:none;justify-content:center;align-items:center;z-index:9999;padding:20px;}
@@ -125,8 +144,8 @@ a{text-decoration:none;}
     .calendar-top{flex-direction:column;align-items:flex-start;}
     #openModalBtn{width:100%;}
     .calendar-wrapper{padding:16px;}
-    .fc .fc-toolbar{flex-direction:column;gap:10px;}
-    .fc .fc-toolbar-title{font-size:18px;}
+    .fc .fc-toolbar{flex-direction:column;gap:12px;}
+    .fc .fc-toolbar-title{font-size:20px;white-space:nowrap;}
     .fc .fc-button-primary{padding:7px 10px;font-size:13px;}
     /* крупные кликабельные клетки */
     .fc .fc-daygrid-day-frame{min-height:62px;}
@@ -375,6 +394,12 @@ function initCalendar(){
     calendar=new FullCalendar.Calendar(calendarEl,{
         locale:"ru",
         initialView:"dayGridMonth",
+        titleFormat:(arg)=>{
+            const months=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+            return months[arg.date.month]+" "+arg.date.year;
+        },
+        dayMaxEvents:3,
+        fixedWeekCount:false,
         selectable:true,
         editable:true,
         nowIndicator:true,
