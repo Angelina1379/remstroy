@@ -48,17 +48,36 @@ document.getElementById("clearBtn").addEventListener("click",async()=>{
 });
 
 /* построить этапы объекта: массив рабочих дней с типом работ */
-function buildStages(){
-    // длительности этапов в рабочих днях
-    const demont=rnd(1,2);
-    const chern=rnd(3,5);
-    const otdel=rnd(3,6);
-    const days=[];
-    days.push("Замер");                              // 1 день
-    for(let i=0;i<demont;i++)days.push("Демонтаж");
-    for(let i=0;i<chern;i++)days.push("Черновые работы");
-    for(let i=0;i<otdel;i++)days.push("Отделочные работы");
-    days.push("Сдача объекта");                       // 1 день в конце
+function buildStages(service){
+    const s=(service||"").toLowerCase();
+    const days=["Замер"]; // замер всегда первый
+    const rep=(type,n)=>{for(let i=0;i<n;i++)days.push(type);};
+
+    if(s.includes("косметическ")){
+        // косметика: без демонтажа, в основном отделка
+        rep("Отделочные работы",rnd(3,5));
+    }else if(s.includes("ванн")||s.includes("кухн")){
+        // санузел/кухня: демонтаж, черновые (плитка/сантехника), отделка
+        rep("Демонтаж",1);
+        rep("Черновые работы",rnd(2,4));
+        rep("Отделочные работы",rnd(2,4));
+    }else if(s.includes("капитальн")||s.includes("дизайн")||s.includes("ключ")){
+        // капитальный/дизайн: всё по полной
+        rep("Демонтаж",rnd(1,2));
+        rep("Черновые работы",rnd(4,6));
+        rep("Отделочные работы",rnd(4,7));
+    }else if(s.includes("новостро")){
+        // новостройка: без демонтажа, черновые + отделка
+        rep("Черновые работы",rnd(3,5));
+        rep("Отделочные работы",rnd(3,6));
+    }else{
+        // прочее / студия — средний набор
+        rep("Демонтаж",1);
+        rep("Черновые работы",rnd(2,4));
+        rep("Отделочные работы",rnd(3,5));
+    }
+
+    days.push("Сдача объекта"); // сдача всегда последняя
     return days;
 }
 
@@ -98,48 +117,69 @@ document.getElementById("runBtn").addEventListener("click",async()=>{
     }
 
     let cursor=new Date(2026,0,6,9,0); // старт пн 6 янв
-    const limit=new Date(2026,5,1);    // до 1 июня
+    const limit=new Date(2026,6,1);    // до 1 июля (весь июнь включительно)
     let created=0, placedObjects=0;
 
-    for(const order of orders){
-      if(cursor>=limit)break;
-      const stages=buildStages();
-      let firstDay=null,lastDay=null;
-
-      for(const wt of stages){
+    let round=0;
+    while(cursor<limit && round<6){  // несколько кругов, пока не заполним июнь
+      for(const order of orders){
         if(cursor>=limit)break;
-        // ищем рабочий день, где ещё нет 2 объектов
-        while(isSunday(cursor) || (dayLoad[dayKey(cursor)]||0)>=2){
-          cursor=nextWorkday(cursor);
+        const stages=buildStages(order.service||order.title);
+        let firstDay=null,lastDay=null;
+        const stageStart={}; // тип этапа -> дата первого появления
+
+        for(const wt of stages){
           if(cursor>=limit)break;
+          while(isSunday(cursor) || (dayLoad[dayKey(cursor)]||0)>=2){
+            cursor=nextWorkday(cursor);
+            if(cursor>=limit)break;
+          }
+          if(cursor>=limit)break;
+
+          const load=dayLoad[dayKey(cursor)]||0;
+          const half=load===0?"am":"pm";
+          await addEvent(order,cursor,wt,half);
+          dayLoad[dayKey(cursor)]=load+1;
+          created++;
+          if(!firstDay)firstDay=new Date(cursor);
+          if(!stageStart[wt])stageStart[wt]=new Date(cursor); // запоминаем старт этапа
+          lastDay=new Date(cursor);
+          cursor=nextWorkday(cursor);
         }
-        if(cursor>=limit)break;
 
-        const load=dayLoad[dayKey(cursor)]||0;
-        // если день уже занят одним объектом — второй ставим после обеда
-        const half=load===0?"am":"pm";
-        await addEvent(order,cursor,wt,half);
-        dayLoad[dayKey(cursor)]=load+1;
-        created++;
-        if(!firstDay)firstDay=new Date(cursor);
-        lastDay=new Date(cursor);
-
-        // следующий этап этого объекта — на следующий рабочий день
-        cursor=nextWorkday(cursor);
-      }
-
-      // записываем период работ в заказ
-      if(firstDay&&lastDay){
-        try{
-          await updateDoc(doc(db,"projects",order.id),{
-            workStart:fmtFull(firstDay),
-            workEnd:fmtFull(lastDay),
-            workPeriod:fmt(firstDay)+" — "+fmt(lastDay)
+        // период работ пишем в заказ только в первом круге (последний реальный объект)
+        if(firstDay&&lastDay){
+          // собираем осмысленную историю заказа
+          const createdDate=order.createdAt?new Date(order.createdAt):new Date(firstDay.getTime()-7*86400000);
+          const history=[{title:"Заявка получена",date:fmtFull(createdDate)}];
+          history.push({title:"Заявка одобрена, назначен замер",date:fmtFull(firstDay)});
+          // этапы в порядке появления
+          const order2=["Демонтаж","Черновые работы","Отделочные работы"];
+          order2.forEach(t=>{
+            if(stageStart[t])history.push({title:"Начаты: "+t.toLowerCase(),date:fmtFull(stageStart[t])});
           });
-        }catch(e){}
-        placedObjects++;
-        log(`🏠 ${order.clientName} · ${order.service||order.title}\n     работы: ${fmtFull(firstDay)} — ${fmtFull(lastDay)} (${stages.length} раб. дн.)`,"hl");
+          const isDone=(order.status==="Завершён"||order.status==="Завершен");
+          if(isDone){
+            history.push({title:"Объект сдан, работы завершены",date:fmtFull(lastDay)});
+          }else{
+            history.push({title:"Проект в работе",date:fmtFull(firstDay)});
+          }
+
+          try{
+            await updateDoc(doc(db,"projects",order.id),{
+              measureDate:fmtFull(firstDay),
+              deadline:fmtFull(lastDay),
+              workStart:fmtFull(firstDay),
+              workEnd:fmtFull(lastDay),
+              workPeriod:fmt(firstDay)+" — "+fmt(lastDay),
+              history:history
+            });
+          }catch(e){}
+          placedObjects++;
+          log(`🏠 ${order.clientName} · ${order.service||order.title}\n     работы: ${fmtFull(firstDay)} — ${fmtFull(lastDay)} (${stages.length} раб. дн.)`,"hl");
+        }
       }
+      round++;
     }
 
     log(`\n🎉 Готово! Объектов в графике: ${placedObjects}, записей: ${created}`,"ok");
