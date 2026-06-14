@@ -252,7 +252,7 @@ a{text-decoration:none;}
 import { auth, db } from "../js/firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-    collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, onSnapshot
+    collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $ = (id)=>document.getElementById(id);
@@ -805,9 +805,34 @@ $("saveBtn").addEventListener("click",async()=>{
             await addDoc(collection(db,"documents"),payload);
             alert("Смета сохранена в кабинет клиента. Клиент увидит её таблицей в разделе «Документы».");
         }
+        // записываем сумму сметы в бюджет проекта клиента
+        await updateClientProjectBudget(currentClient.uid,total);
         loadClientDocs();
     }catch(e){alert("Ошибка: "+e.message);}
 });
+
+/* сумма сметы -> бюджет проекта клиента */
+async function updateClientProjectBudget(uid,total){
+    try{
+        // ищем проект клиента (по uid в документе или по id=uid)
+        let projectId=null;
+        const q=query(collection(db,"projects"),where("uid","==",uid));
+        const snap=await getDocs(q);
+        if(!snap.empty){
+            // берём самый свежий проект
+            let newest=null,nt=-1;
+            snap.forEach(d=>{const p=d.data();const t=p.createdAt||0;if(t>=nt){nt=t;newest={id:d.id};}});
+            projectId=newest?.id;
+        }else{
+            // запасной вариант — документ с id=uid
+            const direct=await getDoc(doc(db,"projects",uid));
+            if(direct.exists())projectId=uid;
+        }
+        if(projectId){
+            await updateDoc(doc(db,"projects",projectId),{budget:total});
+        }
+    }catch(e){console.warn("Не удалось записать бюджет в проект:",e);}
+}
 </script>
 
 </body>
