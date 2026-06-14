@@ -435,7 +435,7 @@ function projectForm(o){
     <div class="form-grid">
         <div class="form-group"><label>Услуга</label><input id="fService" value="${(o.service||o.title||"").replace(/"/g,'&quot;')}"></div>
         <div class="form-group"><label>Адрес</label><input id="fAddress" value="${(o.address||"").replace(/"/g,'&quot;')}"></div>
-        <div class="form-group"><label>Бюджет (₽)</label><input type="number" id="fBudget" value="${o.budget||""}"></div>
+        <div class="form-group"><label>Бюджет — из сметы (₽)</label><input type="number" id="fBudget" value="${o.budget||""}" readonly style="background:#eef1f6;color:#555;cursor:not-allowed;" title="Сумма берётся из сметы на странице Документы" placeholder="появится после сметы"></div>
         <div class="form-group"><label>Дата начала</label><input type="date" id="fStart" value="${o.startDate||""}"></div>
         <div class="form-group"><label>Срок сдачи</label><input type="date" id="fDeadline" value="${o.deadline||""}"></div>
         <div class="form-group"><label>Прогресс (%)</label><input type="number" id="fProgress" min="0" max="100" value="${o.progress!=null?o.progress:""}"></div>
@@ -551,10 +551,9 @@ function bindRightActions(o,st){
 /* сбор формы */
 function collectForm(){
     const num=(v)=>v===""?null:Number(v);
-    return {
+    const data={
         service:$("fService").value,
         address:$("fAddress").value,
-        budget:num($("fBudget").value),
         startDate:$("fStart").value,
         deadline:$("fDeadline").value,
         progress:$("fProgress").value===""?null:Number($("fProgress").value),
@@ -562,6 +561,11 @@ function collectForm(){
         status:$("fStatus").value,
         comment:$("fComment").value
     };
+    // бюджет сохраняем, только если он уже есть в поле (пришёл из сметы) —
+    // чтобы сохранение заказа не затёрло сумму нулём
+    const b=$("fBudget").value;
+    if(b!=="")data.budget=Number(b);
+    return data;
 }
 </script>
 
