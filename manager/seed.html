@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>График работ | BuildHouse</title>
+<title>Сметы и оплаты | BuildHouse</title>
 <style>
 body{font-family:Inter,Arial,sans-serif;background:#f5f6fa;color:#1b2430;max-width:820px;margin:40px auto;padding:20px;}
 h1{font-size:26px;}
@@ -15,15 +15,15 @@ button:hover{background:#f39a1f;}button:disabled{background:#ffd699;cursor:not-a
 </style>
 </head>
 <body>
-<h1>📅 Плотный график работ бригады</h1>
+<h1>💰 Сметы и оплаты</h1>
 <div class="warn">
-<b>Что делает:</b> заполняет календарь реалистичным графиком — бригада работает на объекте несколько дней подряд (этапы ремонта), каждый рабочий день занят, воскресенья выходные, иногда два объекта в день (утро/после обеда).<br><br>
-<b>Шаг 1.</b> «Очистить старый календарь» — убирает прежние разрозненные записи.<br>
-<b>Шаг 2.</b> «Создать график» — строит сплошной график за январь–май 2026.<br><br>
+<b>Что делает:</b> создаёт сметы под заказы и проводит оплату, чтобы в финансах появилась выручка.<br><br>
+• <b>Завершённые</b> заказы → смета оплачена (деньги идут в выручку).<br>
+• <b>В работе</b> → часть оплачена (аванс), часть в «Ожидает оплаты».<br><br>
 Откройте через Live Server. После — файл можно удалить.
 </div>
-<button class="clear-btn" id="clearBtn">🗑 Очистить старый календарь</button>
-<button id="runBtn">📅 Создать график работ</button>
+<button class="clear-btn" id="clearBtn">🗑 Удалить старые сметы</button>
+<button id="runBtn">💰 Создать сметы и провести оплаты</button>
 <div class="log" id="log">Готов к запуску...</div>
 
 <script type="module">
@@ -31,116 +31,95 @@ import { db } from "./js/firebase.js";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const log=(m,c="")=>{const el=document.getElementById("log");el.innerHTML+=`\n<span class="${c}">${m}</span>`;el.scrollTop=el.scrollHeight;};
-const pick=(a)=>a[Math.floor(Math.random()*a.length)];
 const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
-const WT_COLOR={"Замер":"#ffb547","Смета":"#2563eb","Черновые работы":"#ef4444","Отделочные работы":"#22c55e","Сдача объекта":"#8b5cf6"};
-/* этапы по порядку — бригада идёт по ним на объекте */
-const STAGES=["Замер","Черновые работы","Черновые работы","Отделочные работы","Отделочные работы","Сдача объекта"];
+/* собрать смету-разбивку из суммы заказа (для красоты в кабинете клиента) */
+function buildEstimate(total){
+    // разложим итог на несколько работ примерными долями
+    const parts=[
+        {name:"Демонтажные работы",k:0.10},
+        {name:"Черновые работы",k:0.30},
+        {name:"Отделочные работы",k:0.40},
+        {name:"Электромонтаж и сантехника",k:0.20},
+    ];
+    const area=rnd(35,75);
+    return parts.map(p=>{
+        const sum=Math.round(total*p.k);
+        return {name:p.name, area, unit:Math.round(sum/area), sum};
+    });
+}
 
-/* ОЧИСТКА */
+/* ОЧИСТКА смет */
 document.getElementById("clearBtn").addEventListener("click",async()=>{
-  if(!confirm("Удалить все записи календаря? Заказы и клиенты не тронутся."))return;
+  if(!confirm("Удалить все документы типа «Смета»? Договоры/акты не тронутся."))return;
   const btn=document.getElementById("clearBtn");btn.disabled=true;
-  document.getElementById("log").innerHTML="Очищаю календарь...";
+  document.getElementById("log").innerHTML="Удаляю старые сметы...";
   try{
-    const snap=await getDocs(collection(db,"calendarEvents"));
+    const snap=await getDocs(collection(db,"documents"));
     let n=0;
-    for(const d of snap.docs){await deleteDoc(doc(db,"calendarEvents",d.id));n++;}
-    log(`✅ Удалено записей: ${n}`,"ok");
-    log("Теперь нажмите «Создать график работ».","dim");
+    for(const d of snap.docs){if(d.data().type==="Смета"){await deleteDoc(doc(db,"documents",d.id));n++;}}
+    log(`✅ Удалено смет: ${n}`,"ok");
+    log("Теперь нажмите «Создать сметы и провести оплаты».","dim");
   }catch(e){log("❌ Ошибка: "+e.message,"err");}
   btn.disabled=false;
 });
 
-/* ПОСТРОЕНИЕ ГРАФИКА */
+/* СОЗДАНИЕ смет + оплата */
 document.getElementById("runBtn").addEventListener("click",async()=>{
   const btn=document.getElementById("runBtn");btn.disabled=true;
   document.getElementById("log").innerHTML="Загружаю заказы...";
   try{
     const snap=await getDocs(collection(db,"projects"));
     let orders=[];
-    snap.forEach(d=>{const p=d.data();const st=p.status;
-      if(st==="Завершён"||st==="Завершен"||st==="В работе")orders.push({id:d.id,...p});});
-    if(!orders.length){log("❌ Нет подходящих заказов (завершённых или в работе).","err");btn.disabled=false;return;}
-    log(`✅ Объектов для графика: ${orders.length}`,"ok");
-    log("Строю сплошной график (пн–сб), январь–май 2026...\n");
+    snap.forEach(d=>{const p=d.data();orders.push({id:d.id,...p});});
+    if(!orders.length){log("❌ Заказов нет.","err");btn.disabled=false;return;}
 
-    // перемешаем заказы, чтобы порядок объектов был разный
-    orders.sort(()=>Math.random()-0.5);
+    let num=1000, paidSum=0, pendingSum=0, n=0;
+    for(const p of orders){
+      const status=p.status;
+      // сметы делаем для завершённых и в работе
+      if(status!=="Завершён"&&status!=="Завершен"&&status!=="В работе")continue;
+      const total=Number(p.budget||0);
+      if(!total)continue;
 
-    let cursor=new Date(2026,0,6,9,0); // старт — 6 января 2026 (пн)
-    const limit=new Date(2026,5,1);    // до 1 июня
-    let oi=0;       // индекс заказа
-    let created=0;
-    let stageIdx=0; // текущий этап на объекте
-    let daysOnObject=0; // сколько дней уже на этом объекте
-    let objectDuration=rnd(4,8); // длительность объекта в днях
+      // оплата: завершённые — оплачены; в работе — 50/50
+      let paid;
+      if(status==="Завершён"||status==="Завершен")paid=true;
+      else paid=Math.random()<0.5;
 
-    // вспом: следующий рабочий день (пропускаем воскресенье)
-    function nextWorkday(d){
-      const x=new Date(d);
-      x.setDate(x.getDate()+1);
-      if(x.getDay()===0)x.setDate(x.getDate()+1); // вс -> пн
-      return x;
+      const estimate=buildEstimate(total);
+      const base=p.createdAt||Date.now();
+      const paidAt=paid?(base+rnd(15,45)*86400000):null;
+
+      const docData={
+        uid:p.uid,
+        title:"Смета № "+(num++),
+        type:"Смета",
+        url:"",
+        fileName:"Смета по объекту "+(p.address||""),
+        estimate,
+        materials:[],
+        workTotal:total,
+        matTotal:0,
+        total,
+        area:estimate[0]?.area||50,
+        className:"Капитальный",
+        paid,
+        createdBy:"Менеджер BuildHouse",
+        createdAt:base+rnd(3,10)*86400000
+      };
+      if(paid)docData.paidAt=paidAt;
+
+      await addDoc(collection(db,"documents"),docData);
+      n++;
+      if(paid){paidSum+=total;log(`✅ ${p.clientName} — ${total.toLocaleString("ru-RU")}₽ — ОПЛАЧЕНО`,"ok");}
+      else{pendingSum+=total;log(`⏳ ${p.clientName} — ${total.toLocaleString("ru-RU")}₽ — ожидает оплаты`,"dim");}
     }
 
-    async function addEvent(order,date,hour,workType){
-      const dt=new Date(date);dt.setHours(hour,0,0,0);
-      const iso=dt.toISOString();
-      await addDoc(collection(db,"calendarEvents"),{
-        uid:order.uid,
-        client:order.clientName||"",
-        clientName:order.clientName||"",
-        phone:order.phone||"",
-        address:order.address||"",
-        workType,
-        comment:(hour<13?"До обеда. ":"После обеда. ")+"Объект: "+(order.service||order.title||""),
-        orderId:order.id,
-        date:iso,
-        dateStart:iso.slice(0,10),
-        dateEnd:iso.slice(0,10),
-        color:WT_COLOR[workType]||"#ffb547",
-        manager:"Бригада BuildHouse",
-        createdAt:Date.now()
-      });
-      created++;
-    }
-
-    while(cursor<limit && oi<orders.length){
-      // воскресенье — выходной
-      if(cursor.getDay()===0){cursor=nextWorkday(cursor);continue;}
-
-      const order=orders[oi];
-      const workType=STAGES[Math.min(stageIdx,STAGES.length-1)];
-
-      // основная работа на текущем объекте (целый день, с утра)
-      await addEvent(order,cursor,9,workType);
-      log(`${cursor.toLocaleDateString("ru-RU",{weekday:"short",day:"2-digit",month:"2-digit"})} — ${order.clientName} · ${workType}`,"dim");
-
-      // иногда после обеда — второй объект (если есть следующий)
-      if(Math.random()<0.25 && oi+1<orders.length){
-        const order2=orders[oi+1];
-        const wt2=pick(["Замер","Отделочные работы","Сдача объекта"]);
-        await addEvent(order2,cursor,14,wt2);
-        log(`           + после обеда — ${order2.clientName} · ${wt2}`,"dim");
-      }
-
-      // продвигаемся по дням
-      daysOnObject++;
-      stageIdx++;
-      if(daysOnObject>=objectDuration){
-        // объект закрыт — переходим к следующему
-        oi++;
-        daysOnObject=0;
-        stageIdx=0;
-        objectDuration=rnd(4,8);
-      }
-      cursor=nextWorkday(cursor);
-    }
-
-    log(`\n🎉 Готово! Создано записей: ${created}`,"ok");
-    log("Календарь заполнен сплошным графиком. Откройте «Замеры» в панели менеджера. Файл можно удалить.","ok");
+    log(`\n🎉 Готово! Создано смет: ${n}`,"ok");
+    log(`💰 Поступило (оплачено): ${paidSum.toLocaleString("ru-RU")} ₽`,"ok");
+    log(`⏳ Ожидает оплаты: ${pendingSum.toLocaleString("ru-RU")} ₽`,"dim");
+    log("Откройте панель менеджера — в «Финансах» появилась выручка. Файл можно удалить.","ok");
   }catch(e){log("❌ Ошибка: "+e.message,"err");}
   btn.disabled=false;
 });
