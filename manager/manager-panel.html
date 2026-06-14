@@ -214,7 +214,7 @@ tbody tr:hover{background:#fffaf1;}
         <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
         <a href="calendar.html"><span class="m-ic">📅</span> Замеры</a>
         <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
-        <a href="seed.html"><span class="m-ic">⚙️</span> Настройки</a>
+        <a href="setting.html"><span class="m-ic">⚙️</span> Настройки</a>
     </nav>
     <button id="logoutBtn">Выйти</button>
 </aside>
@@ -668,7 +668,7 @@ function renderAllReviews(){
             <div class="rv-text">${r.text||""}</div>
             ${r.reply?`<div class="rv-reply"><b>Ваш ответ:</b><p>${r.reply}</p></div>`:""}
             <div class="rv-replybox">
-                <textarea data-rid="${r.id}" placeholder="${r.reply?'Изменить ответ...':'Написать ответ клиенту...'}">${r.reply||""}</textarea>
+                <textarea data-rid="${r.id}" placeholder="${r.reply?'Изменить ответ...':'Написать ответ клиенту...'}"></textarea>
                 <button data-send="${r.id}">Ответить</button>
             </div>
         </div>`;
