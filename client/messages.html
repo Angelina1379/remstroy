@@ -196,19 +196,22 @@ const MAX_INLINE=700*1024;
 function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
 const blobToBase64=fileToBase64;
 async function uploadToImgBB(file){
+    // ImgBB надёжнее всего принимает base64-строку без префикса
+    const b64=await fileToBase64(file);
+    const pure=b64.indexOf(",")>=0 ? b64.split(",")[1] : b64;
     const form=new FormData();
-    form.append("key",IMGBB_KEY);
-    form.append("image",file); // сам файл — ImgBB надёжно его принимает
-    let res,data;
+    form.append("image",pure);
+    let res,raw,data;
     try{
-        res=await fetch("https://api.imgbb.com/1/upload",{method:"POST",body:form});
+        res=await fetch("https://api.imgbb.com/1/upload?key="+encodeURIComponent(IMGBB_KEY),{method:"POST",body:form});
     }catch(netErr){
-        throw new Error("Нет связи с сервисом фото (проверьте интернет или блокировку api.imgbb.com)");
+        throw new Error("Нет связи с api.imgbb.com (интернет/блокировка домена)");
     }
-    try{ data=await res.json(); }catch(e){ throw new Error("ImgBB вернул непонятный ответ (код "+res.status+")"); }
+    raw=await res.text();
+    try{ data=JSON.parse(raw); }catch(e){ throw new Error("Ответ ImgBB (код "+res.status+"): "+raw.slice(0,200)); }
     if(!data.success){
-        const msg=data?.error?.message||("код "+res.status);
-        throw new Error("ImgBB отклонил фото: "+msg);
+        const msg=data?.error?.message||JSON.stringify(data).slice(0,200);
+        throw new Error("ImgBB (код "+res.status+"): "+msg);
     }
     return data.data.url;
 }
