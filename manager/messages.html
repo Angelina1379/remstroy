@@ -214,18 +214,40 @@ a{text-decoration:none;}
 
 
 <script type="module">
-import { auth, db, storage } from "../js/firebase.js";
+import { auth, db } from "../js/firebase.js";
 import {
     collection, collectionGroup, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, getDoc, getDocs, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-    ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import {
     signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const $ = (id)=>document.getElementById(id);
+
+/* ===== БЕСПЛАТНОЕ ХРАНЕНИЕ ===== */
+const IMGBB_KEY="bd8a728ac270a8d6fecbd03734d77c8e"; // фото -> ImgBB
+const MAX_INLINE=700*1024; // лимит для файлов/голосовых в base64 (Firestore: 1МБ на документ)
+
+// загрузка фото в ImgBB, возвращает прямую ссылку
+async function uploadToImgBB(file){
+    const b64=await fileToBase64(file);
+    const form=new FormData();
+    form.append("image",b64.split(",")[1]); // только данные, без префикса
+    const res=await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{method:"POST",body:form});
+    const data=await res.json();
+    if(!data.success)throw new Error("ImgBB не принял файл");
+    return data.data.url;
+}
+
+function fileToBase64(file){
+    return new Promise((resolve,reject)=>{
+        const r=new FileReader();
+        r.onload=()=>resolve(r.result);
+        r.onerror=reject;
+        r.readAsDataURL(file);
+    });
+}
+const blobToBase64=fileToBase64; // работает и с Blob
 
 const clientsList=$("clientsList");
 const messagesContainer=$("messagesContainer");
@@ -405,17 +427,27 @@ sendBtn?.addEventListener("click",async()=>{
     let fileUrl="",imageUrl="",fileName="";
     try{
         if(selectedFile){
-            const storageRef=ref(storage,`chatFiles/${currentChat}_${Date.now()}_${selectedFile.name}`);
-            await uploadBytes(storageRef,selectedFile);
-            fileUrl=await getDownloadURL(storageRef);
-            fileName=selectedFile.name;
-            if(selectedFile.type.startsWith("image/"))imageUrl=fileUrl;
+            const isImage=selectedFile.type.startsWith("image/");
+            if(isImage){
+                // фото -> ImgBB (ссылка)
+                sendBtn.disabled=true;
+                imageUrl=await uploadToImgBB(selectedFile);
+                sendBtn.disabled=false;
+            }else{
+                // файл -> base64 в Firestore (с проверкой размера)
+                if(selectedFile.size>MAX_INLINE){
+                    alert("Файл слишком большой (макс. ~700 КБ для вложений). Фото можно больше — они идут в облако.");
+                    return;
+                }
+                fileUrl=await fileToBase64(selectedFile); // data:... строка
+                fileName=selectedFile.name;
+            }
         }
         await addDoc(collection(db,"messages",currentChat,"items"),{
             text,sender:"manager",fileUrl,fileName,imageUrl,time:serverTimestamp(),read:false
         });
         messageInput.value="";fileInput.value="";filePreview.innerHTML="";selectedFile=null;
-    }catch(e){alert("Ошибка отправки: "+e.message);}
+    }catch(e){sendBtn.disabled=false;alert("Ошибка отправки: "+e.message);}
 });
 
 /* ENTER */
@@ -438,12 +470,14 @@ $("voiceBtn")?.addEventListener("click",async()=>{
         mediaRecorder.onstop=async()=>{
             const blob=new Blob(audioChunks,{type:"audio/webm"});
             try{
-                const storageRef=ref(storage,`voices/${currentChat}_${Date.now()}.webm`);
-                await uploadBytes(storageRef,blob);
-                const url=await getDownloadURL(storageRef);
-                await addDoc(collection(db,"messages",currentChat,"items"),{
-                    sender:"manager",voiceUrl:url,time:serverTimestamp(),read:false
-                });
+                if(blob.size>MAX_INLINE){
+                    alert("Голосовое слишком длинное (макс. ~30-40 сек). Запишите покороче.");
+                }else{
+                    const voiceUrl=await blobToBase64(blob);
+                    await addDoc(collection(db,"messages",currentChat,"items"),{
+                        sender:"manager",voiceUrl,time:serverTimestamp(),read:false
+                    });
+                }
             }catch(e){alert("Ошибка записи: "+e.message);}
             stream.getTracks().forEach(t=>t.stop());
         };
