@@ -195,25 +195,26 @@ const IMGBB_KEY="bd8a728ac270a8d6fecbd03734d77c8e";
 const MAX_INLINE=700*1024;
 function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
 const blobToBase64=fileToBase64;
-async function uploadToImgBB(file){
-    // ImgBB надёжнее всего принимает base64-строку без префикса
-    const b64=await fileToBase64(file);
-    const pure=b64.indexOf(",")>=0 ? b64.split(",")[1] : b64;
-    const form=new FormData();
-    form.append("image",pure);
-    let res,raw,data;
-    try{
-        res=await fetch("https://api.imgbb.com/1/upload?key="+encodeURIComponent(IMGBB_KEY),{method:"POST",body:form});
-    }catch(netErr){
-        throw new Error("Нет связи с api.imgbb.com (интернет/блокировка домена)");
-    }
-    raw=await res.text();
-    try{ data=JSON.parse(raw); }catch(e){ throw new Error("Ответ ImgBB (код "+res.status+"): "+raw.slice(0,200)); }
-    if(!data.success){
-        const msg=data?.error?.message||JSON.stringify(data).slice(0,200);
-        throw new Error("ImgBB (код "+res.status+"): "+msg);
-    }
-    return data.data.url;
+// сжимаем фото в компактный base64 для хранения прямо в базе
+function compressImage(file,maxW=900,quality=0.6){
+    return new Promise((resolve,reject)=>{
+        const img=new Image();
+        const url=URL.createObjectURL(file);
+        img.onload=()=>{
+            URL.revokeObjectURL(url);
+            let w=img.width,h=img.height;
+            if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+            const canvas=document.createElement("canvas");
+            canvas.width=w;canvas.height=h;
+            canvas.getContext("2d").drawImage(img,0,0,w,h);
+            let q=quality, dataUrl=canvas.toDataURL("image/jpeg",q);
+            // если всё ещё крупно для базы — дожимаем
+            while(dataUrl.length>900*1024 && q>0.3){ q-=0.1; dataUrl=canvas.toDataURL("image/jpeg",q); }
+            resolve(dataUrl);
+        };
+        img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Не удалось прочитать изображение"));};
+        img.src=url;
+    });
 }
 
 const messagesContainer = document.getElementById("messagesContainer");
@@ -306,11 +307,11 @@ sendBtn?.addEventListener("click",async()=>{
             const isImage=selectedFile.type.startsWith("image/");
             if(isImage){
                 sendBtn.disabled=true;
-                imageUrl=await uploadToImgBB(selectedFile);
+                imageUrl=await compressImage(selectedFile); // сжатое фото прямо в базу
                 sendBtn.disabled=false;
             }else{
                 if(selectedFile.size>MAX_INLINE){
-                    alert("Файл слишком большой (макс. ~700 КБ). Фото можно больше — они идут в облако.");
+                    alert("Файл слишком большой (макс. ~700 КБ).");
                     return;
                 }
                 fileUrl=await fileToBase64(selectedFile);
