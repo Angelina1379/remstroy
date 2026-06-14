@@ -234,13 +234,18 @@ tbody tr:hover{background:#fffaf1;}
     <section class="grid-2">
         <div class="finance-card">
             <h2>Финансы</h2>
+            <p style="color:#9aa6b8;font-size:13px;margin:-12px 0 18px;">Только по оплаченным сметам</p>
             <div class="money">
-                <small>Выручка за текущий месяц</small>
+                <small>Поступило за текущий месяц</small>
                 <span id="monthProfit">0 ₽</span>
             </div>
             <div class="money">
-                <small>Выручка за всё время</small>
+                <small>Поступило за всё время</small>
                 <span id="yearProfit">0 ₽</span>
+            </div>
+            <div class="money" style="margin-bottom:0;">
+                <small>Ожидает оплаты</small>
+                <span id="pendingProfit" style="color:#ffd699;font-size:26px;">0 ₽</span>
             </div>
         </div>
         <div class="panel">
@@ -285,6 +290,7 @@ onAuthStateChanged(auth,async(user)=>{
     }catch(e){console.error(e);}
     loadClients();
     loadProjects();
+    loadFinance();
     loadReviews();
 });
 
@@ -316,10 +322,8 @@ function loadProjects(){
         projects.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
 
         let active=0,done=0,nw=0;
-        let monthProfit=0,totalProfit=0;
         const statuses={"Новая заявка":0,"В работе":0,"Завершён":0};
         const serviceCount={};
-        const monthly={};
         const now=new Date();
 
         projects.forEach(p=>{
@@ -329,19 +333,6 @@ function loadProjects(){
             else if(st==="В работе")active++;
             else nw++;
 
-            const budget=Number(p.budget||0);
-            totalProfit+=budget;
-
-            let date=null;
-            if(p.createdAt){
-                date=typeof p.createdAt==="number"?new Date(p.createdAt):(p.createdAt.toDate?p.createdAt.toDate():new Date(p.createdAt));
-            }
-            if(date && !isNaN(date)){
-                if(date.getMonth()===now.getMonth() && date.getFullYear()===now.getFullYear()) monthProfit+=budget;
-                const key=date.toLocaleDateString("ru-RU",{month:"short"});
-                monthly[key]=(monthly[key]||0)+budget;
-            }
-
             const svc=(p.service||p.title||"Прочее").split("(")[0].trim();
             serviceCount[svc]=(serviceCount[svc]||0)+1;
         });
@@ -349,8 +340,6 @@ function loadProjects(){
         $("activeProjects").textContent=active;
         $("completedProjects").textContent=done;
         $("newProjects").textContent=nw;
-        $("monthProfit").textContent=monthProfit.toLocaleString("ru-RU")+" ₽";
-        $("yearProfit").textContent=totalProfit.toLocaleString("ru-RU")+" ₽";
 
         const tbody=$("ordersTable");
         if(!projects.length){
@@ -373,7 +362,6 @@ function loadProjects(){
 
         drawChart(statuses);
         drawFunnel(statuses, projects.length);
-        drawRevenue(monthly);
         drawTopServices(serviceCount);
     });
 }
@@ -403,6 +391,44 @@ function drawFunnel(statuses,total){
             <div class="funnel-top"><b>${s.name}</b><span>${s.val}</span></div>
             <div class="funnel-bar"><div class="funnel-fill" style="width:${(s.val/max)*100}%;background:${s.color}"></div></div>
         </div>`).join("");
+}
+
+/* ФИНАНСЫ — только оплаченные сметы */
+async function loadFinance(){
+    try{
+        const snap=await getDocs(collection(db,"documents"));
+        let monthProfit=0,totalProfit=0,pending=0;
+        const monthly={};
+        const now=new Date();
+        snap.forEach(d=>{
+            const doc=d.data();
+            if(doc.type!=="Смета")return;
+            const sum=Number(doc.total||0);
+            if(doc.paid){
+                totalProfit+=sum;
+                // дата оплаты или создания
+                const ts=doc.paidAt||doc.createdAt;
+                if(ts){
+                    const date=new Date(ts);
+                    if(!isNaN(date)){
+                        if(date.getMonth()===now.getMonth() && date.getFullYear()===now.getFullYear()) monthProfit+=sum;
+                        const key=date.toLocaleDateString("ru-RU",{month:"short"});
+                        monthly[key]=(monthly[key]||0)+sum;
+                    }
+                }
+            }else{
+                pending+=sum;
+            }
+        });
+        $("monthProfit").textContent=monthProfit.toLocaleString("ru-RU")+" ₽";
+        $("yearProfit").textContent=totalProfit.toLocaleString("ru-RU")+" ₽";
+        const pe=$("pendingProfit");
+        if(pe)pe.textContent=pending.toLocaleString("ru-RU")+" ₽";
+        drawRevenue(monthly);
+    }catch(e){
+        console.error("Ошибка финансов:",e);
+        drawRevenue({});
+    }
 }
 
 function drawRevenue(monthly){
