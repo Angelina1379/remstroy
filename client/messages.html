@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Заказы | BuildHouse</title>
+<title>Сообщения | BuildHouse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -18,17 +18,17 @@
     --border:#e6ebf2;
     --text:#1b2430;
     --muted:#7d8896;
-    --success:#22c55e;
-    --danger:#ef4444;
     --shadow:0 10px 35px rgba(0,0,0,.06);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
 a{text-decoration:none;}
+
+.dashboard{display:flex;min-height:100vh;}
 
 /* SIDEBAR */
 .sidebar{
-    position:fixed;left:0;top:0;width:260px;height:100vh;
+    position:fixed;top:0;left:0;width:260px;height:100vh;
     background:var(--sidebar);padding:30px 20px;
     display:flex;flex-direction:column;z-index:1000;
 }
@@ -42,542 +42,325 @@ a{text-decoration:none;}
 #logoutBtn{width:100%;border:none;padding:14px;border-radius:14px;background:#1d2638;color:#ff9b9b;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:auto;}
 #logoutBtn:hover{background:#26344a;}
 
-/* PAGE */
-.orders-page{margin-left:260px;min-height:100vh;padding:40px;}
-.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:30px;}
-.page-header .ph-left{display:flex;align-items:center;gap:16px;}
-.page-header h1{font-size:32px;}
-.page-header p{margin-top:6px;color:var(--muted);}
-.header-actions{display:flex;gap:12px;}
-.burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
+/* CHAT MAIN */
+.chat-main{
+    margin-left:260px;width:calc(100% - 260px);height:100vh;
+    display:flex;flex-direction:column;overflow:hidden;
+    background:#eef1f6;
+}
 
-/* BUTTONS */
-.primary-btn,.secondary-btn,.btn{border:none;padding:14px 22px;border-radius:14px;cursor:pointer;font-size:15px;font-weight:700;transition:.25s;font-family:inherit;}
-.primary-btn,.btn-primary{background:var(--primary);color:#111;}
-.primary-btn:hover,.btn-primary:hover{background:var(--primary-dark);}
-.secondary-btn{background:#111;color:white;}
-.secondary-btn:hover{transform:translateY(-2px);}
+.chat-header{
+    flex-shrink:0;background:white;border-bottom:1px solid var(--border);
+    padding:18px 28px;display:flex;align-items:center;gap:16px;min-height:84px;
+}
+.burger{display:none;background:none;border:none;font-size:26px;cursor:pointer;color:#111;}
+.chat-user{display:flex;align-items:center;gap:14px;}
+.avatar{
+    width:52px;height:52px;border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),#ffe1a2);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:18px;color:#111;
+}
+.chat-user h3{font-size:18px;}
+.chat-user p{color:var(--muted);font-size:14px;}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:5px;}
 
-/* FILTERS */
-.filters{display:flex;gap:14px;margin-bottom:28px;}
-.filters input,.filters select{background:white;border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-family:inherit;font-size:15px;}
-.filters input{flex:1;}
+/* MESSAGES */
+.messages-container{
+    flex:1;min-height:0;overflow-y:auto;padding:28px;
+    display:flex;flex-direction:column;gap:12px;
+}
+.message{
+    max-width:68%;padding:13px 17px;border-radius:18px;line-height:1.5;
+    word-break:break-word;box-shadow:0 3px 12px rgba(0,0,0,.05);
+}
+.message.client{align-self:flex-end;background:var(--primary);color:#111;border-bottom-right-radius:6px;}
+.message.manager{align-self:flex-start;background:white;border-bottom-left-radius:6px;}
+.message-time{font-size:11px;opacity:.6;margin-top:7px;text-align:right;}
+.chat-image{margin-top:8px;max-width:240px;border-radius:14px;display:block;}
+.file-box{margin-top:8px;background:rgba(255,255,255,.45);padding:10px;border-radius:12px;}
+.file-box a{color:#1f5eff;font-weight:600;}
+.message.client .file-box a{color:#7a4a00;}
+.empty-chat{margin:auto;color:#8a95a5;font-size:17px;text-align:center;}
 
-/* STAT STRIP */
-.stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:30px;}
-.stat-mini{background:white;border-radius:18px;padding:20px;box-shadow:var(--shadow);}
-.stat-mini b{font-size:28px;display:block;}
-.stat-mini span{color:var(--muted);font-size:14px;}
-.stat-mini.new b{color:var(--accent);}
-.stat-mini.work b{color:#2563c0;}
-.stat-mini.done b{color:var(--success);}
+/* INPUT */
+.file-preview{flex-shrink:0;background:white;padding:0 24px;color:#555;font-size:14px;}
+.file-preview:not(:empty){padding:12px 24px;border-top:1px solid var(--border);}
+.chat-input{
+    flex-shrink:0;background:white;border-top:1px solid var(--border);
+    padding:16px 20px;display:flex;align-items:center;gap:12px;
+}
+.chat-input input[type=text]{
+    flex:1;border:none;background:#f4f7fb;border-radius:16px;
+    padding:16px;font-family:inherit;font-size:15px;
+}
+.chat-input input[type=text]:focus{outline:none;box-shadow:0 0 0 3px rgba(255,181,71,.2);}
+.attach-btn,#voiceBtn,#sendBtn{
+    width:52px;height:52px;border:none;border-radius:16px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:20px;transition:.25s;
+}
+.attach-btn{background:#eef4ff;}
+#voiceBtn{background:#eef4ff;}
+#voiceBtn.recording{background:#ffe3e3;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+#sendBtn{background:var(--primary);}
+#sendBtn:hover{background:var(--primary-dark);}
+.attach-btn:hover,#voiceBtn:hover{transform:translateY(-2px);}
 
-/* GRID */
-.orders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px;}
-.order-card{background:white;border-radius:24px;padding:24px;box-shadow:var(--shadow);transition:.25s;border:2px solid transparent;}
-.order-card:hover{transform:translateY(-5px);border-color:var(--primary);}
-.order-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:10px;}
-.order-number{font-size:18px;font-weight:700;}
-.order-status{padding:7px 13px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;}
-.status-new{background:#fff4d8;color:#d48806;}
-.status-work{background:#eef4ff;color:#2563c0;}
-.status-done{background:#eafaf0;color:var(--success);}
-.status-cancel{background:#ffecec;color:var(--danger);}
-.order-info{display:flex;flex-direction:column;gap:10px;}
-.order-row{display:flex;justify-content:space-between;gap:10px;}
-.order-label{color:var(--muted);}
-.order-value{font-weight:600;text-align:right;}
-.order-footer{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-.order-price{font-size:22px;font-weight:800;color:var(--accent);}
-.empty-orders{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--muted);}
-.empty-orders h3{font-size:22px;margin-bottom:8px;color:var(--text);}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:#d6dce5;border-radius:20px;}
 
-/* MODAL */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:9999;padding:20px;}
-.modal.open{display:flex;}
-.modal-content{width:100%;max-width:520px;background:white;border-radius:26px;padding:34px;box-shadow:0 25px 60px rgba(0,0,0,.2);max-height:92vh;overflow-y:auto;position:relative;}
-.modal-content h2{margin-bottom:22px;font-size:28px;}
-.close-x{position:absolute;top:20px;right:20px;width:40px;height:40px;border:none;background:#f3f3f3;border-radius:50%;font-size:20px;cursor:pointer;}
-.form-group{margin-bottom:16px;}
-.form-group label{display:block;margin-bottom:8px;font-weight:600;}
-.form-group input,.form-group select{width:100%;padding:14px;border:1px solid var(--border);border-radius:14px;font-family:inherit;font-size:15px;}
-.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary);}
-.calc-result{margin:20px 0;padding:22px;border-radius:18px;background:#fff4df;text-align:center;}
-.calc-result span{color:var(--muted);display:block;margin-bottom:6px;}
-.calc-result b{font-size:32px;color:var(--accent);}
-.btn-full{width:100%;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
+.overlay.show{display:block;}
 
-/* OVERLAY */
 @media(max-width:1100px){
     .sidebar{transform:translateX(-100%);transition:.3s;}
     .sidebar.open{transform:translateX(0);}
-    .orders-page{margin-left:0;padding:24px;}
+    .chat-main{margin-left:0;width:100%;}
     .burger{display:block;}
 }
 @media(max-width:768px){
-    .page-header{flex-direction:column;align-items:flex-start;}
-    .header-actions{width:100%;}
-    .primary-btn,.secondary-btn{flex:1;}
-    .filters{flex-direction:column;}
-    .orders-grid{grid-template-columns:1fr;}
+    .message{max-width:85%;}
 }
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
-.overlay.show{display:block;}
 </style>
 </head>
 
 <body>
 
-<aside class="sidebar" id="sidebar">
-    <div class="logo">
-        <h2>BuildHouse</h2>
-        <p>Личный кабинет</p>
-    </div>
-    <nav class="menu">
-        <a href="client-cabinet.html"><span class="m-ic">🏠</span> Главная</a>
-        <a class="active"><span class="m-ic">📦</span> Заказы</a>
-        <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
-        <a href="calendar.html"><span class="m-ic">📅</span> Календарь</a>
-        <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
-        <a href="settings.html"><span class="m-ic">⚙️</span> Настройки</a>
-    </nav>
-    <button id="logoutBtn">Выйти</button>
-</aside>
+<div class="dashboard">
 
-<div class="overlay" id="overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>BuildHouse</h2>
+            <p>Личный кабинет</p>
+        </div>
+        <nav class="menu">
+            <a href="client-cabinet.html"><span class="m-ic">🏠</span> Главная</a>
+            <a href="orders.html"><span class="m-ic">📦</span> Заказы</a>
+            <a class="active"><span class="m-ic">💬</span> Сообщения</a>
+            <a href="calendar.html"><span class="m-ic">📅</span> Календарь</a>
+            <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
+            <a href="settings.html"><span class="m-ic">⚙️</span> Настройки</a>
+        </nav>
+        <button id="logoutBtn">Выйти</button>
+    </aside>
 
-<main class="orders-page">
+    <div class="overlay" id="overlay"></div>
 
-    <div class="page-header">
-        <div class="ph-left">
+    <main class="chat-main">
+
+        <div class="chat-header">
             <button class="burger" id="burger">☰</button>
-            <div>
-                <h1>Мои заказы</h1>
-                <p>Управление заявками и ремонтными работами</p>
-            </div>
-        </div>
-        <div class="header-actions">
-            <button id="newOrderBtn" class="primary-btn">+ Подать заявку</button>
-            <button id="calculatorBtn" class="secondary-btn">Рассчитать стоимость</button>
-        </div>
-    </div>
-
-    <div class="stat-strip">
-        <div class="stat-mini new"><b id="cntNew">0</b><span>Новые / в обработке</span></div>
-        <div class="stat-mini work"><b id="cntWork">0</b><span>В работе</span></div>
-        <div class="stat-mini done"><b id="cntDone">0</b><span>Завершённые</span></div>
-        <div class="stat-mini"><b id="cntAll">0</b><span>Всего заказов</span></div>
-    </div>
-
-    <div class="filters">
-        <input type="text" id="searchInput" placeholder="Поиск заказа...">
-        <select id="statusFilter">
-            <option value="all">Все статусы</option>
-            <option value="Новая заявка">Новые / в обработке</option>
-            <option value="В работе">В работе</option>
-            <option value="Завершён">Завершённые</option>
-            <option value="Отменён">Отменённые</option>
-        </select>
-    </div>
-
-    <div id="ordersList" class="orders-grid"></div>
-
-</main>
-
-
-<!-- МОДАЛКА ЗАЯВКИ -->
-<div id="orderModal" class="modal">
-    <div class="modal-content">
-        <button class="close-x" data-close>✕</button>
-        <h2>Подать заявку</h2>
-        <div class="form-group">
-            <label>Вид работ</label>
-            <input type="text" id="orderTitle" placeholder="Например: ремонт квартиры">
-        </div>
-        <div class="form-group">
-            <label>Адрес объекта</label>
-            <input type="text" id="orderAddress" placeholder="Введите адрес">
-        </div>
-        <div class="form-group">
-            <label>Комментарий (необязательно)</label>
-            <input type="text" id="orderComment" placeholder="Пожелания, детали">
-        </div>
-        <button id="createOrderBtn" class="btn btn-primary btn-full">Отправить заявку</button>
-    </div>
-</div>
-
-
-<!-- МОДАЛКА КАЛЬКУЛЯТОРА -->
-<div id="calculatorModal" class="modal">
-    <div class="modal-content">
-        <button class="close-x" data-close>✕</button>
-        <h2>Калькулятор ремонта</h2>
-
-        <div class="form-group">
-            <label>Площадь помещения (м²)</label>
-            <input type="number" id="calcArea" value="50" min="1">
-        </div>
-
-        <div class="form-group">
-            <label>Тип помещения</label>
-            <select id="calcRoom">
-                <option value="1">Квартира</option>
-                <option value="1.2">Дом</option>
-                <option value="1.1">Офис</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Вид работ</label>
-            <select id="calcService">
-                <option value="full">Комплексный ремонт</option>
-                <option value="wallpaper">Поклейка обоев</option>
-                <option value="painting">Покраска стен</option>
-                <option value="tile">Укладка плитки</option>
-                <option value="laminate">Укладка ламината</option>
-                <option value="ceiling">Натяжной потолок</option>
-                <option value="electric">Электромонтаж</option>
-                <option value="plumbing">Сантехнические работы</option>
-                <option value="bathroom">Ремонт ванной</option>
-                <option value="kitchen">Ремонт кухни</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Тип ремонта</label>
-            <select id="calcType">
-                <option value="7000">Косметический</option>
-                <option value="12000">Капитальный</option>
-                <option value="18000">Дизайнерский</option>
-            </select>
-        </div>
-
-        <div class="calc-result">
-            <span>Примерная стоимость:</span>
-            <b id="calcResult">0 ₽</b>
-        </div>
-
-        <button id="calcOrderBtn" class="btn btn-primary btn-full">Оформить заявку по расчёту</button>
-    </div>
-</div>
-
-
-<!-- МОДАЛКА ОТЗЫВА -->
-<div id="reviewModal" class="modal">
-    <div class="modal-content">
-        <button class="close-x" data-close>✕</button>
-        <h2>Оставить отзыв</h2>
-        <p style="color:var(--muted);margin-bottom:20px;" id="reviewForOrder">О выполненном заказе</p>
-
-        <div class="form-group">
-            <label>Ваша оценка</label>
-            <div id="starsInput" style="display:flex;gap:8px;font-size:36px;cursor:pointer;">
-                <span class="rstar" data-value="1" style="color:#ddd;transition:.15s;">★</span>
-                <span class="rstar" data-value="2" style="color:#ddd;transition:.15s;">★</span>
-                <span class="rstar" data-value="3" style="color:#ddd;transition:.15s;">★</span>
-                <span class="rstar" data-value="4" style="color:#ddd;transition:.15s;">★</span>
-                <span class="rstar" data-value="5" style="color:#ddd;transition:.15s;">★</span>
+            <div class="chat-user">
+                <div class="avatar">M</div>
+                <div>
+                    <h3>Менеджер проекта</h3>
+                    <p><span class="status-dot"></span>BuildHouse · на связи</p>
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Ваш отзыв</label>
-            <input type="text" id="reviewText" placeholder="Поделитесь впечатлением о ремонте">
+        <div id="messagesContainer" class="messages-container">
+            <div class="empty-chat">Загрузка сообщений...</div>
         </div>
 
-        <button id="sendReviewBtn" class="btn btn-primary btn-full">Опубликовать отзыв</button>
-    </div>
+        <div id="filePreview" class="file-preview"></div>
+
+        <div class="chat-input">
+            <label class="attach-btn">
+                📎
+                <input type="file" id="fileInput" hidden>
+            </label>
+            <input type="text" id="messageInput" placeholder="Введите сообщение...">
+            <button id="voiceBtn" title="Голосовое">🎤</button>
+            <button id="sendBtn" title="Отправить">➤</button>
+        </div>
+
+    </main>
+
 </div>
 
 
 <script type="module">
 import { auth, db } from "../js/firebase.js";
 import {
-    collection, getDocs, addDoc, doc, updateDoc, query, where
+    collection, query, orderBy, onSnapshot, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-    onAuthStateChanged, signOut
+    signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const $ = (id) => document.getElementById(id);
+/* ===== БЕСПЛАТНОЕ ХРАНЕНИЕ ===== */
+const IMGBB_KEY="bd8a728ac270a8d6fecbd03734d77c8e";
+const MAX_INLINE=700*1024;
+function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+const blobToBase64=fileToBase64;
+// сжимаем фото в компактный base64 для хранения прямо в базе
+function compressImage(file,maxW=900,quality=0.6){
+    return new Promise((resolve,reject)=>{
+        const img=new Image();
+        const url=URL.createObjectURL(file);
+        img.onload=()=>{
+            URL.revokeObjectURL(url);
+            let w=img.width,h=img.height;
+            if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+            const canvas=document.createElement("canvas");
+            canvas.width=w;canvas.height=h;
+            canvas.getContext("2d").drawImage(img,0,0,w,h);
+            let q=quality, dataUrl=canvas.toDataURL("image/jpeg",q);
+            // если всё ещё крупно для базы — дожимаем
+            while(dataUrl.length>900*1024 && q>0.3){ q-=0.1; dataUrl=canvas.toDataURL("image/jpeg",q); }
+            resolve(dataUrl);
+        };
+        img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Не удалось прочитать изображение"));};
+        img.src=url;
+    });
+}
 
-const ordersList = $("ordersList");
-const searchInput = $("searchInput");
-const statusFilter = $("statusFilter");
+const messagesContainer = document.getElementById("messagesContainer");
+const sendBtn = document.getElementById("sendBtn");
+const messageInput = document.getElementById("messageInput");
+const fileInput = document.getElementById("fileInput");
+const filePreview = document.getElementById("filePreview");
+const voiceBtn = document.getElementById("voiceBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
 let currentUser = null;
-let currentName = "Клиент";
-let allOrders = [];
+let selectedFile = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
 
-/* ===== БУРГЕР ===== */
-const sidebar=$("sidebar"), overlay=$("overlay");
-$("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
+/* БУРГЕР */
+const sidebar=document.getElementById("sidebar"), overlay=document.getElementById("overlay");
+document.getElementById("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
 overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
 
-/* ===== МОДАЛКИ ===== */
-function openModal(m){m.classList.add("open");}
-function closeModal(m){m.classList.remove("open");}
-const orderModal=$("orderModal"), calcModal=$("calculatorModal");
-$("newOrderBtn").addEventListener("click",()=>openModal(orderModal));
-$("calculatorBtn").addEventListener("click",()=>{calcPrice();openModal(calcModal);});
-document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",e=>closeModal(e.target.closest(".modal"))));
-window.addEventListener("click",e=>{if(e.target===orderModal)closeModal(orderModal);if(e.target===calcModal)closeModal(calcModal);});
-
-/* ===== LOGOUT ===== */
-$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="../login.html";});
-
-/* ===== AUTH ===== */
-onAuthStateChanged(auth,async(user)=>{
+/* AUTH */
+onAuthStateChanged(auth,(user)=>{
     if(!user){window.location.href="../login.html";return;}
     currentUser=user;
-    try{
-        const us=await getDocs(query(collection(db,"users"),where("uid","==",user.uid)));
-        us.forEach(d=>{currentName=d.data().name||"Клиент";});
-    }catch(e){}
-    loadOrders();
+    loadMessages(user.uid);
 });
 
-/* ===== ЗАГРУЗКА ЗАКАЗОВ ===== */
-async function loadOrders(){
-    try{
-        const snap=await getDocs(collection(db,"projects"));
-        allOrders=[];
-        snap.forEach(d=>{
-            const data=d.data();
-            // поддержка разных полей: uid / userId / clientUid
-            const owner=data.uid||data.userId||data.clientUid;
-            if(owner===currentUser.uid){
-                allOrders.push({id:d.id,...data});
-            }
+/* LOGOUT */
+logoutBtn?.addEventListener("click",async()=>{await signOut(auth);window.location.href="../login.html";});
+
+/* LOAD MESSAGES */
+function loadMessages(uid){
+    const messagesRef=query(collection(db,"messages",uid,"items"),orderBy("time","asc"));
+    onSnapshot(messagesRef,(snapshot)=>{
+        messagesContainer.innerHTML="";
+        if(snapshot.empty){
+            messagesContainer.innerHTML='<div class="empty-chat">Сообщений пока нет.<br>Напишите менеджеру — он ответит здесь.</div>';
+            return;
+        }
+        // собираем и сортируем сами по времени (надёжно: serverTime или clientTime)
+        const msgs=[];
+        snapshot.forEach((docSnap)=>{
+            const m=docSnap.data();
+            let t=m.time?.toMillis?m.time.toMillis():(m.time?.seconds?m.time.seconds*1000:null);
+            if(t==null)t=m.clientTime||null; // пока сервер не проставил — берём время отправки
+            msgs.push({m,t});
         });
-        allOrders.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-        updateStats();
-        filterOrders();
-    }catch(e){
-        console.error("Ошибка загрузки:",e);
-        ordersList.innerHTML='<div class="empty-orders"><h3>Ошибка загрузки</h3><p>Попробуйте обновить страницу</p></div>';
-    }
+        msgs.sort((a,b)=>{
+            const ta=a.t==null?Date.now()+1:a.t;
+            const tb=b.t==null?Date.now()+1:b.t;
+            return ta-tb;
+        });
+        msgs.forEach(({m,t})=>{
+            const div=document.createElement("div");
+            div.className=`message ${m.sender==="client"?"client":"manager"}`;
+            let html="";
+            if(m.text) html+=`<div class="message-text">${m.text}</div>`;
+            if(m.imageUrl) html+=`<img src="${m.imageUrl}" class="chat-image" alt="Изображение">`;
+            if(m.fileUrl && !m.imageUrl) html+=`<div class="file-box"><a href="${m.fileUrl}" target="_blank">📎 ${m.fileName||"Файл"}</a></div>`;
+            if(m.voiceUrl) html+=`<audio controls style="margin-top:8px;max-width:240px;"><source src="${m.voiceUrl}"></audio>`;
+            const dt=t?new Date(t):new Date();
+            html+=`<div class="message-time">${dt.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>`;
+            div.innerHTML=html;
+            messagesContainer.appendChild(div);
+        });
+        messagesContainer.scrollTop=messagesContainer.scrollHeight;
+    },(error)=>{console.error("Ошибка Firestore:",error);});
 }
 
-function normStatus(s){
-    if(s==="В работе")return "В работе";
-    if(s==="Завершён"||s==="Завершен")return "Завершён";
-    if(s==="Отменён"||s==="Отменен"||s==="cancelled")return "Отменён";
-    return "Новая заявка";
-}
-function statusClass(s){
-    const n=normStatus(s);
-    if(n==="В работе")return "status-work";
-    if(n==="Завершён")return "status-done";
-    if(n==="Отменён")return "status-cancel";
-    return "status-new";
-}
-
-function updateStats(){
-    let n=0,w=0,d=0;
-    allOrders.forEach(o=>{
-        const s=normStatus(o.status);
-        if(s==="В работе")w++;
-        else if(s==="Завершён")d++;
-        else if(s==="Новая заявка")n++;
+/* FILE SELECT */
+fileInput?.addEventListener("change",()=>{
+    selectedFile=fileInput.files[0];
+    if(!selectedFile)return;
+    filePreview.innerHTML=`📎 ${selectedFile.name} <span style="color:#999;cursor:pointer;" id="clearFile">✕</span>`;
+    document.getElementById("clearFile")?.addEventListener("click",()=>{
+        selectedFile=null;fileInput.value="";filePreview.innerHTML="";
     });
-    $("cntNew").textContent=n;
-    $("cntWork").textContent=w;
-    $("cntDone").textContent=d;
-    $("cntAll").textContent=allOrders.length;
-}
+});
 
-/* ===== РЕНДЕР ===== */
-function renderOrders(orders){
-    ordersList.innerHTML="";
-    if(!orders.length){
-        ordersList.innerHTML='<div class="empty-orders"><h3>Заказов пока нет</h3><p>Подайте первую заявку — она появится здесь</p></div>';
-        return;
-    }
-    orders.forEach((o,i)=>{
-        const st=normStatus(o.status);
-        const date=o.createdAt?new Date(o.createdAt).toLocaleDateString("ru-RU"):"—";
-        const card=document.createElement("div");
-        card.className="order-card";
+/* SEND */
+sendBtn?.addEventListener("click",async()=>{
+    if(!currentUser)return;
+    const text=messageInput.value.trim();
+    if(!text && !selectedFile)return;
 
-        // блок отзыва только для завершённых
-        let reviewBlock="";
-        if(st==="Завершён"){
-            if(o.reviewed){
-                reviewBlock=`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);color:var(--success);font-weight:700;">✓ Спасибо за отзыв!</div>`;
+    let fileUrl="",imageUrl="",fileName="";
+    try{
+        if(selectedFile){
+            const isImage=selectedFile.type.startsWith("image/");
+            if(isImage){
+                sendBtn.disabled=true;
+                imageUrl=await compressImage(selectedFile); // сжатое фото прямо в базу
+                sendBtn.disabled=false;
             }else{
-                reviewBlock=`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);"><button class="btn btn-primary btn-full review-btn" data-id="${o.id}" data-service="${(o.service||o.title||"заказ").replace(/"/g,'')}">★ Оставить отзыв</button></div>`;
+                if(selectedFile.size>MAX_INLINE){
+                    alert("Файл слишком большой (макс. ~700 КБ).");
+                    return;
+                }
+                fileUrl=await fileToBase64(selectedFile);
+                fileName=selectedFile.name;
             }
         }
-
-        card.innerHTML=`
-            <div class="order-top">
-                <div class="order-number">${o.service||o.title||"Заказ"}</div>
-                <div class="order-status ${statusClass(o.status)}">${st}</div>
-            </div>
-            <div class="order-info">
-                <div class="order-row"><span class="order-label">Адрес</span><span class="order-value">${o.address||"—"}</span></div>
-                <div class="order-row"><span class="order-label">Дата заявки</span><span class="order-value">${date}</span></div>
-                <div class="order-row"><span class="order-label">Менеджер</span><span class="order-value">${o.manager||"назначается"}</span></div>
-            </div>
-            <div class="order-footer">
-                <span class="order-label">Стоимость</span>
-                <span class="order-price">${o.budget?Number(o.budget).toLocaleString("ru-RU")+" ₽":"уточняется"}</span>
-            </div>
-            ${reviewBlock}`;
-        ordersList.appendChild(card);
-    });
-
-    // навешиваем обработчики на кнопки отзыва
-    document.querySelectorAll(".review-btn").forEach(btn=>{
-        btn.addEventListener("click",()=>openReview(btn.dataset.id,btn.dataset.service));
-    });
-}
-
-/* ===== ФИЛЬТР ===== */
-function filterOrders(){
-    const search=searchInput.value.toLowerCase();
-    const status=statusFilter.value;
-    const filtered=allOrders.filter(o=>{
-        const text=((o.service||o.title||"")+" "+(o.address||"")).toLowerCase();
-        const searchMatch=text.includes(search);
-        const statusMatch=status==="all"||normStatus(o.status)===status;
-        return searchMatch&&statusMatch;
-    });
-    renderOrders(filtered);
-}
-searchInput.addEventListener("input",filterOrders);
-statusFilter.addEventListener("change",filterOrders);
-
-/* ===== СОЗДАНИЕ ЗАЯВКИ ===== */
-$("createOrderBtn").addEventListener("click",async()=>{
-    const title=$("orderTitle").value.trim();
-    const address=$("orderAddress").value.trim();
-    const comment=$("orderComment").value.trim();
-    if(!title||!address){alert("Заполните вид работ и адрес");return;}
-    try{
-        await addDoc(collection(db,"projects"),{
-            uid:currentUser.uid,
-            clientName:currentName,
-            service:title,
-            address:address,
-            comment:comment,
-            status:"Новая заявка",
-            budget:0,
-            createdAt:Date.now()
+        await addDoc(collection(db,"messages",currentUser.uid,"items"),{
+            text,sender:"client",fileUrl,imageUrl,fileName,read:false,time:serverTimestamp(),clientTime:Date.now()
         });
-        $("orderTitle").value="";
-        $("orderAddress").value="";
-        $("orderComment").value="";
-        closeModal(orderModal);
-        alert("Заявка отправлена!");
-        loadOrders();
-    }catch(e){alert("Ошибка: "+e.message);}
+        messageInput.value="";fileInput.value="";filePreview.innerHTML="";selectedFile=null;
+    }catch(e){sendBtn.disabled=false;alert("Ошибка отправки: "+e.message);}
 });
 
-/* ===== КАЛЬКУЛЯТОР ===== */
-const rates={full:0,wallpaper:450,painting:550,tile:2200,laminate:900,ceiling:1200,electric:1500,plumbing:1800,bathroom:18000,kitchen:14000};
-function calcPrice(){
-    const area=Number($("calcArea").value)||0;
-    const room=parseFloat($("calcRoom").value);
-    const service=$("calcService").value;
-    let total;
-    if(service==="full"){
-        total=area*Number($("calcType").value)*room;
-    }else{
-        total=area*rates[service]*room;
+/* ENTER */
+messageInput?.addEventListener("keydown",(e)=>{if(e.key==="Enter"){e.preventDefault();sendBtn.click();}});
+
+/* VOICE — клик старт / клик стоп */
+voiceBtn?.addEventListener("click",async()=>{
+    if(!currentUser)return;
+    if(isRecording){
+        mediaRecorder.stop();
+        isRecording=false;
+        voiceBtn.classList.remove("recording");
+        return;
     }
-    $("calcResult").textContent=Math.round(total).toLocaleString("ru-RU")+" ₽";
-    return Math.round(total);
-}
-["calcArea","calcRoom","calcService","calcType"].forEach(id=>{
-    $(id).addEventListener("input",calcPrice);
-    $(id).addEventListener("change",calcPrice);
-});
-
-/* заявка из калькулятора */
-$("calcOrderBtn").addEventListener("click",async()=>{
-    const total=calcPrice();
-    const serviceNames={full:"Комплексный ремонт",wallpaper:"Поклейка обоев",painting:"Покраска стен",tile:"Укладка плитки",laminate:"Укладка ламината",ceiling:"Натяжной потолок",electric:"Электромонтаж",plumbing:"Сантехнические работы",bathroom:"Ремонт ванной",kitchen:"Ремонт кухни"};
-    const service=serviceNames[$("calcService").value];
-    const area=$("calcArea").value;
     try{
-        await addDoc(collection(db,"projects"),{
-            uid:currentUser.uid,
-            clientName:currentName,
-            service:service+" ("+area+" м²)",
-            address:"",
-            comment:"Заявка из калькулятора. Предв. расчёт: "+total.toLocaleString("ru-RU")+" ₽",
-            status:"Новая заявка",
-            budget:total,
-            createdAt:Date.now()
-        });
-        closeModal(calcModal);
-        alert("Заявка по расчёту отправлена!");
-        loadOrders();
-    }catch(e){alert("Ошибка: "+e.message);}
+        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+        mediaRecorder=new MediaRecorder(stream);
+        audioChunks=[];
+        mediaRecorder.ondataavailable=(e)=>audioChunks.push(e.data);
+        mediaRecorder.onstop=async()=>{
+            const blob=new Blob(audioChunks,{type:"audio/webm"});
+            try{
+                if(blob.size>MAX_INLINE){
+                    alert("Голосовое слишком длинное (макс. ~30-40 сек). Запишите покороче.");
+                }else{
+                    const voiceUrl=await blobToBase64(blob);
+                    await addDoc(collection(db,"messages",currentUser.uid,"items"),{
+                        sender:"client",voiceUrl,read:false,time:serverTimestamp(),clientTime:Date.now()
+                    });
+                }
+            }catch(e){alert("Ошибка записи: "+e.message);}
+            stream.getTracks().forEach(t=>t.stop());
+        };
+        mediaRecorder.start();
+        isRecording=true;
+        voiceBtn.classList.add("recording");
+    }catch(e){alert("Нет доступа к микрофону");}
 });
-
-
-/* ===== ОТЗЫВ О ЗАВЕРШЁННОМ ЗАКАЗЕ ===== */
-const reviewModal=$("reviewModal");
-let reviewRating=5;
-let reviewOrderId=null;
-
-function paintStars(v){
-    document.querySelectorAll("#starsInput .rstar").forEach(s=>{
-        s.style.color=Number(s.dataset.value)<=v?"#ffb547":"#ddd";
-    });
-}
-document.querySelectorAll("#starsInput .rstar").forEach(s=>{
-    s.addEventListener("click",()=>{reviewRating=Number(s.dataset.value);paintStars(reviewRating);});
-    s.addEventListener("mouseover",()=>paintStars(Number(s.dataset.value)));
-});
-$("starsInput").addEventListener("mouseleave",()=>paintStars(reviewRating));
-
-function openReview(orderId,service){
-    reviewOrderId=orderId;
-    reviewRating=5;
-    paintStars(5);
-    $("reviewText").value="";
-    $("reviewForOrder").textContent="О заказе: "+service;
-    openModal(reviewModal);
-}
-window.addEventListener("click",e=>{if(e.target===reviewModal)closeModal(reviewModal);});
-
-$("sendReviewBtn").addEventListener("click",async()=>{
-    const text=$("reviewText").value.trim();
-    if(!text){alert("Напишите текст отзыва");return;}
-    if(!reviewOrderId)return;
-
-    const btn=$("sendReviewBtn");
-    btn.disabled=true;
-    btn.textContent="Публикуем...";
-
-    try{
-        // 1) публикуем отзыв в reviews (его читает сайт и страница отзывов)
-        await addDoc(collection(db,"reviews"),{
-            uid:currentUser.uid,
-            name:currentName,
-            text:text,
-            rating:reviewRating,
-            photoURL:"",
-            orderId:reviewOrderId,
-            createdAt:Date.now()
-        });
-        // 2) помечаем заказ, чтобы кнопка больше не появлялась
-        await updateDoc(doc(db,"projects",reviewOrderId),{reviewed:true});
-
-        closeModal(reviewModal);
-        alert("Спасибо! Ваш отзыв опубликован на сайте.");
-        loadOrders();
-    }catch(e){
-        alert("Ошибка: "+e.message);
-    }
-    btn.disabled=false;
-    btn.textContent="Опубликовать отзыв";
-});
-
 </script>
 
 <script type="module">
