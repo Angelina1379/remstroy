@@ -221,7 +221,7 @@ a{text-decoration:none;}
 
 
 <script type="module">
-import { auth, db } from "./js/firebase.js";
+import { auth, db } from "../js/firebase.js";
 import {
     onAuthStateChanged, signOut, updateEmail, updatePassword, deleteUser
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -238,13 +238,13 @@ $("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.
 overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
 
 /* LOGOUT (две кнопки) */
-async function doLogout(){await signOut(auth);window.location.href="login.html";}
+async function doLogout(){await signOut(auth);window.location.href="../login.html";}
 $("logoutBtnSide").addEventListener("click",doLogout);
 $("logoutBtn").addEventListener("click",doLogout);
 
 /* AUTH + профиль */
 onAuthStateChanged(auth,async(user)=>{
-    if(!user){window.location.href="login.html";return;}
+    if(!user){window.location.href="../login.html";return;}
     currentUser=user;
 
     let name="Клиент";
@@ -350,7 +350,7 @@ $("deleteBtn").addEventListener("click",async()=>{
         // удаляем аккаунт из Authentication
         await deleteUser(currentUser);
         alert("Аккаунт удалён");
-        window.location.href="index.html";
+        window.location.href="../login.html";
     }catch(e){
         if(e.code==="auth/requires-recent-login"){
             alert("Для удаления нужно заново войти. Выйдите и зайдите снова, затем повторите.");
@@ -361,5 +361,22 @@ $("deleteBtn").addEventListener("click",async()=>{
 });
 </script>
 
+<script type="module">
+// Страховка выхода — срабатывает независимо от основного скрипта
+import { auth } from "../js/firebase.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+function bindLogout(){
+  document.querySelectorAll('#logoutBtn,#logoutBtnSide,[data-logout]').forEach(btn=>{
+    if(btn.dataset.lg)return; btn.dataset.lg="1";
+    btn.addEventListener("click",async(e)=>{
+      e.preventDefault();
+      try{ await signOut(auth); }catch(err){}
+      window.location.href="../login.html";
+    });
+  });
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",bindLogout);
+else bindLogout();
+</script>
 </body>
 </html>
