@@ -100,6 +100,21 @@ a{text-decoration:none;}
 .btn-save{background:#111;color:white;}
 .hint{color:var(--muted);font-size:13px;margin-top:4px;}
 
+/* СПИСОК ДОКУМЕНТОВ КЛИЕНТА */
+.cdoc{display:flex;align-items:center;gap:14px;background:#f8fafc;border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.cdoc .cd-ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:#fff3df;}
+.cdoc .cd-body{flex:1;min-width:0;}
+.cdoc .cd-title{font-weight:600;font-size:14px;}
+.cdoc .cd-sub{color:var(--muted);font-size:12px;margin-top:2px;}
+.cdoc .cd-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;}
+.cb-est{background:#fff3df;color:#a86500;}.cb-con{background:#eef4ff;color:#2563c0;}.cb-act{background:#eafaf0;color:#1e7c3a;}.cb-oth{background:#eee;color:#555;}
+.cdoc .cd-paid{font-size:11px;font-weight:700;}
+.paid-yes{color:#1e7c3a;}.paid-no{color:#c0392b;}
+.cd-btns{display:flex;gap:8px;flex-shrink:0;}
+.cd-edit,.cd-del{border:none;padding:8px 12px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;}
+.cd-edit{background:var(--primary);color:#111;}
+.cd-del{background:#fdecea;color:#ef4444;}
+
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
 .overlay.show{display:block;}
 ::-webkit-scrollbar{width:8px;}::-webkit-scrollbar-thumb{background:#d6dce5;border-radius:20px;}
@@ -144,7 +159,7 @@ a{text-decoration:none;}
                 <button class="burger" id="burger">☰</button>
                 <div>
                     <h1>Документы</h1>
-                    <p>Авто-создание сметы, договора и акта</p>
+                    <p>Авто-создание сметы, договора и акта — менеджер вводит минимум</p>
                 </div>
             </div>
             <div class="manager-card">
@@ -210,13 +225,20 @@ a{text-decoration:none;}
 
                 <div class="panel">
                     <h2>Формирование документов</h2>
-                    <p class="hint" style="margin-bottom:18px;">Выберите клиента и состав работ — документы соберутся автоматически.</p>
+                    <p class="hint" id="editHint" style="margin-bottom:18px;">Выберите клиента и состав работ — документы соберутся автоматически.</p>
                     <div class="doc-actions">
                         <button class="doc-btn btn-estimate" id="estimateBtn">🧮 Смета (Word)</button>
                         <button class="doc-btn btn-contract" id="contractBtn">📑 Договор (Word)</button>
                         <button class="doc-btn btn-act" id="actBtn">✅ Акт (Word)</button>
                         <button class="doc-btn btn-save" id="saveBtn">💾 Сохранить клиенту</button>
+                        <button class="doc-btn" id="newDocBtn" style="background:#f5f6fa;color:#555;display:none;">＋ Новый документ</button>
                     </div>
+                </div>
+
+                <!-- ДОКУМЕНТЫ КЛИЕНТА -->
+                <div class="panel" id="clientDocsPanel" style="display:none;">
+                    <h2>Документы клиента</h2>
+                    <div id="clientDocsList"></div>
                 </div>
 
             </div>
@@ -230,7 +252,7 @@ a{text-decoration:none;}
 import { auth, db } from "../js/firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-    collection, getDocs, getDoc, doc, addDoc
+    collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $ = (id)=>document.getElementById(id);
@@ -238,6 +260,8 @@ const $ = (id)=>document.getElementById(id);
 let managerName="Менеджер";
 let clients=[];
 let currentClient=null;
+let editingDocId=null;
+let clientDocs=[];
 
 /* СРЕДНИЕ РАСЦЕНКИ за м² (базовые, косметический класс) */
 const WORKS=[
@@ -311,7 +335,9 @@ function renderClients(){
             currentClient=c;
             $("clientName").value=c.name||"";
             $("clientPhone").value=c.phone||"";
+            editingDocId=null;
             renderClients();
+            loadClientDocs();
         });
         wrap.appendChild(div);
     });
@@ -641,6 +667,109 @@ $("estimateBtn").addEventListener("click",()=>{if(validate())buildEstimate();});
 $("contractBtn").addEventListener("click",()=>{if(validate())buildContract();});
 $("actBtn").addEventListener("click",()=>{if(validate())buildAct();});
 
+/* ===== ДОКУМЕНТЫ КЛИЕНТА ===== */
+async function loadClientDocs(){
+    const panel=$("clientDocsPanel"), list=$("clientDocsList");
+    if(!currentClient){panel.style.display="none";return;}
+    panel.style.display="block";
+    list.innerHTML='<p class="hint">Загрузка...</p>';
+    try{
+        const snap=await getDocs(collection(db,"documents"));
+        clientDocs=[];
+        snap.forEach(d=>{const doc={id:d.id,...d.data()};if(doc.uid===currentClient.uid)clientDocs.push(doc);});
+        clientDocs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        renderClientDocs();
+    }catch(e){list.innerHTML='<p class="hint">Ошибка загрузки</p>';}
+}
+
+function renderClientDocs(){
+    const list=$("clientDocsList");
+    if(!clientDocs.length){list.innerHTML='<p class="hint">У клиента пока нет документов</p>';return;}
+    const ic={"Смета":"🧮","Договор":"📑","Акт":"✅"};
+    const bc={"Смета":"cb-est","Договор":"cb-con","Акт":"cb-act"};
+    list.innerHTML="";
+    clientDocs.forEach(d=>{
+        const date=d.createdAt?new Date(d.createdAt).toLocaleDateString("ru-RU"):"";
+        const canEdit=d.type==="Смета" && d.estimate; // редактируем только сметы с данными
+        const div=document.createElement("div");
+        div.className="cdoc";
+        div.innerHTML=`
+            <div class="cd-ic">${ic[d.type]||"📄"}</div>
+            <div class="cd-body">
+                <div class="cd-title">${d.title||d.type||"Документ"}</div>
+                <div class="cd-sub">${date}${d.total?" · "+Number(d.total).toLocaleString("ru-RU")+" ₽":""} ${d.type==="Смета"?`· <span class="cd-paid ${d.paid?'paid-yes':'paid-no'}">${d.paid?'оплачено':'не оплачено'}</span>`:""}</div>
+            </div>
+            <span class="cd-badge ${bc[d.type]||'cb-oth'}">${d.type||"Док"}</span>
+            <div class="cd-btns">
+                ${canEdit?`<button class="cd-edit" data-edit="${d.id}">Изменить</button>`:""}
+                <button class="cd-del" data-del="${d.id}">Удалить</button>
+            </div>`;
+        list.appendChild(div);
+    });
+    // редактировать
+    list.querySelectorAll("[data-edit]").forEach(b=>{
+        b.addEventListener("click",()=>loadDocIntoForm(b.dataset.edit));
+    });
+    // удалить
+    list.querySelectorAll("[data-del]").forEach(b=>{
+        b.addEventListener("click",async()=>{
+            if(!confirm("Удалить документ?"))return;
+            try{await deleteDoc(doc(db,"documents",b.dataset.del));loadClientDocs();}
+            catch(e){alert("Ошибка: "+e.message);}
+        });
+    });
+}
+
+/* загрузить смету обратно в форму для редактирования */
+function loadDocIntoForm(id){
+    const d=clientDocs.find(x=>x.id===id);
+    if(!d)return;
+    editingDocId=id;
+    // данные объекта
+    $("projectAddress").value=d.address||"";
+    if(d.area)$("area").value=d.area;
+    // класс
+    if(d.className){
+        [...$("repairClass").options].forEach(o=>{if(o.text===d.className)$("repairClass").value=o.value;});
+    }
+    // снять все галочки
+    document.querySelectorAll('.work-check input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+    // отметить работы по названиям
+    (d.estimate||[]).forEach(it=>{
+        const w=WORKS.find(x=>x.name===it.name);
+        if(w){const cb=document.querySelector(`input[data-id="${w.id}"]`);if(cb){cb.checked=true;cb.closest(".work-check").classList.add("on");}}
+    });
+    // материалы
+    if(d.materials&&d.materials.length){
+        $("useMaterials").checked=true;
+        const grid=$("materialsGrid");grid.style.opacity="1";grid.style.pointerEvents="auto";
+        document.querySelectorAll('#materialsGrid input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+        d.materials.forEach(it=>{
+            const m=MATERIALS.find(x=>x.name===it.name);
+            if(m){const cb=document.querySelector(`input[data-mat="${m.id}"]`);if(cb){cb.checked=true;cb.closest(".work-check").classList.add("on");}}
+        });
+    }
+    calcTotal();
+    // подсказка и кнопки
+    $("editHint").innerHTML="✏️ Редактируется: <b>"+(d.title||"смета")+"</b>. Кнопка «Сохранить» обновит этот документ.";
+    $("saveBtn").textContent="💾 Обновить документ";
+    $("newDocBtn").style.display="inline-flex";
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* сброс режима редактирования */
+$("newDocBtn").addEventListener("click",()=>{
+    editingDocId=null;
+    $("editHint").textContent="Выберите клиента и состав работ — документы соберутся автоматически.";
+    $("saveBtn").textContent="💾 Сохранить клиенту";
+    $("newDocBtn").style.display="none";
+    $("clearAll").click();
+    $("useMaterials").checked=false;
+    const grid=$("materialsGrid");grid.style.opacity=".5";grid.style.pointerEvents="none";
+    document.querySelectorAll('#materialsGrid input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+    calcTotal();
+});
+
 /* СОХРАНИТЬ КЛИЕНТУ — запись в documents (клиент увидит в кабинете) */
 $("saveBtn").addEventListener("click",async()=>{
     if(!validate())return;
@@ -651,9 +780,8 @@ $("saveBtn").addEventListener("click",async()=>{
     const matTotal=materials.reduce((s,i)=>s+i.sum,0);
     const total=workTotal+matTotal;
     try{
-        await addDoc(collection(db,"documents"),{
+        const payload={
             uid:currentClient.uid,
-            title:"Смета № "+m.num,
             type:"Смета",
             url:"",
             fileName:"Смета на "+m.area+" м², "+m.className,
@@ -664,11 +792,20 @@ $("saveBtn").addEventListener("click",async()=>{
             total:total,
             area:m.area,
             className:m.className,
-            paid:false,
-            createdBy:m.manager,
-            createdAt:Date.now()
-        });
-        alert("Смета сохранена в кабинет клиента. Клиент увидит её таблицей в разделе «Документы».");
+            createdBy:m.manager
+        };
+        if(editingDocId){
+            // обновляем существующую смету (paid и title не трогаем лишний раз)
+            await updateDoc(doc(db,"documents",editingDocId),payload);
+            alert("Документ обновлён.");
+        }else{
+            payload.title="Смета № "+m.num;
+            payload.paid=false;
+            payload.createdAt=Date.now();
+            await addDoc(collection(db,"documents"),payload);
+            alert("Смета сохранена в кабинет клиента. Клиент увидит её таблицей в разделе «Документы».");
+        }
+        loadClientDocs();
     }catch(e){alert("Ошибка: "+e.message);}
 });
 </script>
