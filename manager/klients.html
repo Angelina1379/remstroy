@@ -163,7 +163,7 @@ a{text-decoration:none;}
     <div class="stats-grid">
         <div class="stat-card"><div class="ic orange">👥</div><h3 id="totalClients">0</h3><p>Всего клиентов</p></div>
         <div class="stat-card"><div class="ic blue">📦</div><h3 id="activeOrders">0</h3><p>Активных заказов</p></div>
-        <div class="stat-card"><div class="ic green">💰</div><h3 id="totalRevenue">0 ₽</h3><p>Общая выручка</p></div>
+        <div class="stat-card"><div class="ic green">💰</div><h3 id="totalRevenue">0 ₽</h3><p>Выручка (оплачено)</p></div>
         <div class="stat-card"><div class="ic purple">⭐</div><h3 id="vipCount">0</h3><p>Постоянных клиентов</p></div>
     </div>
 
@@ -262,6 +262,9 @@ async function init(){
     clients=[];
     usnap.forEach(d=>{const u={id:d.id,...d.data()};if(u.role!=="manager")clients.push(u);});
 
+    // оплаченные сметы — выручка считается из них (как в Финансах)
+    await loadPaidEstimates();
+
     // проекты живьём
     onSnapshot(collection(db,"projects"),(snap)=>{
         projects=[];
@@ -272,11 +275,30 @@ async function init(){
     });
 }
 
+/* выручка по клиентам = сумма их оплаченных смет */
+let paidByClient={};   // uid -> сумма оплаченного
+let paidTotal=0;       // общая выручка (оплаченное)
+async function loadPaidEstimates(){
+    paidByClient={};paidTotal=0;
+    try{
+        const snap=await getDocs(collection(db,"documents"));
+        snap.forEach(d=>{
+            const doc=d.data();
+            if(doc.type!=="Смета"||!doc.paid)return;
+            const sum=Number(doc.total||0);
+            const uid=doc.uid;
+            if(!uid)return;
+            paidByClient[uid]=(paidByClient[uid]||0)+sum;
+            paidTotal+=sum;
+        });
+    }catch(e){console.error("Ошибка загрузки смет:",e);}
+}
+
 /* считаем статистику по каждому клиенту */
 function computeStats(){
     enriched=clients.map(c=>{
         const own=projects.filter(p=>ownerUid(p)===c.uid);
-        const revenue=own.reduce((s,p)=>s+Number(p.budget||0),0);
+        const revenue=paidByClient[c.uid]||0; // выручка = оплаченные сметы клиента
         const active=own.filter(p=>["В работе","Назначен замер","Новая заявка"].includes(normStatus(p.status))).length;
         const done=own.filter(p=>normStatus(p.status)==="Завершён").length;
         return {...c, ordersCount:own.length, revenue, active, done, orders:own};
@@ -288,7 +310,7 @@ function renderKPI(){
     $("totalClients").textContent=clients.length;
     const activeTotal=projects.filter(p=>["В работе","Назначен замер"].includes(normStatus(p.status))).length;
     $("activeOrders").textContent=activeTotal;
-    const revenue=projects.reduce((s,p)=>s+Number(p.budget||0),0);
+    const revenue=paidTotal; // общая выручка = сумма оплаченных смет (как в Финансах)
     $("totalRevenue").textContent=revenue.toLocaleString("ru-RU")+" ₽";
     // постоянные = 2+ заказа
     const vip=enriched.filter(c=>c.ordersCount>=2).length;
