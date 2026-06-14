@@ -308,11 +308,30 @@ async function loadEvents(){
     try{
         const snap=await getDocs(collection(db,"calendarEvents"));
         events=[];
+        let totalAll=0, mineByUid=0;
         snap.forEach(d=>{
             const ev={id:d.id,...d.data()};
+            // нормализуем даты: если нет dateStart — берём из date
+            if(!ev.dateStart && ev.date) ev.dateStart=String(ev.date).slice(0,10);
+            if(!ev.dateEnd) ev.dateEnd=ev.dateStart;
+            totalAll++;
             // клиент видит только свои, менеджер — все
-            if(isManager || ev.uid===currentUser.uid) events.push(ev);
+            if(isManager){
+                events.push(ev);
+            }else if(ev.uid===currentUser.uid){
+                mineByUid++;
+                events.push(ev);
+            }
         });
+        console.log("Календарь: всего событий в базе =",totalAll,
+                    "| мой uid =",currentUser.uid,
+                    "| моих событий =",isManager?totalAll:mineByUid);
+        if(!isManager && mineByUid===0 && totalAll>0){
+            // покажем, какие uid вообще есть — поможет понять расхождение
+            const sampleUids=[];
+            snap.forEach(d=>{const u=d.data().uid; if(u && sampleUids.length<5 && !sampleUids.includes(u)) sampleUids.push(u);});
+            console.log("Календарь: моих событий нет. Примеры uid в событиях:",sampleUids);
+        }
     }catch(e){console.error("Ошибка календаря:",e);}
     renderCalendar();
     renderSchedule();
@@ -490,7 +509,13 @@ $("prevMonth").addEventListener("click",()=>{viewDate.setMonth(viewDate.getMonth
 $("nextMonth").addEventListener("click",()=>{viewDate.setMonth(viewDate.getMonth()+1);renderCalendar();});
 
 /* ХЕЛПЕРЫ */
-function toISO(d){return d.toISOString().slice(0,10);}
+function toISO(d){
+    // локальная дата без сдвига в UTC (иначе день «уезжает»)
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,"0");
+    const day=String(d.getDate()).padStart(2,"0");
+    return y+"-"+m+"-"+day;
+}
 function inRange(iso,start,end){
     if(!start)return false;
     const e=end||start;
