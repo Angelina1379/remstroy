@@ -355,24 +355,55 @@ import {
 
 const $ = (id)=>document.getElementById(id);
 
-/* ===== WOW: анимация докрутки чисел от 0 до значения ===== */
+/* ===== WOW: докрутка чисел — запускается, когда блок виден на экране ===== */
+const _io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+        if(e.isIntersecting){
+            runCount(e.target);
+            _io.unobserve(e.target); // один раз
+        }
+    });
+},{threshold:0.4});
+
+function runCount(el){
+    const target=Number(el.dataset.target)||0;
+    const suffix=el.dataset.suffix||"";
+    const dur=Number(el.dataset.dur)||1100;
+    const isMoney=el.dataset.money==="1";
+    const start=performance.now();
+    const ease=(t)=>1-Math.pow(1-t,3);
+    function frame(now){
+        const p=Math.min((now-start)/dur,1);
+        const val=Math.round(target*ease(p));
+        el.textContent=(isMoney?val.toLocaleString("ru-RU"):val)+suffix;
+        if(p<1)requestAnimationFrame(frame);
+        else el.textContent=(isMoney?target.toLocaleString("ru-RU"):target)+suffix;
+    }
+    requestAnimationFrame(frame);
+}
+
+/* наблюдатель роста полос/столбцов — растут по появлению */
+const _ioBar = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+        if(e.isIntersecting){
+            const el=e.target;
+            if(el.dataset.w!=null)el.style.width=el.dataset.w+"%";
+            if(el.dataset.h!=null)el.style.height=el.dataset.h+"%";
+            _ioBar.unobserve(el);
+        }
+    });
+},{threshold:0.3});
+
+/* регистрируем число: оно начнёт крутиться, когда попадёт в поле зрения */
 function countUp(id, target, opts={}){
     const el = typeof id==="string" ? $(id) : id;
     if(!el)return;
-    const suffix = opts.suffix||"";
-    const dur = opts.dur||1100;
-    const isMoney = opts.money||false;
-    target = Number(target)||0;
-    const start = performance.now();
-    function ease(t){return 1-Math.pow(1-t,3);} // плавное замедление к концу
-    function frame(now){
-        const p = Math.min((now-start)/dur,1);
-        const val = Math.round(target*ease(p));
-        el.textContent = (isMoney?val.toLocaleString("ru-RU"):val)+suffix;
-        if(p<1)requestAnimationFrame(frame);
-        else el.textContent = (isMoney?target.toLocaleString("ru-RU"):target)+suffix;
-    }
-    requestAnimationFrame(frame);
+    el.dataset.target=Number(target)||0;
+    el.dataset.suffix=opts.suffix||"";
+    el.dataset.dur=opts.dur||1100;
+    el.dataset.money=opts.money?"1":"0";
+    el.textContent=(opts.money?"0":"0")+(opts.suffix||""); // стартуем с нуля
+    _io.observe(el);
 }
 
 /* БУРГЕР */
@@ -498,10 +529,8 @@ function drawFunnel(statuses,total){
             <div class="funnel-top"><b>${s.name}</b><span>${s.val}</span></div>
             <div class="funnel-bar"><div class="funnel-fill" data-w="${(s.val/max)*100}" style="width:0%;background:${s.color}"></div></div>
         </div>`).join("");
-    // запускаем рост из нуля
-    requestAnimationFrame(()=>{
-        list.querySelectorAll(".funnel-fill").forEach(f=>{f.style.width=f.dataset.w+"%";});
-    });
+    // рост по появлению на экране
+    list.querySelectorAll(".funnel-fill").forEach(f=>_ioBar.observe(f));
 }
 
 /* ФИНАНСЫ — только оплаченные сметы */
@@ -562,9 +591,7 @@ function drawRevenue(){
         const tip=col.sum?col.sum.toLocaleString("ru-RU")+" ₽":"0";
         return `<div class="rev-col"><div class="rev-bar" data-h="${h}" style="height:0%" title="${tip}"></div><div class="rev-label">${col.label}</div></div>`;
     }).join("");
-    requestAnimationFrame(()=>{
-        c.querySelectorAll(".rev-bar").forEach(b=>{b.style.height=b.dataset.h+"%";});
-    });
+    c.querySelectorAll(".rev-bar").forEach(b=>_ioBar.observe(b));
 }
 
 $("revPeriod")?.addEventListener("change",drawRevenue);
