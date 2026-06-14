@@ -196,12 +196,20 @@ const MAX_INLINE=700*1024;
 function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
 const blobToBase64=fileToBase64;
 async function uploadToImgBB(file){
-    const b64=await fileToBase64(file);
     const form=new FormData();
-    form.append("image",b64.split(",")[1]);
-    const res=await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{method:"POST",body:form});
-    const data=await res.json();
-    if(!data.success)throw new Error("ImgBB не принял файл");
+    form.append("key",IMGBB_KEY);
+    form.append("image",file); // сам файл — ImgBB надёжно его принимает
+    let res,data;
+    try{
+        res=await fetch("https://api.imgbb.com/1/upload",{method:"POST",body:form});
+    }catch(netErr){
+        throw new Error("Нет связи с сервисом фото (проверьте интернет или блокировку api.imgbb.com)");
+    }
+    try{ data=await res.json(); }catch(e){ throw new Error("ImgBB вернул непонятный ответ (код "+res.status+")"); }
+    if(!data.success){
+        const msg=data?.error?.message||("код "+res.status);
+        throw new Error("ImgBB отклонил фото: "+msg);
+    }
     return data.data.url;
 }
 
@@ -243,17 +251,29 @@ function loadMessages(uid){
             messagesContainer.innerHTML='<div class="empty-chat">Сообщений пока нет.<br>Напишите менеджеру — он ответит здесь.</div>';
             return;
         }
+        // собираем и сортируем сами: без времени (только отправленные) — в конец
+        const msgs=[];
         snapshot.forEach((docSnap)=>{
-            const msg=docSnap.data();
+            const m=docSnap.data();
+            const t=m.time?.toMillis?m.time.toMillis():(m.time?.seconds?m.time.seconds*1000:null);
+            msgs.push({m,t});
+        });
+        msgs.sort((a,b)=>{
+            // null (ещё нет серверного времени) считается «сейчас» — внизу
+            const ta=a.t==null?Date.now()+1:a.t;
+            const tb=b.t==null?Date.now()+1:b.t;
+            return ta-tb;
+        });
+        msgs.forEach(({m,t})=>{
             const div=document.createElement("div");
-            div.className=`message ${msg.sender==="client"?"client":"manager"}`;
+            div.className=`message ${m.sender==="client"?"client":"manager"}`;
             let html="";
-            if(msg.text) html+=`<div class="message-text">${msg.text}</div>`;
-            if(msg.imageUrl) html+=`<img src="${msg.imageUrl}" class="chat-image" alt="Изображение">`;
-            if(msg.fileUrl && !msg.imageUrl) html+=`<div class="file-box"><a href="${msg.fileUrl}" target="_blank">📎 ${msg.fileName||"Файл"}</a></div>`;
-            if(msg.voiceUrl) html+=`<audio controls style="margin-top:8px;max-width:240px;"><source src="${msg.voiceUrl}"></audio>`;
-            const t=msg.time?.toDate?msg.time.toDate():new Date();
-            html+=`<div class="message-time">${t.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>`;
+            if(m.text) html+=`<div class="message-text">${m.text}</div>`;
+            if(m.imageUrl) html+=`<img src="${m.imageUrl}" class="chat-image" alt="Изображение">`;
+            if(m.fileUrl && !m.imageUrl) html+=`<div class="file-box"><a href="${m.fileUrl}" target="_blank">📎 ${m.fileName||"Файл"}</a></div>`;
+            if(m.voiceUrl) html+=`<audio controls style="margin-top:8px;max-width:240px;"><source src="${m.voiceUrl}"></audio>`;
+            const dt=t?new Date(t):new Date();
+            html+=`<div class="message-time">${dt.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>`;
             div.innerHTML=html;
             messagesContainer.appendChild(div);
         });
