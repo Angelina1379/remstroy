@@ -202,16 +202,16 @@ button:hover{background:#ffa51f;transform:translateY(-2px);}
     </main>
 </div>
 <script type="module">
-import { auth, db } from "./js/firebase.js";
+import { auth, db } from "../js/firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, onSnapshot, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const $=(id)=>document.getElementById(id);
 const sidebar=$("sidebar"), overlay=$("overlay"), burger=$("burger");
 burger?.addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
 overlay?.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
-$("logoutBtn")?.addEventListener("click",async()=>{await signOut(auth);window.location.href="index.html";});
+$("logoutBtn")?.addEventListener("click",async()=>{try{await signOut(auth);}catch(e){}window.location.href="../login.html";});
 onAuthStateChanged(auth,(user)=>{
-  if(!user){window.location.href="login.html";return;}
+  if(!user){window.location.href="../login.html";return;}
   loadProject(user.uid);loadNotifications(user.uid);loadProfile(user.uid);
   loadMessagesPreview(user.uid);loadWorks(user.uid);loadDocuments(user.uid);loadStats(user.uid);
 });
@@ -323,6 +323,23 @@ function loadProfile(uid){
       try{await setDoc(doc(db,"users",uid),{name,phone},{merge:true});alert("Сохранено!");}catch(e){alert("Ошибка: "+e.message);}});}
 }
 function setText(id,value){const el=$(id);if(el)el.textContent=value||"—";}
+</script>
+<script type="module">
+// Страховка выхода — срабатывает независимо от основного скрипта
+import { auth } from "../js/firebase.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+function bindLogout(){
+  document.querySelectorAll('#logoutBtn,#logoutBtnSide,[data-logout]').forEach(btn=>{
+    if(btn.dataset.lg)return; btn.dataset.lg="1";
+    btn.addEventListener("click",async(e)=>{
+      e.preventDefault();
+      try{ await signOut(auth); }catch(err){}
+      window.location.href="../login.html";
+    });
+  });
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",bindLogout);
+else bindLogout();
 </script>
 </body>
 </html>
