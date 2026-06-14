@@ -398,7 +398,8 @@ function loadMessages(clientId){
         const msgs=[];
         snapshot.forEach((docSnap)=>{
             const m=docSnap.data();
-            const t=m.time?.toMillis?m.time.toMillis():(m.time?.seconds?m.time.seconds*1000:null);
+            let t=m.time?.toMillis?m.time.toMillis():(m.time?.seconds?m.time.seconds*1000:null);
+            if(t==null)t=m.clientTime||null;
             msgs.push({m,t,ref:docSnap.ref});
         });
         msgs.sort((a,b)=>{
@@ -462,7 +463,7 @@ sendBtn?.addEventListener("click",async()=>{
             }
         }
         await addDoc(collection(db,"messages",currentChat,"items"),{
-            text,sender:"manager",fileUrl,fileName,imageUrl,time:serverTimestamp(),read:false
+            text,sender:"manager",fileUrl,fileName,imageUrl,time:serverTimestamp(),clientTime:Date.now(),read:false
         });
         messageInput.value="";fileInput.value="";filePreview.innerHTML="";selectedFile=null;
     }catch(e){sendBtn.disabled=false;alert("Ошибка отправки: "+e.message);}
@@ -493,7 +494,7 @@ $("voiceBtn")?.addEventListener("click",async()=>{
                 }else{
                     const voiceUrl=await blobToBase64(blob);
                     await addDoc(collection(db,"messages",currentChat,"items"),{
-                        sender:"manager",voiceUrl,time:serverTimestamp(),read:false
+                        sender:"manager",voiceUrl,time:serverTimestamp(),clientTime:Date.now(),read:false
                     });
                 }
             }catch(e){alert("Ошибка записи: "+e.message);}
