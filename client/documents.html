@@ -221,14 +221,11 @@ a{text-decoration:none;}
 
 
 <script type="module">
-import { auth, db, storage } from "./js/firebase.js";
+import { auth, db } from "./js/firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
     collection, getDocs, addDoc, deleteDoc, doc, getDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-    ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const $ = (id)=>document.getElementById(id);
 const container = $("documentsContainer");
@@ -329,31 +326,28 @@ function render(){
 
         let bodyHtml="";
         if(hasEstimate){
-            const works=d.estimate||[];
-            const mats=d.materials||[];
             const fmt=(n)=>Number(n||0).toLocaleString("ru-RU");
-            const rows=(arr)=>arr.map(it=>`<tr><td>${it.name}</td><td style="text-align:center;">${it.area} м²</td><td style="text-align:right;">${fmt(it.unit)} ₽</td><td style="text-align:right;font-weight:600;">${fmt(it.sum)} ₽</td></tr>`).join("");
+            const worksN=(d.estimate||[]).length;
+            const matsN=(d.materials||[]).length;
+            const parts=[];
+            if(worksN)parts.push(worksN+" видов работ");
+            if(matsN)parts.push("материалы");
             bodyHtml=`
-                <div class="est-meta">${d.area?d.area+" м² · ":""}${d.className||""}</div>
-                <table class="est-table">
-                    <thead><tr><th>Наименование</th><th style="text-align:center;">Кол-во</th><th style="text-align:right;">Цена</th><th style="text-align:right;">Сумма</th></tr></thead>
-                    <tbody>
-                        ${works.length?`<tr class="est-sect"><td colspan="4">Работы</td></tr>${rows(works)}`:""}
-                        ${mats.length?`<tr class="est-sect"><td colspan="4">Материалы</td></tr>${rows(mats)}`:""}
-                    </tbody>
-                </table>
-                <div class="est-total"><span>Итого:</span><b>${fmt(d.total)} ₽</b></div>
-                <a class="document-btn" data-dl="${d.id}" style="cursor:pointer;margin-bottom:14px;">📄 Скачать смету (Word)</a>
+                <div class="est-meta">${d.area?d.area+" м² · ":""}${d.className||""}${parts.length?" · "+parts.join(", "):""}</div>
+                <div class="est-total"><span>Сумма по смете:</span><b>${fmt(d.total)} ₽</b></div>
+                <a class="document-btn" data-dl="${d.id}" style="cursor:pointer;margin-bottom:12px;">📄 Скачать смету (Word)</a>
                 <div class="pay-row">
                     <span class="pay-status ${d.paid?'paid':'unpaid'}">${d.paid?'✓ Оплачено':'● Ожидает оплаты'}</span>
                     ${!isManager && !d.paid?`<button class="pay-btn" data-pay="${d.id}">Отметить «Оплачено»</button>`:""}
                 </div>`;
         }else{
-            // обычный документ — кнопка только если есть файл
+            // договор / акт / прочее — кнопка скачивания Word (генерируется из данных)
+            const canGen = d.type==="Договор" || d.type==="Акт";
             bodyHtml=`
-                <div class="document-desc">${d.fileName||"Документ по вашему проекту"}</div>
+                <div class="document-desc">${d.fileName||(d.type==="Договор"?"Договор подряда на ремонтные работы":(d.type==="Акт"?"Акт выполненных работ":"Документ по вашему проекту"))}</div>
                 <div class="document-info"><span>Добавлен</span><span>${date}</span></div>
-                ${d.url?`<a class="document-btn" href="${d.url}" target="_blank">Открыть / Скачать</a>`:`<div class="no-file">Файл не прикреплён</div>`}`;
+                ${canGen?`<a class="document-btn" data-dl="${d.id}" style="cursor:pointer;">📄 Скачать ${d.type} (Word)</a>`
+                    :(d.url?`<a class="document-btn" href="${d.url}" target="_blank">Открыть / Скачать</a>`:`<div class="no-file">Файл не прикреплён</div>`)}`;
         }
 
         card.innerHTML=`
@@ -380,11 +374,14 @@ function render(){
         });
     });
 
-    // скачать смету в Word
+    // скачать документ в Word (по типу)
     container.querySelectorAll("[data-dl]").forEach(btn=>{
         btn.addEventListener("click",()=>{
             const d=allDocs.find(x=>x.id===btn.dataset.dl);
-            if(d)downloadEstimate(d);
+            if(!d)return;
+            if(d.type==="Договор")downloadContract(d);
+            else if(d.type==="Акт")downloadAct(d);
+            else downloadEstimate(d);
         });
     });
 
@@ -416,10 +413,15 @@ $("saveDocBtn").addEventListener("click",async()=>{
     try{
         let url=link, fileName="";
         if(file){
-            const storageRef=ref(storage,`documents/${uid}_${Date.now()}_${file.name}`);
-            await uploadBytes(storageRef,file);
-            url=await getDownloadURL(storageRef);
-            fileName=file.name;
+            if(file.type.startsWith("image/")){
+                // фото сжимаем и храним прямо в базе
+                url=await compressImage(file);
+                fileName=file.name;
+            }else{
+                alert("Файлы (PDF, Word) загружать в облако нельзя без платного хранилища.\nВставьте ссылку на файл (Google Диск, Яндекс.Диск и т.п.) в поле ниже.");
+                btn.disabled=false;btn.textContent="Сохранить документ";
+                return;
+            }
         }
         await addDoc(collection(db,"documents"),{
             uid, title, type, url, fileName,
@@ -435,6 +437,26 @@ $("saveDocBtn").addEventListener("click",async()=>{
     }
     btn.disabled=false;btn.textContent="Сохранить документ";
 });
+
+/* сжатие фото для хранения в базе */
+function compressImage(file,maxW=900,quality=0.6){
+    return new Promise((resolve,reject)=>{
+        const img=new Image();
+        const u=URL.createObjectURL(file);
+        img.onload=()=>{
+            URL.revokeObjectURL(u);
+            let w=img.width,h=img.height;
+            if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+            const c=document.createElement("canvas");
+            c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);
+            let q=quality,out=c.toDataURL("image/jpeg",q);
+            while(out.length>900*1024&&q>0.3){q-=0.1;out=c.toDataURL("image/jpeg",q);}
+            resolve(out);
+        };
+        img.onerror=()=>{URL.revokeObjectURL(u);reject(new Error("Не удалось прочитать фото"));};
+        img.src=u;
+    });
+}
 
 /* ===== СКАЧАТЬ СМЕТУ В WORD ===== */
 function downloadEstimate(d){
@@ -503,6 +525,108 @@ function downloadEstimate(d){
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         setTimeout(()=>URL.revokeObjectURL(url),1000);
     }).catch(e=>alert("Ошибка: "+e.message));
+}
+
+/* общий помощник: создаёт P() и скачивание */
+function docxReady(){
+    if(!window.docx || !window.docx.Document){
+        alert("Библиотека для Word не найдена.\nУбедитесь, что файл docx.js лежит в папке js, и обновите страницу (F5).");
+        return null;
+    }
+    return window.docx;
+}
+function saveDocx(docFile,name){
+    const {Packer}=window.docx;
+    Packer.toBlob(docFile).then(blob=>{
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url; a.download=name;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }).catch(e=>alert("Ошибка: "+e.message));
+}
+
+/* ===== СКАЧАТЬ ДОГОВОР ===== */
+function downloadContract(d){
+    const lib=docxReady(); if(!lib)return;
+    const {Document,Paragraph,TextRun,AlignmentType}=lib;
+    const fmt=(n)=>Number(n||0).toLocaleString("ru-RU");
+    const date=d.createdAt?new Date(d.createdAt).toLocaleDateString("ru-RU"):"";
+    const total=d.total||0;
+    const P=(text,o={})=>new Paragraph({
+        alignment:o.center?AlignmentType.CENTER:AlignmentType.LEFT,
+        spacing:{after:o.after!=null?o.after:120},
+        children:[new TextRun({text,bold:!!o.bold,size:o.size||24,font:"Times New Roman"})]
+    });
+    const children=[
+        P("ДОГОВОР ПОДРЯДА"+(d.num?" № "+d.num:""),{bold:true,size:30,center:true,after:80}),
+        P("на выполнение ремонтно-отделочных работ",{center:true,after:160}),
+        P("г. Астрахань"),
+        P("Дата: "+date,{after:160}),
+        P("ООО «BuildHouse», именуемое «Подрядчик», в лице менеджера "+(d.createdBy||"BuildHouse")+", с одной стороны, и "+(d.clientName||"Заказчик")+", именуемый «Заказчик», с другой стороны, заключили настоящий договор о нижеследующем:",{after:160}),
+        P("1. ПРЕДМЕТ ДОГОВОРА",{bold:true,size:26}),
+        P("1.1. Подрядчик обязуется выполнить ремонтно-отделочные работы на объекте Заказчика по адресу: "+(d.address||"—")+(d.area?", общей площадью "+d.area+" м²":"")+"."),
+        P("1.2. Класс ремонта: "+(d.className||"—")+"."),
+        P("1.3. Состав и стоимость работ определяются Сметой, являющейся неотъемлемой частью договора.",{after:160}),
+        P("2. СТОИМОСТЬ И ПОРЯДОК РАСЧЁТОВ",{bold:true,size:26}),
+        P("2.1. Общая стоимость работ составляет "+fmt(total)+" рублей."),
+        P("2.2. Оплата в два этапа: 50% аванс перед началом работ, 50% после подписания Акта.",{after:160}),
+        P("3. СРОКИ И ГАРАНТИИ",{bold:true,size:26}),
+        P("3.1. Работы выполняются в согласованные сроки по графику."),
+        P("3.2. Гарантия на выполненные работы — 24 месяца с момента подписания Акта.",{after:160}),
+        P("4. РЕКВИЗИТЫ И ПОДПИСИ",{bold:true,size:26}),
+        P("Подрядчик: ООО «BuildHouse», г. Астрахань, ул. Антокольского, д. 6"),
+        P("Тел.: +7 903 349-11-91, e-mail: vitalikpozolotin@yandex.ru"),
+        P("_______________ / "+(d.createdBy||"Менеджер")+" /",{after:120}),
+        P("Заказчик: "+(d.clientName||"")),
+        P("_______________ / "+(d.clientName||"")+" /")
+    ];
+    saveDocx(new Document({sections:[{children}]}),"Договор_BuildHouse.docx");
+}
+
+/* ===== СКАЧАТЬ АКТ ===== */
+function downloadAct(d){
+    const lib=docxReady(); if(!lib)return;
+    const {Document,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType}=lib;
+    const fmt=(n)=>Number(n||0).toLocaleString("ru-RU");
+    const date=d.createdAt?new Date(d.createdAt).toLocaleDateString("ru-RU"):"";
+    const works=d.estimate||[];
+    const total=d.total||works.reduce((s,i)=>s+(i.sum||0),0);
+    const P=(text,o={})=>new Paragraph({
+        alignment:o.center?AlignmentType.CENTER:AlignmentType.LEFT,
+        spacing:{after:o.after!=null?o.after:120},
+        children:[new TextRun({text,bold:!!o.bold,size:o.size||24,font:"Times New Roman"})]
+    });
+    const cell=(t,o={})=>new TableCell({
+        width:{size:o.w||25,type:WidthType.PERCENTAGE},
+        children:[new Paragraph({alignment:o.center?AlignmentType.CENTER:AlignmentType.LEFT,children:[new TextRun({text:String(t),bold:!!o.bold,size:22,font:"Times New Roman"})]})]
+    });
+    const children=[
+        P("АКТ"+(d.num?" № "+d.num:""),{bold:true,size:30,center:true,after:60}),
+        P("выполненных работ",{center:true,size:24}),
+        P("от "+date,{center:true,after:200}),
+        P("Подрядчик ООО «BuildHouse» и Заказчик "+(d.clientName||"")+" составили настоящий акт о том, что работы по адресу "+(d.address||"—")+" выполнены в полном объёме:",{after:160})
+    ];
+    if(works.length){
+        const rows=[new TableRow({children:[
+            cell("№",{w:8,bold:true,center:true}),
+            cell("Наименование работ",{w:62,bold:true}),
+            cell("Сумма, ₽",{w:30,bold:true,center:true})
+        ]})];
+        works.forEach((it,i)=>rows.push(new TableRow({children:[
+            cell(i+1,{w:8,center:true}),
+            cell(it.name,{w:62}),
+            cell(fmt(it.sum),{w:30,center:true})
+        ]})));
+        children.push(new Table({width:{size:100,type:WidthType.PERCENTAGE},rows}));
+        children.push(P("",{after:120}));
+    }
+    children.push(P("Всего выполнено работ на сумму: "+fmt(total)+" руб.",{bold:true,size:26}));
+    children.push(P("Работы выполнены в полном объёме, в срок и с надлежащим качеством. Заказчик претензий не имеет.",{after:160}));
+    children.push(P("Гарантийный срок — 24 месяца.",{after:200}));
+    children.push(P("Подрядчик: _______________ / "+(d.createdBy||"Менеджер")+" /",{after:120}));
+    children.push(P("Заказчик: _______________ / "+(d.clientName||"")+" /"));
+    saveDocx(new Document({sections:[{children}]}),"Акт_BuildHouse.docx");
 }
 </script>
 
