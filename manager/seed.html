@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>График работ | BuildHouse</title>
+<title>Диалоги | BuildHouse</title>
 <style>
 body{font-family:Inter,Arial,sans-serif;background:#f5f6fa;color:#1b2430;max-width:860px;margin:40px auto;padding:20px;}
 h1{font-size:26px;}
@@ -11,179 +11,174 @@ button:hover{background:#f39a1f;}button:disabled{background:#ffd699;cursor:not-a
 .clear-btn{background:#fdecea;color:#ef4444;}
 .log{background:#0b1220;color:#aee;border-radius:14px;padding:18px;margin-top:20px;font-family:monospace;font-size:13px;white-space:pre-wrap;max-height:540px;overflow-y:auto;}
 .warn{background:#fff3df;border-radius:12px;padding:16px;color:#a86500;margin:16px 0;line-height:1.5;}
-.ok{color:#7CFC00;}.err{color:#ff8080;}.dim{color:#88aacc;}.hl{color:#ffd699;}
+.ok{color:#7CFC00;}.err{color:#ff8080;}.dim{color:#88aacc;}
 </style>
 </head>
 <body>
-<h1>📅 График работ бригады</h1>
+<h1>💬 Диалоги с клиентами</h1>
 <div class="warn">
-<b>Логика:</b> каждый объект — сплошной блок дней подряд. Этапы по порядку: замер → демонтаж → черновые → отделочные → сдача (один день, в конце). Воскресенье — выходной. В день максимум 2 объекта и только на разных стадиях (например, отделка на одном + замер нового). Период работ записывается в заказ (с… по…).<br><br>
-<b>Шаг 1:</b> «Очистить» → <b>Шаг 2:</b> «Создать график». Live Server. Потом файл удалить.
+<b>Что делает:</b> создаёт переписку по теме ремонта с клиентами, у которых есть заказы. Клиент пишет — менеджер отвечает — клиент уточняет — и так живой диалог по их виду работ.<br><br>
+<b>Шаг 1:</b> «Очистить чаты» (по желанию) → <b>Шаг 2:</b> «Создать диалоги». Live Server. Потом файл удалить.
 </div>
-<button class="clear-btn" id="clearBtn">🗑 Очистить старый календарь</button>
-<button id="runBtn">📅 Создать график работ</button>
+<button class="clear-btn" id="clearBtn">🗑 Очистить все чаты</button>
+<button id="runBtn">💬 Создать диалоги</button>
 <div class="log" id="log">Готов к запуску...</div>
 
 <script type="module">
 import { db } from "./js/firebase.js";
-import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, getDocs, addDoc, deleteDoc, doc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const log=(m,c="")=>{const el=document.getElementById("log");el.innerHTML+=`\n<span class="${c}">${m}</span>`;el.scrollTop=el.scrollHeight;};
-const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-const WT_COLOR={"Замер":"#ffb547","Демонтаж":"#9333ea","Черновые работы":"#ef4444","Отделочные работы":"#22c55e","Сдача объекта":"#8b5cf6"};
-const fmt=(d)=>d.toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit"});
-const fmtFull=(d)=>d.toLocaleDateString("ru-RU");
+const pick=(a)=>a[Math.floor(Math.random()*a.length)];
 
-/* ОЧИСТКА */
+/* СЦЕНАРИИ ДИАЛОГОВ по типам работ. c=клиент, m=менеджер */
+const DIALOGS={
+  "ванная":[
+    [
+      ["c","Здравствуйте! Хотел уточнить по ремонту ванной — плитку уже начали класть?"],
+      ["m","Добрый день! Да, сегодня бригада завершила укладку на стенах, завтра приступаем к полу. Всё идёт по графику."],
+      ["c","Отлично. А затирку какого цвета будете делать? Хотелось бы, чтобы не сильно выделялась."],
+      ["m","Подобрали затирку в тон плитке, светло-серую — швы будут аккуратными и почти незаметными. Если хотите, пришлю фото образца перед нанесением."],
+      ["c","Да, пришлите пожалуйста. И ещё — гидроизоляцию делали под плиткой?"],
+      ["m","Обязательно, это первое, что мы сделали после стяжки. Нанесли обмазочную гидроизоляцию в два слоя, с заходом на стены — для санузла это критично, чтобы соседей не топить. Так что тут всё по технологии."],
+      ["c","Супер, спасибо за подробности! Спокоен теперь."],
+      ["m","Всегда пожалуйста! Завтра-послезавтра закончим пол, потом установим сантехнику. Держу вас в курсе."]
+    ]
+  ],
+  "кухня":[
+    [
+      ["c","Добрый день! Подскажите, розетки на кухне уже вывели по плану, который мы согласовывали?"],
+      ["m","Здравствуйте! Да, всё развели по вашей схеме: над столешницей пять розеток, отдельные линии под духовку, варочную и посудомойку. Для мощной техники сделали усиленный кабель."],
+      ["c","Это здорово, а то на старой кухне вечно выбивало пробки. Фартук когда начнёте?"],
+      ["m","Стены под фартук уже выровняли, плитку-кабанчик начнём укладывать в четверг. Цвет и раскладку делаем как договаривались — горизонтально, со смещением."],
+      ["c","Класс! А вытяжку куда выводите?"],
+      ["m","Вывод под вытяжку готов, идёт в вентканал, всё герметично. Когда привезут ваш гарнитур — подключим без проблем. Кухня получается продуманной, готовить будет удобно."],
+      ["c","Спасибо большое, вы молодцы!"],
+      ["m","Рады стараться! Скоро всё будет готово."]
+    ]
+  ],
+  "дизайн":[
+    [
+      ["c","Здравствуйте! Посмотрела 3D-визуализацию, всё очень нравится. Только переживаю — в реальности так же будет смотреться?"],
+      ["m","Добрый день! Понимаю ваше беспокойство, но не волнуйтесь — мы подбираем реальные материалы строго под визуализацию. Цвет стен, текстура пола, светильники — всё то же самое, что вы видели на картинке."],
+      ["c","А освещение? На рендере оно очень атмосферное, с подсветкой ниш."],
+      ["m","Подсветку ниш и потолка делаем по дизайн-проекту — светодиодная лента тёплого свечения, как на визуализации. Плюс сценарии освещения: основной свет, мягкий вечерний и акцентный. Атмосфера будет именно такая."],
+      ["c","Обожаю вас! А мебель вы тоже подбираете или мне самой искать?"],
+      ["m","Можем взять это на себя — у нас есть подборка под ваш проект с конкретными моделями и магазинами, всё в стиле и по размерам. Пришлю на согласование, выберете что нравится."],
+      ["c","Да, очень хочу! Так гораздо проще, чем самой бегать по магазинам."],
+      ["m","Договорились, подготовлю подборку к концу недели. Ваша квартира получится именно такой, как мы задумали — стильной и уютной."]
+    ]
+  ],
+  "капитальный":[
+    [
+      ["c","Добрый день! Как продвигаются черновые работы? Хочется понимать сроки."],
+      ["m","Здравствуйте! Черновой этап почти завершён: электрику развели, трубы заменили, стены оштукатурили по маякам, стяжку залили. Сейчас ждём, пока стяжка наберёт прочность — это около недели."],
+      ["c","А почему так долго со стяжкой? Можно быстрее?"],
+      ["m","Понимаю, что хочется быстрее, но стяжке нужно время выстояться, иначе потом пойдут трещины и напольное покрытие вздуется. Это технологический срок, мы его не пропускаем ради качества. Зато потом всё прослужит долго."],
+      ["c","Логично, лучше подождать и сделать на совесть. А электрику всю поменяли?"],
+      ["m","Полностью. Старую проводку демонтировали, проложили новую медную с нуля, поставили новый щиток с автоматами на каждую группу. Теперь всё безопасно и с запасом по мощности."],
+      ["c","Отлично! Спасибо, что всё подробно объясняете."],
+      ["m","Это наша работа — вы должны понимать, за что платите. Как стяжка высохнет, перейдём к чистовой отделке. Держу в курсе каждого этапа."]
+    ]
+  ],
+  "косметический":[
+    [
+      ["c","Здравствуйте! Обои уже поклеили? Очень жду результат."],
+      ["m","Добрый день! Да, в гостиной и спальне обои уже на стенах, легли идеально ровно, без пузырей и стыков. Сохнут. Завтра займёмся потолками."],
+      ["c","А потолки красите или белите?"],
+      ["m","Красим водоэмульсионной краской в два слоя — так ровнее и долговечнее, чем побелка. Перед этим зашпаклевали и отшлифовали, чтобы поверхность была идеально гладкой."],
+      ["c","Здорово! А полы будете менять или оставляем?"],
+      ["m","По смете у нас замена напольного покрытия — постелим новый ламинат, как договаривались. Старое покрытие уже сняли, основание подготовили. Квартира преобразится, сами не узнаете!"],
+      ["c","Не терпится увидеть! Спасибо за работу."],
+      ["m","Совсем немного осталось. Сделаем красиво и аккуратно, всё уберём за собой. Скоро принимаете работу!"]
+    ]
+  ],
+  "новостройка":[
+    [
+      ["c","Добрый день! У меня голые стены от застройщика. С чего начнёте отделку?"],
+      ["m","Здравствуйте! Начинаем с разводки электрики и сантехники по квартире, затем штукатурка стен и стяжка пола — это база. После высыхания переходим к чистовой отделке."],
+      ["c","А сколько примерно времени займёт всё под ключ?"],
+      ["m","По вашему метражу и объёму — ориентировочно полтора-два месяца. Точные сроки по этапам пропишем в графике, вы будете видеть, что и когда делается."],
+      ["c","Понял. А материалы вы закупаете или я?"],
+      ["m","Можем взять закупку на себя — так выходит дешевле, у нас оптовые цены у поставщиков, и не придётся самому возить. Всё по смете, с чеками. Либо закупаете сами — как удобнее."],
+      ["c","Давайте вы, мне некогда этим заниматься. Доверяю."],
+      ["m","Отлично, всё организуем. Превратим вашу новостройку в готовое жильё — заедете и сразу живёте. Будем на связи по каждому этапу!"]
+    ]
+  ]
+};
+
+function dialogFor(service){
+  const s=(service||"").toLowerCase();
+  if(s.includes("ванн"))return pick(DIALOGS["ванная"]);
+  if(s.includes("кухн"))return pick(DIALOGS["кухня"]);
+  if(s.includes("дизайн")||s.includes("ключ"))return pick(DIALOGS["дизайн"]);
+  if(s.includes("капитальн"))return pick(DIALOGS["капитальный"]);
+  if(s.includes("новостро"))return pick(DIALOGS["новостройка"]);
+  return pick(DIALOGS["косметический"]);
+}
+
+/* ОЧИСТКА чатов */
 document.getElementById("clearBtn").addEventListener("click",async()=>{
-  if(!confirm("Удалить все записи календаря? Заказы и клиенты не тронутся."))return;
+  if(!confirm("Удалить все сообщения во всех чатах?"))return;
   const btn=document.getElementById("clearBtn");btn.disabled=true;
-  document.getElementById("log").innerHTML="Очищаю календарь...";
+  document.getElementById("log").innerHTML="Очищаю чаты...";
   try{
-    const snap=await getDocs(collection(db,"calendarEvents"));
-    let n=0;for(const d of snap.docs){await deleteDoc(doc(db,"calendarEvents",d.id));n++;}
-    log(`✅ Удалено записей: ${n}`,"ok");log("Теперь «Создать график работ».","dim");
+    // собираем uid клиентов
+    const usnap=await getDocs(collection(db,"users"));
+    let n=0;
+    for(const u of usnap.docs){
+      const uid=u.data().uid;if(!uid)continue;
+      const items=await getDocs(collection(db,"messages",uid,"items"));
+      for(const m of items.docs){await deleteDoc(doc(db,"messages",uid,"items",m.id));n++;}
+    }
+    log(`✅ Удалено сообщений: ${n}`,"ok");
   }catch(e){log("❌ Ошибка: "+e.message,"err");}
   btn.disabled=false;
 });
 
-/* построить этапы объекта: массив рабочих дней с типом работ */
-function buildStages(service){
-    const s=(service||"").toLowerCase();
-    const days=["Замер"]; // замер всегда первый
-    const rep=(type,n)=>{for(let i=0;i<n;i++)days.push(type);};
-
-    if(s.includes("косметическ")){
-        // косметика: без демонтажа, в основном отделка
-        rep("Отделочные работы",rnd(3,5));
-    }else if(s.includes("ванн")||s.includes("кухн")){
-        // санузел/кухня: демонтаж, черновые (плитка/сантехника), отделка
-        rep("Демонтаж",1);
-        rep("Черновые работы",rnd(2,4));
-        rep("Отделочные работы",rnd(2,4));
-    }else if(s.includes("капитальн")||s.includes("дизайн")||s.includes("ключ")){
-        // капитальный/дизайн: всё по полной
-        rep("Демонтаж",rnd(1,2));
-        rep("Черновые работы",rnd(4,6));
-        rep("Отделочные работы",rnd(4,7));
-    }else if(s.includes("новостро")){
-        // новостройка: без демонтажа, черновые + отделка
-        rep("Черновые работы",rnd(3,5));
-        rep("Отделочные работы",rnd(3,6));
-    }else{
-        // прочее / студия — средний набор
-        rep("Демонтаж",1);
-        rep("Черновые работы",rnd(2,4));
-        rep("Отделочные работы",rnd(3,5));
-    }
-
-    days.push("Сдача объекта"); // сдача всегда последняя
-    return days;
-}
-
-/* следующий рабочий день (пропуск вс) */
-function nextWorkday(d){const x=new Date(d);x.setDate(x.getDate()+1);if(x.getDay()===0)x.setDate(x.getDate()+1);return x;}
-function isSunday(d){return d.getDay()===0;}
-
+/* СОЗДАНИЕ диалогов */
 document.getElementById("runBtn").addEventListener("click",async()=>{
   const btn=document.getElementById("runBtn");btn.disabled=true;
   document.getElementById("log").innerHTML="Загружаю заказы...";
   try{
-    const snap=await getDocs(collection(db,"projects"));
-    let orders=[];
-    snap.forEach(d=>{const p=d.data();const st=p.status;
-      if(st==="Завершён"||st==="Завершен"||st==="В работе")orders.push({id:d.id,...p});});
-    if(!orders.length){log("❌ Нет завершённых или активных заказов.","err");btn.disabled=false;return;}
-    orders.sort(()=>Math.random()-0.5);
-    log(`✅ Объектов: ${orders.length}. Строю последовательный график...\n`,"ok");
-
-    // занятость дня: ключ "YYYY-MM-DD" -> сколько объектов уже в этот день (макс 2)
-    const dayLoad={};
-    const dayKey=(d)=>d.toISOString().slice(0,10);
-
-    async function addEvent(order,date,workType,half){
-      const dt=new Date(date);
-      dt.setHours(half==="pm"?14:9,0,0,0);
-      const iso=dt.toISOString();
-      await addDoc(collection(db,"calendarEvents"),{
-        uid:order.uid, client:order.clientName||"", clientName:order.clientName||"",
-        phone:order.phone||"", address:order.address||"",
-        workType,
-        comment:(half==="pm"?"После обеда. ":"")+"Объект: "+(order.service||order.title||""),
-        orderId:order.id,
-        date:iso, dateStart:iso.slice(0,10), dateEnd:iso.slice(0,10),
-        color:WT_COLOR[workType]||"#ffb547", manager:"Бригада BuildHouse", createdAt:Date.now()
-      });
-    }
-
-    let cursor=new Date(2026,0,6,9,0); // старт пн 6 янв
-    const limit=new Date(2026,6,1);    // до 1 июля (весь июнь включительно)
-    let created=0, placedObjects=0;
-
-    let round=0;
-    while(cursor<limit && round<6){  // несколько кругов, пока не заполним июнь
-      for(const order of orders){
-        if(cursor>=limit)break;
-        const stages=buildStages(order.service||order.title);
-        let firstDay=null,lastDay=null;
-        const stageStart={}; // тип этапа -> дата первого появления
-
-        for(const wt of stages){
-          if(cursor>=limit)break;
-          while(isSunday(cursor) || (dayLoad[dayKey(cursor)]||0)>=2){
-            cursor=nextWorkday(cursor);
-            if(cursor>=limit)break;
-          }
-          if(cursor>=limit)break;
-
-          const load=dayLoad[dayKey(cursor)]||0;
-          const half=load===0?"am":"pm";
-          await addEvent(order,cursor,wt,half);
-          dayLoad[dayKey(cursor)]=load+1;
-          created++;
-          if(!firstDay)firstDay=new Date(cursor);
-          if(!stageStart[wt])stageStart[wt]=new Date(cursor); // запоминаем старт этапа
-          lastDay=new Date(cursor);
-          cursor=nextWorkday(cursor);
-        }
-
-        // период работ пишем в заказ только в первом круге (последний реальный объект)
-        if(firstDay&&lastDay){
-          // собираем осмысленную историю заказа
-          const createdDate=order.createdAt?new Date(order.createdAt):new Date(firstDay.getTime()-7*86400000);
-          const history=[{title:"Заявка получена",date:fmtFull(createdDate)}];
-          history.push({title:"Заявка одобрена, назначен замер",date:fmtFull(firstDay)});
-          // этапы в порядке появления
-          const order2=["Демонтаж","Черновые работы","Отделочные работы"];
-          order2.forEach(t=>{
-            if(stageStart[t])history.push({title:"Начаты: "+t.toLowerCase(),date:fmtFull(stageStart[t])});
-          });
-          const isDone=(order.status==="Завершён"||order.status==="Завершен");
-          if(isDone){
-            history.push({title:"Объект сдан, работы завершены",date:fmtFull(lastDay)});
-          }else{
-            history.push({title:"Проект в работе",date:fmtFull(firstDay)});
-          }
-
-          try{
-            await updateDoc(doc(db,"projects",order.id),{
-              measureDate:fmtFull(firstDay),
-              deadline:fmtFull(lastDay),
-              workStart:fmtFull(firstDay),
-              workEnd:fmtFull(lastDay),
-              workPeriod:fmt(firstDay)+" — "+fmt(lastDay),
-              history:history
-            });
-          }catch(e){}
-          placedObjects++;
-          log(`🏠 ${order.clientName} · ${order.service||order.title}\n     работы: ${fmtFull(firstDay)} — ${fmtFull(lastDay)} (${stages.length} раб. дн.)`,"hl");
-        }
+    // клиенты с заказами (берём завершённые и в работе)
+    const psnap=await getDocs(collection(db,"projects"));
+    const byClient={}; // uid -> service (последний заказ)
+    psnap.forEach(d=>{
+      const p=d.data();const st=p.status;
+      if(st==="Завершён"||st==="Завершен"||st==="В работе"){
+        const uid=p.uid;if(!uid)return;
+        if(!byClient[uid])byClient[uid]={service:p.service||p.title,name:p.clientName,createdAt:p.createdAt||Date.now()};
       }
-      round++;
-    }
+    });
+    const uids=Object.keys(byClient);
+    if(!uids.length){log("❌ Нет клиентов с заказами.","err");btn.disabled=false;return;}
+    log(`✅ Клиентов с заказами: ${uids.length}`,"ok");
+    log("Создаю диалоги по теме ремонта...\n");
 
-    log(`\n🎉 Готово! Объектов в графике: ${placedObjects}, записей: ${created}`,"ok");
-    log("В заказах появился период «работы с… по…». Откройте «Замеры». Файл можно удалить.","ok");
+    let total=0;
+    for(const uid of uids){
+      const info=byClient[uid];
+      const dialog=dialogFor(info.service);
+      // время начала диалога — через несколько дней после заказа
+      let t=(info.createdAt||Date.now())+5*86400000;
+      const step=Math.floor((2*3600000+Math.random()*6*3600000)); // 2-8 часов между сообщениями
+
+      for(const [who,text] of dialog){
+        const when=new Date(t);
+        await addDoc(collection(db,"messages",uid,"items"),{
+          text,
+          sender:who==="c"?"client":"manager",
+          time:Timestamp.fromDate(when),
+          read:true
+        });
+        t+=step+Math.floor(Math.random()*4*3600000);
+        total++;
+      }
+      log(`💬 ${info.name} (${info.service}) — ${dialog.length} сообщений`,"dim");
+    }
+    log(`\n🎉 Готово! Создано сообщений: ${total} в ${uids.length} чатах.`,"ok");
+    log("Откройте «Сообщения» в панели менеджера. Файл можно удалить.","ok");
   }catch(e){log("❌ Ошибка: "+e.message,"err");}
   btn.disabled=false;
 });
