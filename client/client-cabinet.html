@@ -10,6 +10,22 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Inter',sans-serif;background:#f5f6fa;color:#111;}
 .dashboard{min-height:100vh;}
+
+/* анимации появления */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes popIn{0%{opacity:0;transform:scale(.94);}60%{transform:scale(1.01);}100%{opacity:1;transform:scale(1);}}
+.project-card{animation:fadeUp .6s ease backwards;}
+.stat-strip .stat-box{animation:popIn .5s cubic-bezier(.16,1,.3,1) backwards;}
+.stat-strip .stat-box:nth-child(1){animation-delay:.05s;}
+.stat-strip .stat-box:nth-child(2){animation-delay:.13s;}
+.stat-strip .stat-box:nth-child(3){animation-delay:.21s;}
+.stat-strip .stat-box:nth-child(4){animation-delay:.29s;}
+.two-col>*{animation:fadeUp .6s ease backwards;animation-delay:.1s;}
+.cabinet-grid .cabinet-card{animation:fadeUp .55s ease backwards;}
+.cabinet-grid .cabinet-card:nth-child(1){animation-delay:.08s;}
+.cabinet-grid .cabinet-card:nth-child(2){animation-delay:.16s;}
+.cabinet-grid .cabinet-card:nth-child(3){animation-delay:.24s;}
+.profile-settings{animation:fadeUp .6s ease backwards;animation-delay:.15s;}
 .sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:#0b1220;padding:30px 20px;display:flex;flex-direction:column;z-index:100;}
 .logo h2{color:#ffb547;font-size:28px;font-weight:900;}
 .logo p{color:#8a93a6;margin-top:6px;font-size:14px;}
@@ -60,12 +76,21 @@ button:hover{background:#ffa51f;transform:translateY(-2px);}
 .stage-text b{display:block;font-size:16px;}
 .stage-text span{font-size:13px;color:#999;}
 .notif-section{display:flex;flex-direction:column;gap:14px;}
-.notif-wrapper{display:flex;align-items:center;gap:8px;background:white;padding:16px 18px;border-radius:18px;box-shadow:0 4px 14px rgba(0,0,0,0.04);font-weight:700;font-size:16px;}
-.badge{background:#ff8c42;color:white;border-radius:999px;padding:3px 10px;font-size:12px;margin-left:auto;}
-.notifications-list{display:flex;flex-direction:column;gap:12px;max-height:360px;overflow-y:auto;}
-.notification-item{background:white;padding:16px 18px;border-radius:16px;box-shadow:0 4px 10px rgba(0,0,0,0.04);border-left:4px solid #ffb547;}
-.notification-item p{line-height:1.5;margin-bottom:6px;}
-.notification-item span{font-size:12px;opacity:0.6;}
+.notif-wrapper{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#0b1220,#1d2638);color:#fff;padding:18px 20px;border-radius:18px;box-shadow:0 8px 24px rgba(11,18,32,.2);font-weight:700;font-size:16px;}
+.notif-wrapper .badge{background:#ff8c42;color:white;border-radius:999px;padding:3px 10px;font-size:12px;margin-left:auto;}
+.notifications-list{display:flex;flex-direction:column;gap:12px;max-height:420px;overflow-y:auto;padding-right:4px;}
+.notification-item{background:white;padding:16px 18px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.05);border-left:4px solid #ffb547;display:flex;gap:12px;align-items:flex-start;animation:notifIn .45s ease backwards;}
+.notification-item .n-ic{font-size:20px;flex-shrink:0;line-height:1.2;}
+.notification-item .n-body{flex:1;min-width:0;}
+.notification-item.unread{border-left-color:#ff8c42;background:#fffaf2;}
+.notification-item p{line-height:1.45;margin-bottom:5px;font-size:14px;}
+.notification-item span{font-size:12px;opacity:0.55;}
+@keyframes notifIn{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}
+.notification-item:nth-child(1){animation-delay:.04s;}
+.notification-item:nth-child(2){animation-delay:.10s;}
+.notification-item:nth-child(3){animation-delay:.16s;}
+.notification-item:nth-child(4){animation-delay:.22s;}
+.notification-item:nth-child(5){animation-delay:.28s;}
 .cabinet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-bottom:30px;}
 .cabinet-card{background:white;border-radius:24px;padding:26px;box-shadow:0 4px 14px rgba(0,0,0,0.04);}
 .card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
@@ -256,14 +281,35 @@ async function loadDocuments(uid){
 }
 function loadNotifications(uid){
   const c=$("notificationsList"), badge=$("notifBadge");if(!c||!badge)return;
-  const ref=query(collection(db,"notifications",uid,"items"),orderBy("time","desc"));
-  onSnapshot(ref,(snap)=>{c.innerHTML="";let unread=0;
-    if(snap.empty){c.innerHTML='<p class="muted">Новых уведомлений нет</p>';}
-    snap.forEach(ds=>{const n=ds.data();if(!n.read)unread++;const time=n.time?.toDate?n.time.toDate():new Date(n.time);
-      const div=document.createElement("div");div.className="notification-item";
-      div.innerHTML='<p>'+(n.text||"Без текста")+'</p><span>'+(isNaN(time)?"":time.toLocaleString("ru-RU"))+'</span>';c.appendChild(div);});
+  onSnapshot(collection(db,"notifications",uid,"items"),(snap)=>{
+    let arr=[];
+    snap.forEach(ds=>{const n=ds.data();
+      const t=n.time?.toMillis?n.time.toMillis():(n.time?.seconds?n.time.seconds*1000:(n.clientTime||0));
+      arr.push({...n,_t:t});});
+    arr.sort((a,b)=>b._t-a._t); // свежие сверху
+    c.innerHTML="";let unread=0;
+    if(!arr.length){c.innerHTML='<p class="muted">Здесь появятся уведомления об изменениях по вашему проекту</p>';badge.style.display="none";return;}
+    arr.forEach(n=>{
+      if(!n.read)unread++;
+      const txt=n.text||"Без текста";
+      // иконка по смыслу
+      let ic="🔔";
+      if(/одобрен|в работу|запущен/i.test(txt))ic="✅";
+      else if(/замер|календар/i.test(txt))ic="📅";
+      else if(/смета|документ/i.test(txt))ic="🧮";
+      else if(/статус/i.test(txt))ic="📌";
+      else if(/готовност|%/i.test(txt))ic="📊";
+      else if(/сдан|спасибо|🎉/i.test(txt))ic="🎉";
+      else if(/отклонен|отмен/i.test(txt))ic="⚠️";
+      const dt=n._t?new Date(n._t):null;
+      const when=dt&&!isNaN(dt)?dt.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+      const div=document.createElement("div");
+      div.className="notification-item"+(n.read?"":" unread");
+      div.innerHTML='<div class="n-ic">'+ic+'</div><div class="n-body"><p>'+txt.replace(/^[✅📅🧮📌📊🎉⚠️🔨]\s*/,"")+'</p><span>'+when+'</span></div>';
+      c.appendChild(div);
+    });
     badge.textContent=unread;badge.style.display=unread>0?"inline-block":"none";
-  },()=>{c.innerHTML='<p class="muted">Новых уведомлений нет</p>';badge.style.display="none";});
+  },()=>{c.innerHTML='<p class="muted">Здесь появятся уведомления</p>';badge.style.display="none";});
 }
 function loadProfile(uid){
   onSnapshot(doc(db,"users",uid),(snap)=>{if(!snap.exists())return;const data=snap.data();const name=data.name||"Клиент";
