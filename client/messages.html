@@ -182,16 +182,28 @@ a{text-decoration:none;}
 
 
 <script type="module">
-import { auth, db, storage } from "./js/firebase.js";
+import { auth, db } from "./js/firebase.js";
 import {
     collection, query, orderBy, onSnapshot, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-    ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-import {
     signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* ===== БЕСПЛАТНОЕ ХРАНЕНИЕ ===== */
+const IMGBB_KEY="bd8a728ac270a8d6fecbd03734d77c8e";
+const MAX_INLINE=700*1024;
+function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+const blobToBase64=fileToBase64;
+async function uploadToImgBB(file){
+    const b64=await fileToBase64(file);
+    const form=new FormData();
+    form.append("image",b64.split(",")[1]);
+    const res=await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{method:"POST",body:form});
+    const data=await res.json();
+    if(!data.success)throw new Error("ImgBB не принял файл");
+    return data.data.url;
+}
 
 const messagesContainer = document.getElementById("messagesContainer");
 const sendBtn = document.getElementById("sendBtn");
@@ -268,17 +280,25 @@ sendBtn?.addEventListener("click",async()=>{
     let fileUrl="",imageUrl="",fileName="";
     try{
         if(selectedFile){
-            const storageRef=ref(storage,`chatFiles/${currentUser.uid}_${Date.now()}_${selectedFile.name}`);
-            await uploadBytes(storageRef,selectedFile);
-            fileUrl=await getDownloadURL(storageRef);
-            fileName=selectedFile.name;
-            if(selectedFile.type.startsWith("image/")) imageUrl=fileUrl;
+            const isImage=selectedFile.type.startsWith("image/");
+            if(isImage){
+                sendBtn.disabled=true;
+                imageUrl=await uploadToImgBB(selectedFile);
+                sendBtn.disabled=false;
+            }else{
+                if(selectedFile.size>MAX_INLINE){
+                    alert("Файл слишком большой (макс. ~700 КБ). Фото можно больше — они идут в облако.");
+                    return;
+                }
+                fileUrl=await fileToBase64(selectedFile);
+                fileName=selectedFile.name;
+            }
         }
         await addDoc(collection(db,"messages",currentUser.uid,"items"),{
             text,sender:"client",fileUrl,imageUrl,fileName,read:false,time:serverTimestamp()
         });
         messageInput.value="";fileInput.value="";filePreview.innerHTML="";selectedFile=null;
-    }catch(e){alert("Ошибка отправки: "+e.message);}
+    }catch(e){sendBtn.disabled=false;alert("Ошибка отправки: "+e.message);}
 });
 
 /* ENTER */
@@ -301,12 +321,14 @@ voiceBtn?.addEventListener("click",async()=>{
         mediaRecorder.onstop=async()=>{
             const blob=new Blob(audioChunks,{type:"audio/webm"});
             try{
-                const storageRef=ref(storage,`voices/${currentUser.uid}_${Date.now()}.webm`);
-                await uploadBytes(storageRef,blob);
-                const url=await getDownloadURL(storageRef);
-                await addDoc(collection(db,"messages",currentUser.uid,"items"),{
-                    sender:"client",voiceUrl:url,read:false,time:serverTimestamp()
-                });
+                if(blob.size>MAX_INLINE){
+                    alert("Голосовое слишком длинное (макс. ~30-40 сек). Запишите покороче.");
+                }else{
+                    const voiceUrl=await blobToBase64(blob);
+                    await addDoc(collection(db,"messages",currentUser.uid,"items"),{
+                        sender:"client",voiceUrl,read:false,time:serverTimestamp()
+                    });
+                }
             }catch(e){alert("Ошибка записи: "+e.message);}
             stream.getTracks().forEach(t=>t.stop());
         };
