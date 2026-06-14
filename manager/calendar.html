@@ -91,6 +91,16 @@ a{text-decoration:none;}
 .modal-grid input,.modal-grid select,.modal-grid textarea{width:100%;padding:14px;border:none;background:#f5f6fa;border-radius:13px;font-family:inherit;font-size:15px;}
 .modal-grid input:focus,.modal-grid select:focus,.modal-grid textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(255,181,71,.2);}
 .modal-grid textarea{resize:none;min-height:80px;}
+
+/* поиск клиента с подсказками */
+.suggest-box{position:absolute;top:calc(100% + 4px);left:0;right:0;background:white;border-radius:13px;box-shadow:0 12px 30px rgba(0,0,0,.15);max-height:240px;overflow-y:auto;z-index:50;display:none;}
+.suggest-box.show{display:block;}
+.suggest-item{padding:12px 14px;cursor:pointer;border-bottom:1px solid #f2f4f8;transition:.15s;}
+.suggest-item:last-child{border-bottom:none;}
+.suggest-item:hover,.suggest-item.hl{background:#fff8eb;}
+.suggest-item b{font-size:14px;display:block;}
+.suggest-item span{font-size:12px;color:var(--muted);}
+.suggest-empty{padding:14px;color:var(--muted);font-size:13px;text-align:center;}
 .modal-actions{display:flex;gap:12px;margin-top:22px;}
 .modal-actions button{flex:1;border:none;padding:15px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;}
 #saveTaskBtn{background:var(--primary);color:#111;}
@@ -199,7 +209,11 @@ a{text-decoration:none;}
         </div>
         <div class="modal-grid">
             <label>Клиент</label>
-            <select id="clientSelect"><option value="">Выберите клиента</option></select>
+            <div style="position:relative;">
+                <input id="clientSearch" type="text" placeholder="Начните вводить имя или телефон..." autocomplete="off">
+                <input type="hidden" id="clientUid">
+                <div id="clientSuggest" class="suggest-box"></div>
+            </div>
 
             <label>Тип работ</label>
             <select id="workType">
@@ -285,16 +299,75 @@ onAuthStateChanged(auth,async(user)=>{
     initCalendar();
 });
 
-/* клиенты в выпадашку */
+/* клиенты — грузим в массив для поиска */
 async function loadClients(){
     try{
         const snap=await getDocs(collection(db,"users"));
         clients=[];
         snap.forEach(d=>{const u=d.data();if(u.role!=="manager")clients.push(u);});
-        $("clientSelect").innerHTML='<option value="">Выберите клиента</option>'+
-            clients.map(c=>`<option value="${c.uid}">${c.name||c.email}</option>`).join("");
     }catch(e){console.error(e);}
 }
+
+/* ПОИСК КЛИЕНТА С АВТОДОПОЛНЕНИЕМ */
+const clientSearch=$("clientSearch");
+const clientSuggest=$("clientSuggest");
+let suggestList=[];
+let hlIndex=-1;
+
+clientSearch.addEventListener("input",()=>{
+    $("clientUid").value=""; // сбрасываем выбор при ручном вводе
+    const q=clientSearch.value.trim().toLowerCase();
+    if(!q){clientSuggest.classList.remove("show");return;}
+    suggestList=clients.filter(c=>((c.name||"")+" "+(c.phone||"")+" "+(c.email||"")).toLowerCase().includes(q)).slice(0,30);
+    hlIndex=-1;
+    renderSuggest();
+});
+
+clientSearch.addEventListener("focus",()=>{
+    if(clientSearch.value.trim() && suggestList.length)clientSuggest.classList.add("show");
+});
+
+function renderSuggest(){
+    if(!suggestList.length){
+        clientSuggest.innerHTML='<div class="suggest-empty">Клиент не найден</div>';
+        clientSuggest.classList.add("show");
+        return;
+    }
+    clientSuggest.innerHTML=suggestList.map((c,i)=>`
+        <div class="suggest-item ${i===hlIndex?'hl':''}" data-uid="${c.uid}">
+            <b>${c.name||"Без имени"}</b>
+            <span>${c.phone||""}${c.email?" · "+c.email:""}</span>
+        </div>`).join("");
+    clientSuggest.classList.add("show");
+    clientSuggest.querySelectorAll(".suggest-item").forEach(el=>{
+        el.addEventListener("click",()=>pickClient(el.dataset.uid));
+    });
+}
+
+function pickClient(uid){
+    const c=clients.find(x=>x.uid===uid);
+    if(!c)return;
+    clientSearch.value=c.name||c.email||"";
+    $("clientUid").value=uid;
+    if(!$("clientAddress").value && c.address)$("clientAddress").value=c.address;
+    clientSuggest.classList.remove("show");
+}
+
+/* навигация стрелками */
+clientSearch.addEventListener("keydown",(e)=>{
+    if(!clientSuggest.classList.contains("show"))return;
+    if(e.key==="ArrowDown"){e.preventDefault();hlIndex=Math.min(hlIndex+1,suggestList.length-1);renderSuggest();}
+    else if(e.key==="ArrowUp"){e.preventDefault();hlIndex=Math.max(hlIndex-1,0);renderSuggest();}
+    else if(e.key==="Enter"){e.preventDefault();if(hlIndex>=0&&suggestList[hlIndex])pickClient(suggestList[hlIndex].uid);}
+    else if(e.key==="Escape"){clientSuggest.classList.remove("show");}
+});
+
+/* клик вне — закрыть подсказки */
+document.addEventListener("click",(e)=>{
+    if(!e.target.closest("#clientSearch") && !e.target.closest("#clientSuggest")){
+        clientSuggest.classList.remove("show");
+    }
+});
 
 /* инициализация календаря */
 function initCalendar(){
@@ -325,7 +398,8 @@ function initCalendar(){
             currentDocId=info.event.id;
             const p=info.event.extendedProps;
             $("modalTitle").textContent="Редактировать запись";
-            $("clientSelect").value=p.uid||"";
+            $("clientUid").value=p.uid||"";
+            $("clientSearch").value=p.client||"";
             $("workType").value=p.workType||"Замер";
             $("clientAddress").value=p.address||"";
             $("manager").value=p.manager||"";
@@ -390,7 +464,7 @@ $("openModalBtn").addEventListener("click",()=>{
 
 /* сохранить */
 $("saveTaskBtn").addEventListener("click",async()=>{
-    const uid=$("clientSelect").value;
+    const uid=$("clientUid").value;
     const client=clients.find(c=>c.uid===uid);
     const workType=$("workType").value;
     const address=$("clientAddress").value.trim();
@@ -398,7 +472,8 @@ $("saveTaskBtn").addEventListener("click",async()=>{
     const comment=$("comment").value.trim();
     const dateVal=$("eventDate").value;
 
-    if(!uid||!dateVal){alert("Выберите клиента и дату");return;}
+    if(!uid){alert("Выберите клиента из списка подсказок");return;}
+    if(!dateVal){alert("Укажите дату");return;}
 
     const iso=new Date(dateVal).toISOString();
     const color=getColor(workType);
@@ -494,7 +569,8 @@ function scrollToPlan(){
     }
 }
 function clearForm(){
-    $("clientSelect").value="";
+    $("clientSearch").value="";
+    $("clientUid").value="";
     $("workType").value="Замер";
     $("clientAddress").value="";
     $("manager").value="";
