@@ -12,572 +12,589 @@
     --primary:#ffb547;
     --primary-dark:#f39a1f;
     --accent:#ff8c42;
-    --sidebar:#0b1220;
-    --bg:#f4f7fb;
+    --navy:#0b1220;
+    --bg:#f5f6fa;
     --white:#fff;
-    --border:#e6ebf2;
+    --border:#e8edf4;
     --text:#1b2430;
     --muted:#7d8896;
     --success:#22c55e;
     --danger:#ef4444;
-    --shadow:0 10px 35px rgba(0,0,0,.06);
+    --info:#3b82f6;
+    --shadow:0 4px 14px rgba(0,0,0,.04);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
 a{text-decoration:none;}
+.dashboard{display:flex;min-height:100vh;}
 
 /* SIDEBAR */
-.sidebar{
-    position:fixed;left:0;top:0;width:260px;height:100vh;
-    background:var(--sidebar);padding:30px 20px;
-    display:flex;flex-direction:column;z-index:1000;
-}
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--navy);padding:30px 20px;display:flex;flex-direction:column;z-index:100;}
 .logo h2{color:var(--primary);font-size:28px;font-weight:900;}
-.logo p{color:#8f9aad;margin-top:6px;font-size:14px;}
-.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex-grow:1;}
-.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;font-weight:500;}
+.logo p{color:#8894a8;margin-top:6px;font-size:14px;}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex:1;}
+.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;cursor:pointer;font-weight:500;}
 .menu a .m-ic{font-size:19px;}
 .menu a:hover{background:#1d2638;color:white;}
 .menu .active{background:var(--primary);color:#111;font-weight:700;}
-#logoutBtn{width:100%;border:none;padding:14px;border-radius:14px;background:#1d2638;color:#ff9b9b;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:auto;}
+#logoutBtn{border:none;background:#1d2638;color:#ff9b9b;padding:14px;border-radius:14px;font-weight:700;cursor:pointer;margin-top:auto;font-family:inherit;font-size:15px;}
 #logoutBtn:hover{background:#26344a;}
 
-/* PAGE */
-.orders-page{margin-left:260px;min-height:100vh;padding:40px;}
-.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:30px;}
-.page-header .ph-left{display:flex;align-items:center;gap:16px;}
-.page-header h1{font-size:32px;}
-.page-header p{margin-top:6px;color:var(--muted);}
-.header-actions{display:flex;gap:12px;}
+/* MAIN */
+.main{margin-left:260px;padding:30px;width:100%;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;gap:20px;}
+.top-left{display:flex;align-items:center;gap:16px;}
+.topbar h1{font-size:32px;margin-bottom:6px;}
+.topbar p{color:var(--muted);}
 .burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
-
-/* BUTTONS */
-.primary-btn,.secondary-btn,.btn{border:none;padding:14px 22px;border-radius:14px;cursor:pointer;font-size:15px;font-weight:700;transition:.25s;font-family:inherit;}
-.primary-btn,.btn-primary{background:var(--primary);color:#111;}
-.primary-btn:hover,.btn-primary:hover{background:var(--primary-dark);}
-.secondary-btn{background:#111;color:white;}
-.secondary-btn:hover{transform:translateY(-2px);}
-
-/* FILTERS */
-.filters{display:flex;gap:14px;margin-bottom:28px;}
-.filters input,.filters select{background:white;border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-family:inherit;font-size:15px;}
-.filters input{flex:1;}
-
-/* STAT STRIP */
-.stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:30px;}
-.stat-mini{background:white;border-radius:18px;padding:20px;box-shadow:var(--shadow);}
-.stat-mini b{font-size:28px;display:block;}
-.stat-mini span{color:var(--muted);font-size:14px;}
-.stat-mini.new b{color:var(--accent);}
-.stat-mini.work b{color:#2563c0;}
-.stat-mini.done b{color:var(--success);}
+.manager-card{display:flex;align-items:center;gap:12px;background:white;padding:10px 16px;border-radius:18px;box-shadow:var(--shadow);}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--primary);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
+.manager-card h4{font-size:15px;}.manager-card p{color:var(--muted);font-size:13px;}
 
 /* GRID */
-.orders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px;}
-.order-card{background:white;border-radius:24px;padding:24px;box-shadow:var(--shadow);transition:.25s;border:2px solid transparent;}
-.order-card:hover{transform:translateY(-5px);border-color:var(--primary);}
-.order-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:10px;}
-.order-number{font-size:18px;font-weight:700;}
-.order-status{padding:7px 13px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;}
-.status-new{background:#fff4d8;color:#d48806;}
-.status-work{background:#eef4ff;color:#2563c0;}
-.status-done{background:#eafaf0;color:var(--success);}
-.status-cancel{background:#ffecec;color:var(--danger);}
-.order-info{display:flex;flex-direction:column;gap:10px;}
-.order-row{display:flex;justify-content:space-between;gap:10px;}
-.order-label{color:var(--muted);}
-.order-value{font-weight:600;text-align:right;}
-.order-footer{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-.order-price{font-size:22px;font-weight:800;color:var(--accent);}
-.empty-orders{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--muted);}
-.empty-orders h3{font-size:22px;margin-bottom:8px;color:var(--text);}
+.grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;}
 
-/* MODAL */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:9999;padding:20px;}
-.modal.open{display:flex;}
-.modal-content{width:100%;max-width:520px;background:white;border-radius:26px;padding:34px;box-shadow:0 25px 60px rgba(0,0,0,.2);max-height:92vh;overflow-y:auto;position:relative;}
-.modal-content h2{margin-bottom:22px;font-size:28px;}
-.close-x{position:absolute;top:20px;right:20px;width:40px;height:40px;border:none;background:#f3f3f3;border-radius:50%;font-size:20px;cursor:pointer;}
-.form-group{margin-bottom:16px;}
-.form-group label{display:block;margin-bottom:8px;font-weight:600;}
-.form-group input,.form-group select{width:100%;padding:14px;border:1px solid var(--border);border-radius:14px;font-family:inherit;font-size:15px;}
-.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary);}
-.calc-result{margin:20px 0;padding:22px;border-radius:18px;background:#fff4df;text-align:center;}
-.calc-result span{color:var(--muted);display:block;margin-bottom:6px;}
-.calc-result b{font-size:32px;color:var(--accent);}
-.btn-full{width:100%;}
+/* LEFT */
+.left-panel{background:white;border-radius:24px;padding:22px;box-shadow:var(--shadow);height:calc(100vh - 130px);overflow-y:auto;position:sticky;top:20px;}
+.search{width:100%;border:none;background:#f5f6fa;padding:15px;border-radius:14px;margin-bottom:14px;font-family:inherit;font-size:15px;}
+.search:focus{outline:none;background:white;box-shadow:0 0 0 3px rgba(255,181,71,.2);}
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.ftab{border:none;background:#f5f6fa;padding:8px 12px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:#555;}
+.ftab.active{background:var(--primary);color:#111;}
+.project-card{background:#fafbfd;border-radius:18px;padding:18px;margin-bottom:12px;cursor:pointer;border:2px solid transparent;transition:.25s;}
+.project-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.project-card.active{border-color:var(--primary);background:#fff8eb;}
+.project-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;}
+.project-card h3{font-size:16px;}
+.project-card p{color:var(--muted);font-size:14px;}
+.status{padding:5px 11px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;}
+.st-new{background:#fff3df;color:#a86500;}
+.st-measure{background:#e6f0ff;color:#2563c0;}
+.st-work{background:#e6f4ff;color:#1677ff;}
+.st-done{background:#e3f9ea;color:#1e7c3a;}
+.st-cancel{background:#fdecea;color:#c0392b;}
+.empty-projects{text-align:center;padding:50px 20px;color:var(--muted);}
 
-/* OVERLAY */
+/* RIGHT */
+.right-panel{display:flex;flex-direction:column;gap:22px;}
+.block{background:white;padding:28px;border-radius:24px;box-shadow:var(--shadow);}
+.block h2{margin-bottom:20px;font-size:20px;}
+.placeholder{text-align:center;padding:60px 20px;color:var(--muted);}
+.placeholder .big{font-size:50px;margin-bottom:14px;}
+
+/* CLIENT INFO */
+.client-row{display:flex;align-items:center;gap:16px;margin-bottom:6px;}
+.client-av{width:56px;height:56px;border-radius:50%;background:var(--primary);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;}
+.client-row h3{font-size:20px;}
+.client-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:18px;}
+.cm-box{background:#f8f9fc;padding:14px 16px;border-radius:14px;}
+.cm-box small{color:var(--muted);display:block;margin-bottom:4px;}
+.cm-box b{font-size:15px;}
+
+/* ACTIONS for new request */
+.req-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;}
+.btn{border:none;padding:14px 22px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;transition:.2s;color:white;}
+.btn:hover{transform:translateY(-2px);}
+.btn-approve{background:var(--success);}
+.btn-measure{background:var(--info);}
+.btn-reject{background:var(--danger);}
+.btn-primary{background:var(--primary);color:#111;}
+.btn-block{width:100%;}
+.measure-row{display:flex;gap:12px;align-items:flex-end;margin-top:16px;flex-wrap:wrap;}
+.measure-row .form-group{flex:1;min-width:160px;margin:0;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.form-group{margin-bottom:0;}
+.form-group label{display:block;margin-bottom:7px;font-weight:600;font-size:13px;color:#555;}
+.form-grid input,.form-grid select,.form-grid textarea,.form-group input,.form-group select{width:100%;border:none;background:#f5f6fa;padding:14px;border-radius:13px;font-family:inherit;font-size:15px;}
+.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{outline:none;background:white;box-shadow:0 0 0 3px rgba(255,181,71,.15);}
+textarea{resize:none;min-height:90px;grid-column:1/-1;}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;}
+
+/* INFO BOXES */
+.info-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+.info-box{background:#f8f9fc;padding:18px;border-radius:16px;}
+.info-box p{color:var(--muted);font-size:13px;margin-bottom:6px;}
+.info-box h3{font-size:17px;}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.timeline-item{display:flex;gap:14px;position:relative;padding-bottom:22px;}
+.timeline-item:last-child{padding-bottom:0;}
+.timeline-item::before{content:"";position:absolute;left:7px;top:18px;bottom:0;width:2px;background:var(--border);}
+.timeline-item:last-child::before{display:none;}
+.timeline-dot{width:16px;height:16px;background:var(--primary);border-radius:50%;margin-top:3px;flex-shrink:0;z-index:1;}
+.timeline-item h4{font-size:15px;margin-bottom:3px;}
+.timeline-item p{color:var(--muted);font-size:13px;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
+.overlay.show{display:block;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:#d9dee7;border-radius:20px;}
+
 @media(max-width:1100px){
+    .grid{grid-template-columns:1fr;}
+    .left-panel{height:auto;position:relative;max-height:500px;}
+}
+@media(max-width:900px){
     .sidebar{transform:translateX(-100%);transition:.3s;}
     .sidebar.open{transform:translateX(0);}
-    .orders-page{margin-left:0;padding:24px;}
+    .main{margin-left:0;padding:24px;}
     .burger{display:block;}
+    .topbar{flex-direction:column;align-items:flex-start;}
 }
-@media(max-width:768px){
-    .page-header{flex-direction:column;align-items:flex-start;}
-    .header-actions{width:100%;}
-    .primary-btn,.secondary-btn{flex:1;}
-    .filters{flex-direction:column;}
-    .orders-grid{grid-template-columns:1fr;}
-}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
-.overlay.show{display:block;}
 </style>
 </head>
 
 <body>
+<div class="dashboard">
 
 <aside class="sidebar" id="sidebar">
     <div class="logo">
         <h2>BuildHouse</h2>
-        <p>Личный кабинет</p>
+        <p>CRM система</p>
     </div>
     <nav class="menu">
-        <a href="client-cabinet.html"><span class="m-ic">🏠</span> Главная</a>
+        <a href="manager-panel.html"><span class="m-ic">📊</span> Главная</a>
         <a class="active"><span class="m-ic">📦</span> Заказы</a>
+        <a href="klients.html"><span class="m-ic">👥</span> Клиенты</a>
         <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
-        <a href="calendar.html"><span class="m-ic">📅</span> Календарь</a>
+        <a href="calendar.html"><span class="m-ic">📅</span> Замеры</a>
         <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
-        <a href="settings.html"><span class="m-ic">⚙️</span> Настройки</a>
+        <a href="setting.html"><span class="m-ic">⚙️</span> Настройки</a>
     </nav>
     <button id="logoutBtn">Выйти</button>
 </aside>
 
 <div class="overlay" id="overlay"></div>
 
-<main class="orders-page">
+<main class="main">
 
-    <div class="page-header">
-        <div class="ph-left">
+    <div class="topbar">
+        <div class="top-left">
             <button class="burger" id="burger">☰</button>
             <div>
-                <h1>Мои заказы</h1>
-                <p>Управление заявками и ремонтными работами</p>
+                <h1>Заказы</h1>
+                <p>Заявки клиентов и управление проектами</p>
             </div>
         </div>
-        <div class="header-actions">
-            <button id="newOrderBtn" class="primary-btn">+ Подать заявку</button>
-            <button id="calculatorBtn" class="secondary-btn">Рассчитать стоимость</button>
+        <div class="manager-card">
+            <div class="avatar" id="mgrAvatar">М</div>
+            <div>
+                <h4 id="mgrName">Менеджер</h4>
+                <p>BuildHouse CRM</p>
+            </div>
         </div>
     </div>
 
-    <div class="stat-strip">
-        <div class="stat-mini new"><b id="cntNew">0</b><span>Новые / в обработке</span></div>
-        <div class="stat-mini work"><b id="cntWork">0</b><span>В работе</span></div>
-        <div class="stat-mini done"><b id="cntDone">0</b><span>Завершённые</span></div>
-        <div class="stat-mini"><b id="cntAll">0</b><span>Всего заказов</span></div>
-    </div>
+    <div class="grid">
 
-    <div class="filters">
-        <input type="text" id="searchInput" placeholder="Поиск заказа...">
-        <select id="statusFilter">
-            <option value="all">Все статусы</option>
-            <option value="Новая заявка">Новые / в обработке</option>
-            <option value="В работе">В работе</option>
-            <option value="Завершён">Завершённые</option>
-            <option value="Отменён">Отменённые</option>
-        </select>
-    </div>
+        <!-- LEFT: список заявок -->
+        <div class="left-panel">
+            <input type="text" id="searchInput" class="search" placeholder="Поиск по клиенту, услуге, адресу...">
+            <div class="filter-tabs">
+                <button class="ftab active" data-f="all">Все</button>
+                <button class="ftab" data-f="Новая заявка">Новые</button>
+                <button class="ftab" data-f="Назначен замер">Замер</button>
+                <button class="ftab" data-f="В работе">В работе</button>
+                <button class="ftab" data-f="Завершён">Завершён</button>
+            </div>
+            <div id="ordersList"></div>
+        </div>
 
-    <div id="ordersList" class="orders-grid"></div>
+        <!-- RIGHT: работа с заявкой -->
+        <div class="right-panel" id="rightPanel">
+            <div class="block">
+                <div class="placeholder">
+                    <div class="big">📋</div>
+                    <h3>Выберите заявку слева</h3>
+                    <p>Здесь появятся действия, информация о заказе, история и данные клиента</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 </main>
-
-
-<!-- МОДАЛКА ЗАЯВКИ -->
-<div id="orderModal" class="modal">
-    <div class="modal-content">
-        <button class="close-x" data-close>✕</button>
-        <h2>Подать заявку</h2>
-        <div class="form-group">
-            <label>Вид работ</label>
-            <input type="text" id="orderTitle" placeholder="Например: ремонт квартиры">
-        </div>
-        <div class="form-group">
-            <label>Адрес объекта</label>
-            <input type="text" id="orderAddress" placeholder="Введите адрес">
-        </div>
-        <div class="form-group">
-            <label>Комментарий (необязательно)</label>
-            <input type="text" id="orderComment" placeholder="Пожелания, детали">
-        </div>
-        <button id="createOrderBtn" class="btn btn-primary btn-full">Отправить заявку</button>
-    </div>
-</div>
-
-
-<!-- МОДАЛКА КАЛЬКУЛЯТОРА -->
-<div id="calculatorModal" class="modal">
-    <div class="modal-content">
-        <button class="close-x" data-close>✕</button>
-        <h2>Калькулятор ремонта</h2>
-
-        <div class="form-group">
-            <label>Площадь помещения (м²)</label>
-            <input type="number" id="calcArea" value="50" min="1">
-        </div>
-
-        <div class="form-group">
-            <label>Тип помещения</label>
-            <select id="calcRoom">
-                <option value="1">Квартира</option>
-                <option value="1.2">Дом</option>
-                <option value="1.1">Офис</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Вид работ</label>
-            <select id="calcService">
-                <option value="full">Комплексный ремонт</option>
-                <option value="wallpaper">Поклейка обоев</option>
-                <option value="painting">Покраска стен</option>
-                <option value="tile">Укладка плитки</option>
-                <option value="laminate">Укладка ламината</option>
-                <option value="ceiling">Натяжной потолок</option>
-                <option value="electric">Электромонтаж</option>
-                <option value="plumbing">Сантехнические работы</option>
-                <option value="bathroom">Ремонт ванной</option>
-                <option value="kitchen">Ремонт кухни</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Тип ремонта</label>
-            <select id="calcType">
-                <option value="7000">Косметический</option>
-                <option value="12000">Капитальный</option>
-                <option value="18000">Дизайнерский</option>
-            </select>
-        </div>
-
-        <div class="calc-result">
-            <span>Примерная стоимость:</span>
-            <b id="calcResult">0 ₽</b>
-        </div>
-
-        <button id="calcOrderBtn" class="btn btn-primary btn-full">Оформить заявку по расчёту</button>
-    </div>
-</div>
-
-
-<!-- МОДАЛКА ОТЗЫВА -->
-<div id="reviewModal" class="modal">
-    <div class="modal-content">
-        <button class="close-x" data-close>✕</button>
-        <h2>Оставить отзыв</h2>
-        <p style="color:var(--muted);margin-bottom:20px;" id="reviewForOrder">О выполненном заказе</p>
-
-        <div class="form-group">
-            <label>Ваша оценка</label>
-            <div id="starsInput" style="display:flex;gap:8px;font-size:36px;cursor:pointer;">
-                <span class="rstar" data-value="1" style="color:#ddd;transition:.15s;">★</span>
-                <span class="rstar" data-value="2" style="color:#ddd;transition:.15s;">★</span>
-                <span class="rstar" data-value="3" style="color:#ddd;transition:.15s;">★</span>
-                <span class="rstar" data-value="4" style="color:#ddd;transition:.15s;">★</span>
-                <span class="rstar" data-value="5" style="color:#ddd;transition:.15s;">★</span>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Ваш отзыв</label>
-            <input type="text" id="reviewText" placeholder="Поделитесь впечатлением о ремонте">
-        </div>
-
-        <button id="sendReviewBtn" class="btn btn-primary btn-full">Опубликовать отзыв</button>
-    </div>
 </div>
 
 
 <script type="module">
-import { auth, db } from "./js/firebase.js";
+import { auth, db } from "../js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-    collection, getDocs, addDoc, doc, updateDoc, query, where
+    collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, onSnapshot, arrayUnion, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-    onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const $ = (id) => document.getElementById(id);
+/* уведомление клиенту: notifications/{uid}/items */
+async function notify(uid,text){
+    if(!uid||!text)return;
+    try{
+        await addDoc(collection(db,"notifications",uid,"items"),{
+            text, read:false, time:serverTimestamp(), clientTime:Date.now()
+        });
+    }catch(e){console.warn("Не удалось отправить уведомление:",e);}
+}
 
-const ordersList = $("ordersList");
-const searchInput = $("searchInput");
-const statusFilter = $("statusFilter");
+const $ = (id)=>document.getElementById(id);
 
-let currentUser = null;
-let currentName = "Клиент";
-let allOrders = [];
+let managerName="Менеджер";
+let allOrders=[];
+let clientsMap={};   // uid -> данные клиента
+let selectedId=null;
+let activeFilter="all";
 
-/* ===== БУРГЕР ===== */
+/* БУРГЕР */
 const sidebar=$("sidebar"), overlay=$("overlay");
 $("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
 overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
 
-/* ===== МОДАЛКИ ===== */
-function openModal(m){m.classList.add("open");}
-function closeModal(m){m.classList.remove("open");}
-const orderModal=$("orderModal"), calcModal=$("calculatorModal");
-$("newOrderBtn").addEventListener("click",()=>openModal(orderModal));
-$("calculatorBtn").addEventListener("click",()=>{calcPrice();openModal(calcModal);});
-document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",e=>closeModal(e.target.closest(".modal"))));
-window.addEventListener("click",e=>{if(e.target===orderModal)closeModal(orderModal);if(e.target===calcModal)closeModal(calcModal);});
+/* LOGOUT */
+$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="../login.html";});
 
-/* ===== LOGOUT ===== */
-$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="login.html";});
-
-/* ===== AUTH ===== */
+/* AUTH + роль */
 onAuthStateChanged(auth,async(user)=>{
-    if(!user){window.location.href="login.html";return;}
-    currentUser=user;
+    if(!user){window.location.href="../login.html";return;}
     try{
-        const us=await getDocs(query(collection(db,"users"),where("uid","==",user.uid)));
-        us.forEach(d=>{currentName=d.data().name||"Клиент";});
-    }catch(e){}
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists()){
+            const d=snap.data();
+            if(d.role!=="manager"){window.location.href="../client-cabinet.html";return;}
+            managerName=d.name||"Менеджер";
+            $("mgrName").textContent=managerName;
+            $("mgrAvatar").textContent=managerName.charAt(0).toUpperCase();
+        }
+    }catch(e){console.error(e);}
+    await loadClients();
     loadOrders();
 });
 
-/* ===== ЗАГРУЗКА ЗАКАЗОВ ===== */
-async function loadOrders(){
-    try{
-        const snap=await getDocs(collection(db,"projects"));
-        allOrders=[];
-        snap.forEach(d=>{
-            const data=d.data();
-            // поддержка разных полей: uid / userId / clientUid
-            const owner=data.uid||data.userId||data.clientUid;
-            if(owner===currentUser.uid){
-                allOrders.push({id:d.id,...data});
-            }
-        });
-        allOrders.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-        updateStats();
-        filterOrders();
-    }catch(e){
-        console.error("Ошибка загрузки:",e);
-        ordersList.innerHTML='<div class="empty-orders"><h3>Ошибка загрузки</h3><p>Попробуйте обновить страницу</p></div>';
-    }
-}
-
+/* статусы */
 function normStatus(s){
+    if(s==="Назначен замер")return "Назначен замер";
     if(s==="В работе")return "В работе";
     if(s==="Завершён"||s==="Завершен")return "Завершён";
-    if(s==="Отменён"||s==="Отменен"||s==="cancelled")return "Отменён";
+    if(s==="Отменён"||s==="Отменен")return "Отменён";
     return "Новая заявка";
 }
 function statusClass(s){
     const n=normStatus(s);
-    if(n==="В работе")return "status-work";
-    if(n==="Завершён")return "status-done";
-    if(n==="Отменён")return "status-cancel";
-    return "status-new";
+    if(n==="Назначен замер")return "st-measure";
+    if(n==="В работе")return "st-work";
+    if(n==="Завершён")return "st-done";
+    if(n==="Отменён")return "st-cancel";
+    return "st-new";
 }
 
-function updateStats(){
-    let n=0,w=0,d=0;
-    allOrders.forEach(o=>{
-        const s=normStatus(o.status);
-        if(s==="В работе")w++;
-        else if(s==="Завершён")d++;
-        else if(s==="Новая заявка")n++;
+/* КЛИЕНТЫ */
+async function loadClients(){
+    try{
+        const snap=await getDocs(collection(db,"users"));
+        clientsMap={};
+        snap.forEach(d=>{const u=d.data();if(u.uid)clientsMap[u.uid]=u;});
+    }catch(e){console.error(e);}
+}
+
+/* ЗАГРУЗКА ЗАЯВОК — живое обновление */
+function loadOrders(){
+    onSnapshot(collection(db,"projects"),(snap)=>{
+        allOrders=[];
+        snap.forEach(d=>allOrders.push({id:d.id,...d.data()}));
+        allOrders.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        renderList();
+        // если выбранная заявка обновилась — перерисуем правую часть
+        if(selectedId){
+            const sel=allOrders.find(o=>o.id===selectedId);
+            if(sel) renderRight(sel);
+        }
     });
-    $("cntNew").textContent=n;
-    $("cntWork").textContent=w;
-    $("cntDone").textContent=d;
-    $("cntAll").textContent=allOrders.length;
 }
 
-/* ===== РЕНДЕР ===== */
-function renderOrders(orders){
-    ordersList.innerHTML="";
-    if(!orders.length){
-        ordersList.innerHTML='<div class="empty-orders"><h3>Заказов пока нет</h3><p>Подайте первую заявку — она появится здесь</p></div>';
+/* СПИСОК СЛЕВА */
+function renderList(){
+    const search=$("searchInput").value.toLowerCase();
+    const list=allOrders.filter(o=>{
+        const text=((o.clientName||"")+" "+(o.service||o.title||"")+" "+(o.address||"")).toLowerCase();
+        const matchSearch=text.includes(search);
+        const matchFilter=activeFilter==="all"||normStatus(o.status)===activeFilter;
+        return matchSearch&&matchFilter;
+    });
+
+    const wrap=$("ordersList");
+    if(!list.length){
+        wrap.innerHTML='<div class="empty-projects"><h3>Заявок нет</h3><p>Здесь появятся заявки клиентов</p></div>';
         return;
     }
-    orders.forEach((o,i)=>{
-        const st=normStatus(o.status);
-        const date=o.createdAt?new Date(o.createdAt).toLocaleDateString("ru-RU"):"—";
+    wrap.innerHTML="";
+    list.forEach(o=>{
         const card=document.createElement("div");
-        card.className="order-card";
-
-        // блок отзыва только для завершённых
-        let reviewBlock="";
-        if(st==="Завершён"){
-            if(o.reviewed){
-                reviewBlock=`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);color:var(--success);font-weight:700;">✓ Спасибо за отзыв!</div>`;
-            }else{
-                reviewBlock=`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);"><button class="btn btn-primary btn-full review-btn" data-id="${o.id}" data-service="${(o.service||o.title||"заказ").replace(/"/g,'')}">★ Оставить отзыв</button></div>`;
-            }
-        }
-
+        card.className="project-card"+(o.id===selectedId?" active":"");
         card.innerHTML=`
-            <div class="order-top">
-                <div class="order-number">${o.service||o.title||"Заказ"}</div>
-                <div class="order-status ${statusClass(o.status)}">${st}</div>
+            <div class="project-top">
+                <h3>${o.clientName||"Клиент"}</h3>
+                <span class="status ${statusClass(o.status)}">${normStatus(o.status)}</span>
             </div>
-            <div class="order-info">
-                <div class="order-row"><span class="order-label">Адрес</span><span class="order-value">${o.address||"—"}</span></div>
-                <div class="order-row"><span class="order-label">Дата заявки</span><span class="order-value">${date}</span></div>
-                <div class="order-row"><span class="order-label">Менеджер</span><span class="order-value">${o.manager||"назначается"}</span></div>
-            </div>
-            <div class="order-footer">
-                <span class="order-label">Стоимость</span>
-                <span class="order-price">${o.budget?Number(o.budget).toLocaleString("ru-RU")+" ₽":"уточняется"}</span>
-            </div>
-            ${reviewBlock}`;
-        ordersList.appendChild(card);
-    });
-
-    // навешиваем обработчики на кнопки отзыва
-    document.querySelectorAll(".review-btn").forEach(btn=>{
-        btn.addEventListener("click",()=>openReview(btn.dataset.id,btn.dataset.service));
+            <p>${o.service||o.title||"Заявка"}</p>
+            <p style="font-size:13px;margin-top:4px;">${o.address||"адрес не указан"}</p>`;
+        card.addEventListener("click",()=>{selectedId=o.id;renderList();renderRight(o);});
+        wrap.appendChild(card);
     });
 }
 
-/* ===== ФИЛЬТР ===== */
-function filterOrders(){
-    const search=searchInput.value.toLowerCase();
-    const status=statusFilter.value;
-    const filtered=allOrders.filter(o=>{
-        const text=((o.service||o.title||"")+" "+(o.address||"")).toLowerCase();
-        const searchMatch=text.includes(search);
-        const statusMatch=status==="all"||normStatus(o.status)===status;
-        return searchMatch&&statusMatch;
+$("searchInput").addEventListener("input",renderList);
+document.querySelectorAll(".ftab").forEach(t=>{
+    t.addEventListener("click",()=>{
+        document.querySelectorAll(".ftab").forEach(x=>x.classList.remove("active"));
+        t.classList.add("active");
+        activeFilter=t.dataset.f;
+        renderList();
     });
-    renderOrders(filtered);
-}
-searchInput.addEventListener("input",filterOrders);
-statusFilter.addEventListener("change",filterOrders);
-
-/* ===== СОЗДАНИЕ ЗАЯВКИ ===== */
-$("createOrderBtn").addEventListener("click",async()=>{
-    const title=$("orderTitle").value.trim();
-    const address=$("orderAddress").value.trim();
-    const comment=$("orderComment").value.trim();
-    if(!title||!address){alert("Заполните вид работ и адрес");return;}
-    try{
-        await addDoc(collection(db,"projects"),{
-            uid:currentUser.uid,
-            clientName:currentName,
-            service:title,
-            address:address,
-            comment:comment,
-            status:"Новая заявка",
-            budget:0,
-            createdAt:Date.now()
-        });
-        $("orderTitle").value="";
-        $("orderAddress").value="";
-        $("orderComment").value="";
-        closeModal(orderModal);
-        alert("Заявка отправлена!");
-        loadOrders();
-    }catch(e){alert("Ошибка: "+e.message);}
 });
 
-/* ===== КАЛЬКУЛЯТОР ===== */
-const rates={full:0,wallpaper:450,painting:550,tile:2200,laminate:900,ceiling:1200,electric:1500,plumbing:1800,bathroom:18000,kitchen:14000};
-function calcPrice(){
-    const area=Number($("calcArea").value)||0;
-    const room=parseFloat($("calcRoom").value);
-    const service=$("calcService").value;
-    let total;
-    if(service==="full"){
-        total=area*Number($("calcType").value)*room;
+/* ПРАВАЯ ЧАСТЬ */
+function renderRight(o){
+    const client=clientsMap[o.uid]||{};
+    const st=normStatus(o.status);
+    const panel=$("rightPanel");
+
+    // данные клиента
+    const clientName=o.clientName||client.name||"Клиент";
+    const clientBlock=`
+        <div class="block">
+            <h2>Клиент</h2>
+            <div class="client-row">
+                <div class="client-av">${clientName.charAt(0).toUpperCase()}</div>
+                <div><h3>${clientName}</h3></div>
+            </div>
+            <div class="client-meta">
+                <div class="cm-box"><small>Телефон</small><b>${client.phone||o.phone||"—"}</b></div>
+                <div class="cm-box"><small>Email</small><b>${client.email||o.email||"—"}</b></div>
+                <div class="cm-box"><small>Адрес объекта</small><b>${o.address||"—"}</b></div>
+            </div>
+        </div>`;
+
+    // блок действий зависит от статуса
+    let actionBlock="";
+    if(st==="Новая заявка"){
+        actionBlock=`
+            <div class="block">
+                <h2>Действия по заявке</h2>
+                <p style="color:var(--muted);margin-bottom:16px;">Новая заявка от клиента. Одобрите, назначьте замер или отклоните.</p>
+                <div class="req-actions">
+                    <button class="btn btn-approve" id="approveBtn">✓ Одобрить</button>
+                    <button class="btn btn-reject" id="rejectBtn">✕ Отказать</button>
+                </div>
+                <div class="measure-row">
+                    <div class="form-group">
+                        <label>Дата замера</label>
+                        <input type="date" id="measureDate">
+                    </div>
+                    <button class="btn btn-measure" id="measureBtn">📅 Записать на замер</button>
+                </div>
+            </div>`;
+    }else if(st==="Назначен замер"){
+        actionBlock=`
+            <div class="block">
+                <h2>Оформление проекта после замера</h2>
+                <p style="color:var(--muted);margin-bottom:18px;">Замер назначен на ${o.measureDate||"—"}. Заполните точные данные и запустите проект в работу.</p>
+                ${projectForm(o)}
+                <div class="actions">
+                    <button class="btn btn-primary" id="startProjectBtn">Запустить проект в работу</button>
+                </div>
+            </div>`;
     }else{
-        total=area*rates[service]*room;
+        // в работе / завершён — редактирование проекта
+        actionBlock=`
+            <div class="block">
+                <h2>Управление проектом</h2>
+                ${projectForm(o)}
+                <div class="actions">
+                    <button class="btn btn-primary" id="saveProjectBtn">Сохранить изменения</button>
+                    <button class="btn btn-reject" id="deleteBtn">Удалить</button>
+                </div>
+            </div>`;
     }
-    $("calcResult").textContent=Math.round(total).toLocaleString("ru-RU")+" ₽";
-    return Math.round(total);
+
+    // информация
+    const infoBlock=`
+        <div class="block">
+            <h2>Информация по заказу</h2>
+            <div class="info-list">
+                <div class="info-box"><p>Статус</p><h3>${st}</h3></div>
+                <div class="info-box"><p>Бюджет</p><h3>${o.budget?Number(o.budget).toLocaleString("ru-RU")+" ₽":"—"}</h3></div>
+                <div class="info-box"><p>Дата замера</p><h3>${o.measureDate||"—"}</h3></div>
+                <div class="info-box"><p>Период работ</p><h3>${o.workPeriod||"—"}</h3></div>
+                <div class="info-box"><p>Срок сдачи</p><h3>${o.deadline||"—"}</h3></div>
+            </div>
+        </div>`;
+
+    // история
+    const historyBlock=`
+        <div class="block">
+            <h2>История заказа</h2>
+            <div class="timeline">${renderTimeline(o)}</div>
+        </div>`;
+
+    panel.innerHTML=clientBlock+actionBlock+infoBlock+historyBlock;
+    bindRightActions(o,st);
 }
-["calcArea","calcRoom","calcService","calcType"].forEach(id=>{
-    $(id).addEventListener("input",calcPrice);
-    $(id).addEventListener("change",calcPrice);
-});
 
-/* заявка из калькулятора */
-$("calcOrderBtn").addEventListener("click",async()=>{
-    const total=calcPrice();
-    const serviceNames={full:"Комплексный ремонт",wallpaper:"Поклейка обоев",painting:"Покраска стен",tile:"Укладка плитки",laminate:"Укладка ламината",ceiling:"Натяжной потолок",electric:"Электромонтаж",plumbing:"Сантехнические работы",bathroom:"Ремонт ванной",kitchen:"Ремонт кухни"};
-    const service=serviceNames[$("calcService").value];
-    const area=$("calcArea").value;
-    try{
-        await addDoc(collection(db,"projects"),{
-            uid:currentUser.uid,
-            clientName:currentName,
-            service:service+" ("+area+" м²)",
-            address:"",
-            comment:"Заявка из калькулятора. Предв. расчёт: "+total.toLocaleString("ru-RU")+" ₽",
-            status:"Новая заявка",
-            budget:total,
-            createdAt:Date.now()
+/* форма проекта */
+function projectForm(o){
+    return `
+    <div class="form-grid">
+        <div class="form-group"><label>Услуга</label><input id="fService" value="${(o.service||o.title||"").replace(/"/g,'&quot;')}"></div>
+        <div class="form-group"><label>Адрес</label><input id="fAddress" value="${(o.address||"").replace(/"/g,'&quot;')}"></div>
+        <div class="form-group"><label>Бюджет — из сметы (₽)</label><input type="number" id="fBudget" value="${o.budget||""}" readonly style="background:#eef1f6;color:#555;cursor:not-allowed;" title="Сумма берётся из сметы на странице Документы" placeholder="появится после сметы"></div>
+        <div class="form-group"><label>Дата начала</label><input type="date" id="fStart" value="${o.startDate||""}"></div>
+        <div class="form-group"><label>Срок сдачи</label><input type="date" id="fDeadline" value="${o.deadline||""}"></div>
+        <div class="form-group"><label>Прогресс (%)</label><input type="number" id="fProgress" min="0" max="100" value="${o.progress!=null?o.progress:""}"></div>
+        <div class="form-group"><label>Ответственный</label><input id="fManager" value="${(o.manager||managerName).replace(/"/g,'&quot;')}"></div>
+        <div class="form-group"><label>Статус</label>
+            <select id="fStatus">
+                <option ${o.status==="В работе"?"selected":""}>В работе</option>
+                <option ${o.status==="Завершён"?"selected":""}>Завершён</option>
+                <option ${o.status==="Отменён"?"selected":""}>Отменён</option>
+            </select>
+        </div>
+        <textarea id="fComment" placeholder="Комментарий менеджера...">${o.comment||""}</textarea>
+    </div>`;
+}
+
+/* timeline */
+function renderTimeline(o){
+    let items=[];
+    if(o.history && o.history.length){
+        items=o.history;
+    }else{
+        items=[{title:"Заявка создана",date:o.createdAt?new Date(o.createdAt).toLocaleString("ru-RU"):""}];
+    }
+    return items.map(h=>`
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div><h4>${h.title}</h4><p>${h.date||""}</p></div>
+        </div>`).join("");
+}
+
+/* действия */
+function bindRightActions(o,st){
+    const now=()=>new Date().toLocaleString("ru-RU");
+
+    // одобрить
+    $("approveBtn")?.addEventListener("click",async()=>{
+        await updateDoc(doc(db,"projects",o.id),{
+            status:"В работе",
+            manager:managerName,
+            history:arrayUnion({title:"Заявка одобрена менеджером",date:now()})
         });
-        closeModal(calcModal);
-        alert("Заявка по расчёту отправлена!");
-        loadOrders();
-    }catch(e){alert("Ошибка: "+e.message);}
-});
+        await notify(o.uid,"✅ Ваша заявка одобрена и переведена в работу!");
+        alert("Заявка одобрена и переведена в работу");
+    });
 
+    // отказать
+    $("rejectBtn")?.addEventListener("click",async()=>{
+        if(!confirm("Отклонить заявку?"))return;
+        await updateDoc(doc(db,"projects",o.id),{
+            status:"Отменён",
+            history:arrayUnion({title:"Заявка отклонена",date:now()})
+        });
+        await notify(o.uid,"К сожалению, ваша заявка отклонена. Свяжитесь с нами для уточнения деталей.");
+        alert("Заявка отклонена");
+    });
 
-/* ===== ОТЗЫВ О ЗАВЕРШЁННОМ ЗАКАЗЕ ===== */
-const reviewModal=$("reviewModal");
-let reviewRating=5;
-let reviewOrderId=null;
+    // записать на замер -> статус + запись в calendarEvents
+    $("measureBtn")?.addEventListener("click",async()=>{
+        const date=$("measureDate").value;
+        if(!date){alert("Выберите дату замера");return;}
+        try{
+            await updateDoc(doc(db,"projects",o.id),{
+                status:"Назначен замер",
+                measureDate:date,
+                manager:managerName,
+                history:arrayUnion({title:"Назначен замер на "+new Date(date).toLocaleDateString("ru-RU"),date:now()})
+            });
+            // автоматически в календарь
+            await addDoc(collection(db,"calendarEvents"),{
+                uid:o.uid,
+                workType:"Замер",
+                dateStart:date,
+                dateEnd:date,
+                comment:"Замер по заявке: "+(o.service||o.title||""),
+                orderId:o.id,
+                createdAt:Date.now()
+            });
+            alert("Замер назначен и добавлен в календарь");
+            await notify(o.uid,"📅 Назначен замер на "+new Date(date).toLocaleDateString("ru-RU")+". Ждём встречи!");
+        }catch(e){alert("Ошибка: "+e.message);}
+    });
 
-function paintStars(v){
-    document.querySelectorAll("#starsInput .rstar").forEach(s=>{
-        s.style.color=Number(s.dataset.value)<=v?"#ffb547":"#ddd";
+    // запустить проект после замера
+    $("startProjectBtn")?.addEventListener("click",async()=>{
+        const data=collectForm();
+        data.status="В работе";
+        data.history=arrayUnion({title:"Проект оформлен и запущен в работу",date:now()});
+        try{
+            await updateDoc(doc(db,"projects",o.id),data);
+            await notify(o.uid,"🔨 Ваш проект оформлен и запущен в работу! Следите за этапами в кабинете.");
+            alert("Проект запущен в работу — клиент видит детали в кабинете");
+        }catch(e){alert("Ошибка: "+e.message);}
+    });
+
+    // сохранить изменения
+    $("saveProjectBtn")?.addEventListener("click",async()=>{
+        const data=collectForm();
+        data.history=arrayUnion({title:"Проект обновлён ("+normStatus(data.status)+")",date:now()});
+        try{
+            await updateDoc(doc(db,"projects",o.id),data);
+            // уведомляем клиента о том, что изменилось
+            const oldStatus=normStatus(o.status), newStatus=normStatus(data.status);
+            const oldProg=o.progress!=null?Number(o.progress):null;
+            const newProg=data.progress!=null?Number(data.progress):null;
+            if(newStatus!==oldStatus){
+                await notify(o.uid,"📌 Статус вашего проекта изменён: «"+newStatus+"»");
+            }
+            if(newProg!=null && newProg!==oldProg){
+                await notify(o.uid,"📊 Готовность проекта обновлена: "+newProg+"%");
+            }
+            if(newStatus==="Завершён"){
+                await notify(o.uid,"🎉 Ваш объект сдан! Спасибо, что выбрали BuildHouse.");
+            }
+            alert("Изменения сохранены");
+        }catch(e){alert("Ошибка: "+e.message);}
+    });
+
+    // удалить
+    $("deleteBtn")?.addEventListener("click",async()=>{
+        if(!confirm("Удалить заказ навсегда?"))return;
+        try{
+            await deleteDoc(doc(db,"projects",o.id));
+            selectedId=null;
+            $("rightPanel").innerHTML='<div class="block"><div class="placeholder"><div class="big">📋</div><h3>Выберите заявку слева</h3></div></div>';
+            alert("Заказ удалён");
+        }catch(e){alert("Ошибка: "+e.message);}
     });
 }
-document.querySelectorAll("#starsInput .rstar").forEach(s=>{
-    s.addEventListener("click",()=>{reviewRating=Number(s.dataset.value);paintStars(reviewRating);});
-    s.addEventListener("mouseover",()=>paintStars(Number(s.dataset.value)));
-});
-$("starsInput").addEventListener("mouseleave",()=>paintStars(reviewRating));
 
-function openReview(orderId,service){
-    reviewOrderId=orderId;
-    reviewRating=5;
-    paintStars(5);
-    $("reviewText").value="";
-    $("reviewForOrder").textContent="О заказе: "+service;
-    openModal(reviewModal);
+/* сбор формы */
+function collectForm(){
+    const num=(v)=>v===""?null:Number(v);
+    const data={
+        service:$("fService").value,
+        address:$("fAddress").value,
+        startDate:$("fStart").value,
+        deadline:$("fDeadline").value,
+        progress:$("fProgress").value===""?null:Number($("fProgress").value),
+        manager:$("fManager").value,
+        status:$("fStatus").value,
+        comment:$("fComment").value
+    };
+    // бюджет сохраняем, только если он уже есть в поле (пришёл из сметы) —
+    // чтобы сохранение заказа не затёрло сумму нулём
+    const b=$("fBudget").value;
+    if(b!=="")data.budget=Number(b);
+    return data;
 }
-window.addEventListener("click",e=>{if(e.target===reviewModal)closeModal(reviewModal);});
-
-$("sendReviewBtn").addEventListener("click",async()=>{
-    const text=$("reviewText").value.trim();
-    if(!text){alert("Напишите текст отзыва");return;}
-    if(!reviewOrderId)return;
-
-    const btn=$("sendReviewBtn");
-    btn.disabled=true;
-    btn.textContent="Публикуем...";
-
-    try{
-        // 1) публикуем отзыв в reviews (его читает сайт и страница отзывов)
-        await addDoc(collection(db,"reviews"),{
-            uid:currentUser.uid,
-            name:currentName,
-            text:text,
-            rating:reviewRating,
-            photoURL:"",
-            orderId:reviewOrderId,
-            createdAt:Date.now()
-        });
-        // 2) помечаем заказ, чтобы кнопка больше не появлялась
-        await updateDoc(doc(db,"projects",reviewOrderId),{reviewed:true});
-
-        closeModal(reviewModal);
-        alert("Спасибо! Ваш отзыв опубликован на сайте.");
-        loadOrders();
-    }catch(e){
-        alert("Ошибка: "+e.message);
-    }
-    btn.disabled=false;
-    btn.textContent="Опубликовать отзыв";
-});
-
 </script>
 
 </body>
