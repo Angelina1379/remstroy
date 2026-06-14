@@ -252,8 +252,18 @@ a{text-decoration:none;}
 import { auth, db } from "../js/firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-    collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where
+    collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* уведомление клиенту */
+async function notify(uid,text){
+    if(!uid||!text)return;
+    try{
+        await addDoc(collection(db,"notifications",uid,"items"),{
+            text, read:false, time:serverTimestamp(), clientTime:Date.now()
+        });
+    }catch(e){console.warn("notify:",e);}
+}
 
 const $ = (id)=>document.getElementById(id);
 
@@ -803,6 +813,7 @@ $("saveBtn").addEventListener("click",async()=>{
             payload.paid=false;
             payload.createdAt=Date.now();
             await addDoc(collection(db,"documents"),payload);
+            await notify(currentClient.uid,"🧮 Для вас готова смета на "+total.toLocaleString("ru-RU")+" ₽. Смотрите в разделе «Документы».");
             alert("Смета сохранена в кабинет клиента. Клиент увидит её таблицей в разделе «Документы».");
         }
         // записываем сумму сметы в бюджет проекта клиента
