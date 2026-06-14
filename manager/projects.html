@@ -414,6 +414,7 @@ function renderRight(o){
                 <div class="info-box"><p>Статус</p><h3>${st}</h3></div>
                 <div class="info-box"><p>Бюджет</p><h3>${o.budget?Number(o.budget).toLocaleString("ru-RU")+" ₽":"—"}</h3></div>
                 <div class="info-box"><p>Дата замера</p><h3>${o.measureDate||"—"}</h3></div>
+                <div class="info-box"><p>Период работ</p><h3>${o.workPeriod||"—"}</h3></div>
                 <div class="info-box"><p>Срок сдачи</p><h3>${o.deadline||"—"}</h3></div>
             </div>
         </div>`;
