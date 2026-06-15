@@ -556,6 +556,32 @@ section{
     font-weight:700;
     line-height:1.5;
     margin-bottom:30px;
+    transition:opacity .6s ease, transform .6s ease;
+}
+
+.quote-fade{
+    opacity:0;
+    transform:translateY(12px);
+}
+
+.quote-dots{
+    display:flex;
+    justify-content:center;
+    gap:9px;
+    margin-top:26px;
+}
+.quote-dots span{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.5);
+    cursor:pointer;
+    transition:.3s;
+}
+.quote-dots span.active{
+    background:white;
+    width:26px;
+    border-radius:6px;
 }
 
 .quote-author{
@@ -1071,6 +1097,7 @@ section{
 <span id="quoteName">Клиент</span>
 <span>клиент BuildHouse</span>
 </div>
+<div class="quote-dots" id="quoteDots"></div>
 </div>
 </div>
 </section>
@@ -1305,22 +1332,30 @@ async function loadProjects(){
     }
 }
 
-/* отзывы: средняя оценка + свежая цитата */
+/* отзывы: средняя оценка + карусель последних отзывов */
+let reviewSlides=[];
+let reviewIndex=0;
+let reviewTimer=null;
+
 async function loadReviews(){
     try {
         const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
         const snap = await getDocs(q);
 
-        let sum = 0, count = 0, latest = null;
+        let sum = 0, count = 0;
+        reviewSlides = [];
 
         snap.forEach((d) => {
             const data = d.data();
             const r = parseFloat(data.rating);
             if(!isNaN(r)){ sum += r; count++; }
-            if(!latest && data.text){ latest = data; }
+            // берём отзывы с текстом для карусели (последние 8)
+            if(data.text && reviewSlides.length < 8){
+                reviewSlides.push({text:data.text, name:data.name || "Клиент"});
+            }
         });
 
-        // средняя оценка (в герое и в блоке доверия)
+        // средняя оценка
         if(count > 0){
             const avg = (sum / count).toFixed(1);
             if(heroRating) heroRating.innerText = avg;
@@ -1330,13 +1365,13 @@ async function loadReviews(){
             if(elRating) elRating.innerText = "—";
         }
 
-        // свежий реальный отзыв в цитату
+        // запускаем карусель
         const quoteSection = document.getElementById("quoteSection");
-        if(latest){
-            document.getElementById("quoteText").innerText = latest.text;
-            document.getElementById("quoteName").innerText = latest.name || "Клиент";
+        if(reviewSlides.length){
+            buildDots();
+            showReview(0);
+            startReviewRotation();
         } else if(quoteSection){
-            // нет отзывов — прячем секцию цитаты
             quoteSection.style.display = "none";
         }
 
@@ -1345,6 +1380,53 @@ async function loadReviews(){
         if(heroRating) heroRating.innerText = "—";
         if(elRating) elRating.innerText = "—";
     }
+}
+
+/* показать отзыв по индексу с плавным затуханием */
+function showReview(i){
+    const txtEl = document.getElementById("quoteText");
+    const nameEl = document.getElementById("quoteName");
+    if(!txtEl || !reviewSlides.length) return;
+    reviewIndex = (i + reviewSlides.length) % reviewSlides.length;
+    // затухание
+    txtEl.classList.add("quote-fade");
+    nameEl.classList.add("quote-fade");
+    setTimeout(()=>{
+        txtEl.innerText = reviewSlides[reviewIndex].text;
+        nameEl.innerText = reviewSlides[reviewIndex].name;
+        txtEl.classList.remove("quote-fade");
+        nameEl.classList.remove("quote-fade");
+        updateDots();
+    }, 500);
+}
+
+/* точки-индикаторы */
+function buildDots(){
+    const box = document.getElementById("quoteDots");
+    if(!box) return;
+    if(reviewSlides.length < 2){ box.innerHTML=""; return; }
+    box.innerHTML = reviewSlides.map((_,i)=>`<span data-i="${i}"></span>`).join("");
+    box.querySelectorAll("span").forEach(s=>{
+        s.addEventListener("click",()=>{
+            showReview(parseInt(s.dataset.i));
+            startReviewRotation(); // сбросить таймер после ручного клика
+        });
+    });
+    updateDots();
+}
+function updateDots(){
+    const box = document.getElementById("quoteDots");
+    if(!box) return;
+    box.querySelectorAll("span").forEach((s,i)=>{
+        s.classList.toggle("active", i===reviewIndex);
+    });
+}
+
+/* автосмена каждые 12 секунд */
+function startReviewRotation(){
+    if(reviewTimer) clearInterval(reviewTimer);
+    if(reviewSlides.length < 2) return;
+    reviewTimer = setInterval(()=>{ showReview(reviewIndex + 1); }, 12000);
 }
 
 loadProjects();
