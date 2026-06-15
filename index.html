@@ -538,43 +538,127 @@ section{
 }
 
 .quote-box{
-    text-align:center;
-    max-width:850px;
+    max-width:900px;
     margin:auto;
 }
 
-.quote-box .mark{
-    font-size:80px;
-    font-weight:900;
-    color:rgba(255,255,255,0.6);
-    line-height:0.5;
-    margin-bottom:20px;
-}
-
-.quote-box p{
-    font-size:30px;
-    font-weight:700;
-    line-height:1.5;
-    margin-bottom:30px;
+/* карточка отзыва */
+.review-card{
+    background:white;
+    border-radius:28px;
+    padding:46px 50px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.12);
     transition:opacity .6s ease, transform .6s ease;
 }
 
-.quote-fade{
+.review-fade{
     opacity:0;
-    transform:translateY(12px);
+    transform:translateY(14px);
+}
+
+.review-head{
+    display:flex;
+    align-items:center;
+    gap:22px;
+    margin-bottom:26px;
+}
+
+.review-avatar{
+    width:78px;
+    height:78px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#ffb547,#ffe1a2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    font-weight:800;
+    color:#222;
+    flex-shrink:0;
+}
+
+.review-meta{
+    flex:1;
+    min-width:0;
+}
+
+.review-service{
+    font-size:13px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    color:#aaa;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.review-name{
+    font-size:26px;
+    font-weight:700;
+}
+
+.review-stars{
+    color:#ffb547;
+    font-size:24px;
+    letter-spacing:3px;
+    white-space:nowrap;
+    flex-shrink:0;
+}
+
+.review-body{
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+}
+
+.review-body .mark{
+    font-size:64px;
+    font-weight:900;
+    color:#e8e8ec;
+    line-height:.8;
+    flex-shrink:0;
+}
+
+.review-text{
+    font-size:19px;
+    line-height:1.7;
+    color:#444;
+    font-weight:400;
+}
+
+.review-more{
+    display:inline-block;
+    margin-top:24px;
+    margin-left:84px;
+    border:1px solid #ddd;
+    color:#888;
+    padding:11px 22px;
+    border-radius:12px;
+    font-size:13px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+    transition:.2s;
+    background:none;
+    font-family:inherit;
+}
+.review-more:hover{
+    border-color:#ffb547;
+    color:#ff8c42;
 }
 
 .quote-dots{
     display:flex;
     justify-content:center;
     gap:9px;
-    margin-top:26px;
+    margin-top:28px;
 }
 .quote-dots span{
     width:9px;
     height:9px;
     border-radius:50%;
-    background:rgba(255,255,255,0.5);
+    background:rgba(255,255,255,0.55);
     cursor:pointer;
     transition:.3s;
 }
@@ -582,18 +666,6 @@ section{
     background:white;
     width:26px;
     border-radius:6px;
-}
-
-.quote-author{
-    font-weight:700;
-    font-size:18px;
-}
-
-.quote-author span{
-    display:block;
-    font-weight:400;
-    color:#7a5210;
-    margin-top:4px;
 }
 
 
@@ -1091,11 +1163,20 @@ section{
 <section class="quote" id="quoteSection">
 <div class="container">
 <div class="quote-box reveal">
+<div class="review-card" id="reviewCard">
+<div class="review-head">
+<div class="review-avatar" id="reviewAvatar">К</div>
+<div class="review-meta">
+<div class="review-service" id="reviewService">ОТЗЫВ КЛИЕНТА</div>
+<div class="review-name" id="quoteName">Клиент</div>
+</div>
+<div class="review-stars" id="reviewStars">★★★★★</div>
+</div>
+<div class="review-body">
 <div class="mark">“</div>
-<p id="quoteText">Заехали в квартиру ровно в срок, без сюрпризов по цене. Очень удобно было следить за этапами онлайн — всё прозрачно.</p>
-<div class="quote-author">
-<span id="quoteName">Клиент</span>
-<span>клиент BuildHouse</span>
+<div class="review-text" id="quoteText">Заехали в квартиру ровно в срок, без сюрпризов по цене. Очень удобно было следить за этапами онлайн — всё прозрачно.</div>
+</div>
+<button class="review-more" id="reviewMore" style="display:none;">Отзыв полностью</button>
 </div>
 <div class="quote-dots" id="quoteDots"></div>
 </div>
@@ -1351,7 +1432,13 @@ async function loadReviews(){
             if(!isNaN(r)){ sum += r; count++; }
             // берём отзывы с текстом для карусели (последние 8)
             if(data.text && reviewSlides.length < 8){
-                reviewSlides.push({text:data.text, name:data.name || "Клиент"});
+                reviewSlides.push({
+                    text:data.text,
+                    name:data.name || "Клиент",
+                    service:data.service || "Отзыв клиента",
+                    rating:isNaN(r)?5:Math.round(r),
+                    date:data.createdAt?new Date(data.createdAt):null
+                });
             }
         });
 
@@ -1384,18 +1471,41 @@ async function loadReviews(){
 
 /* показать отзыв по индексу с плавным затуханием */
 function showReview(i){
-    const txtEl = document.getElementById("quoteText");
-    const nameEl = document.getElementById("quoteName");
-    if(!txtEl || !reviewSlides.length) return;
+    const card = document.getElementById("reviewCard");
+    if(!card || !reviewSlides.length) return;
     reviewIndex = (i + reviewSlides.length) % reviewSlides.length;
-    // затухание
-    txtEl.classList.add("quote-fade");
-    nameEl.classList.add("quote-fade");
+    const r = reviewSlides[reviewIndex];
+
+    card.classList.add("review-fade");
     setTimeout(()=>{
-        txtEl.innerText = reviewSlides[reviewIndex].text;
-        nameEl.innerText = reviewSlides[reviewIndex].name;
-        txtEl.classList.remove("quote-fade");
-        nameEl.classList.remove("quote-fade");
+        const name = r.name || "Клиент";
+        document.getElementById("quoteName").innerText = name;
+        document.getElementById("reviewAvatar").innerText = name.charAt(0).toUpperCase();
+        // услуга + дата в шапке
+        let head = (r.service || "Отзыв клиента").toUpperCase();
+        if(r.date && !isNaN(r.date)){
+            head += "  —  " + r.date.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
+        }
+        document.getElementById("reviewService").innerText = head;
+        // звёзды
+        const rt = r.rating || 5;
+        document.getElementById("reviewStars").innerText = "★".repeat(rt) + "☆".repeat(5-rt);
+        // текст — обрезаем длинный, показываем кнопку
+        const txtEl = document.getElementById("quoteText");
+        const moreBtn = document.getElementById("reviewMore");
+        const LIMIT = 220;
+        if(r.text.length > LIMIT){
+            txtEl.innerText = r.text.slice(0, LIMIT).trim() + "…";
+            moreBtn.style.display = "inline-block";
+            moreBtn.onclick = ()=>{
+                txtEl.innerText = r.text;
+                moreBtn.style.display = "none";
+            };
+        } else {
+            txtEl.innerText = r.text;
+            moreBtn.style.display = "none";
+        }
+        card.classList.remove("review-fade");
         updateDots();
     }, 500);
 }
