@@ -99,6 +99,14 @@ a{text-decoration:none;}
     .form-row{grid-template-columns:1fr;}
     .profile-head{flex-direction:column;text-align:center;}
 }
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
 </style>
 </head>
 
