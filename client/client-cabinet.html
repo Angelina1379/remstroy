@@ -124,6 +124,14 @@ button:hover{background:#ffa51f;transform:translateY(-2px);}
     .cabinet-grid{grid-template-columns:1fr;}
     .stat-strip{grid-template-columns:1fr;}
 }
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
 </style>
 </head>
 <body>
