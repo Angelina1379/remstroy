@@ -64,7 +64,11 @@ button:hover{background:#ffa51f;transform:translateY(-2px);}
 .sb-ic.o{background:#fff3df;}.sb-ic.g{background:#e3f9ea;}.sb-ic.b{background:#e6f0ff;}.sb-ic.p{background:#f0e9ff;}
 .stat-box h3{font-size:28px;font-weight:800;}
 .stat-box p{color:#888;font-size:13px;margin-top:2px;}
-.two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;margin-bottom:30px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px;align-items:stretch;}
+.two-col .status-section{display:flex;flex-direction:column;}
+.two-col .card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;}
+.two-col .card-top h2{margin-bottom:0;}
+.two-col .card-top a{color:#ff8c42;font-weight:700;font-size:14px;text-decoration:none;}
 .status-section{background:white;border-radius:24px;padding:28px;box-shadow:0 4px 14px rgba(0,0,0,0.04);}
 .status-section h2{margin-bottom:22px;font-size:22px;}
 .stages-list{display:flex;flex-direction:column;gap:14px;}
@@ -180,31 +184,9 @@ img,table,video,canvas{max-width:100%;}
         </div>
         <div class="two-col">
             <div class="status-section"><h2>Этапы ремонта</h2><div class="stages-list" id="stagesList"></div></div>
-            <div class="notif-section">
-                <div class="notif-wrapper">🔔 Уведомления <span id="notifBadge" class="badge">0</span></div>
-                <div id="notificationsList" class="notifications-list"></div>
-            </div>
-        </div>
-        <div class="cabinet-grid">
-            <div class="cabinet-card">
-                <div class="card-top"><h3>Сообщения</h3><a href="messages.html">Открыть</a></div>
-                <div id="messagesPreview"><p class="muted">Загрузка...</p></div>
-            </div>
-            <div class="cabinet-card">
-                <div class="card-top"><h3>Ближайшие работы</h3><a href="calendar.html">Календарь</a></div>
-                <div id="worksList"><p class="muted">Загрузка...</p></div>
-            </div>
-            <div class="cabinet-card">
-                <div class="card-top"><h3>Документы</h3><a href="documents.html">Открыть</a></div>
+            <div class="status-section">
+                <div class="card-top"><h2>Документы</h2><a href="documents.html">Все →</a></div>
                 <div id="documentsList"><p class="muted">Загрузка...</p></div>
-            </div>
-        </div>
-        <div class="profile-settings">
-            <h2>Личные данные</h2>
-            <div class="settings-grid">
-                <input type="text" id="editName" placeholder="Введите имя">
-                <input type="text" id="editPhone" placeholder="+7 (___) ___-__-__">
-                <button id="saveProfileBtn">Сохранить изменения</button>
             </div>
         </div>
     </main>
@@ -220,8 +202,8 @@ overlay?.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.
 $("logoutBtn")?.addEventListener("click",async()=>{try{await signOut(auth);}catch(e){}window.location.href="../login.html";});
 onAuthStateChanged(auth,(user)=>{
   if(!user){window.location.href="../login.html";return;}
-  loadProject(user.uid);loadNotifications(user.uid);loadProfile(user.uid);
-  loadMessagesPreview(user.uid);loadWorks(user.uid);loadDocuments(user.uid);loadStats(user.uid);
+  loadProject(user.uid);loadProfile(user.uid);
+  loadDocuments(user.uid);loadStats(user.uid);
 });
 function normStatus(s){if(s==="В работе")return "В работе";if(s==="Завершён"||s==="Завершен")return "Завершён";if(s==="Назначен замер")return "Назначен замер";return s||"Новая заявка";}
 function ownerUid(p){return p.uid||p.userId||p.clientUid;}
@@ -281,10 +263,20 @@ async function loadWorks(uid){
 async function loadDocuments(uid){
   const box=$("documentsList");
   try{const snap=await getDocs(collection(db,"documents"));let arr=[];snap.forEach(d=>{const doc=d.data();if(doc.uid===uid)arr.push(doc);});
-    arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));arr=arr.slice(0,3);
+    arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));arr=arr.slice(0,6);
     if(!arr.length){box.innerHTML='<p class="muted">Документов пока нет</p>';return;}
     const bc={"Смета":"dib-est","Договор":"dib-con","Акт":"dib-act"};
-    box.innerHTML=arr.map(d=>{const cls=bc[d.type]||"dib-oth";return '<div class="document-item"><span>'+(d.title||d.type||"Документ")+'</span><span class="di-badge '+cls+'">'+(d.type||"Док")+'</span></div>';}).join("");
+    const ic={"Смета":"🧮","Договор":"📑","Акт":"✅"};
+    box.innerHTML=arr.map(d=>{
+      const cls=bc[d.type]||"dib-oth";
+      const date=d.createdAt?new Date(d.createdAt).toLocaleDateString("ru-RU"):"";
+      const sum=d.total?Number(d.total).toLocaleString("ru-RU")+" ₽":"";
+      return '<div class="document-item"><div style="display:flex;align-items:center;gap:12px;min-width:0;">'
+        +'<span style="font-size:20px;flex-shrink:0;">'+(ic[d.type]||"📄")+'</span>'
+        +'<div style="min-width:0;"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(d.title||d.type||"Документ")+'</div>'
+        +'<div style="font-size:12px;color:#999;">'+date+(sum?" · "+sum:"")+'</div></div></div>'
+        +'<span class="di-badge '+cls+'">'+(d.type||"Док")+'</span></div>';
+    }).join("");
   }catch(e){box.innerHTML='<p class="muted">Документов пока нет</p>';}
 }
 function loadNotifications(uid){
@@ -321,14 +313,7 @@ function loadNotifications(uid){
 }
 function loadProfile(uid){
   onSnapshot(doc(db,"users",uid),(snap)=>{if(!snap.exists())return;const data=snap.data();const name=data.name||"Клиент";
-    setText("clientName",name);setText("clientPhone",data.phone||"—");$("profileAvatar").textContent=name.charAt(0).toUpperCase();
-    $("editName").value=data.name||"";$("editPhone").value=data.phone||"";});
-  const saveBtn=$("saveProfileBtn");
-  if(saveBtn&&!saveBtn.dataset.l){saveBtn.dataset.l="1";
-    saveBtn.addEventListener("click",async()=>{const user=auth.currentUser;if(!user)return;
-      const name=$("editName").value.trim(),phone=$("editPhone").value.trim();
-      if(!name||!phone){alert("Заполните все поля");return;}
-      try{await setDoc(doc(db,"users",uid),{name,phone},{merge:true});alert("Сохранено!");}catch(e){alert("Ошибка: "+e.message);}});}
+    setText("clientName",name);setText("clientPhone",data.phone||"—");$("profileAvatar").textContent=name.charAt(0).toUpperCase();});
 }
 function setText(id,value){const el=$(id);if(el)el.textContent=value||"—";}
 </script>
