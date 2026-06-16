@@ -279,7 +279,8 @@ async function loadEvents(){
         let mine=0;
         snap.forEach(docSnap=>{
             const data=docSnap.data();
-            if(data.uid!==currentUser.uid)return;
+            const evUid=data.uid||data.userId||data.clientUid;
+            if(evUid!==currentUser.uid)return;
             const start=data.date || data.dateStart || null;
             if(!start)return;
             const color=data.color||getColor(data.workType);
