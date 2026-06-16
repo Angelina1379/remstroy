@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Договоры и акты | BuildHouse</title>
+<title>График работ | BuildHouse</title>
 <style>
 body{font-family:Inter,Arial,sans-serif;background:#f5f6fa;color:#1b2430;max-width:860px;margin:40px auto;padding:20px;}
 h1{font-size:26px;}
@@ -11,116 +11,182 @@ button:hover{background:#f39a1f;}button:disabled{background:#ffd699;cursor:not-a
 .clear-btn{background:#fdecea;color:#ef4444;}
 .log{background:#0b1220;color:#aee;border-radius:14px;padding:18px;margin-top:20px;font-family:monospace;font-size:13px;white-space:pre-wrap;max-height:540px;overflow-y:auto;}
 .warn{background:#fff3df;border-radius:12px;padding:16px;color:#a86500;margin:16px 0;line-height:1.5;}
-.ok{color:#7CFC00;}.err{color:#ff8080;}.dim{color:#88aacc;}
+.ok{color:#7CFC00;}.err{color:#ff8080;}.dim{color:#88aacc;}.hl{color:#ffd699;}
 </style>
 </head>
 <body>
-<h1>📑 Договоры и акты</h1>
+<h1>📅 График работ бригады</h1>
 <div class="warn">
-<b>Что делает:</b> для каждого заказа (с замером) создаёт <b>Договор</b>, а для <b>завершённых</b> — ещё и <b>Акт</b>. Смету не трогает (её делает сидер оплат).<br><br>
-Клиент сможет открыть и скачать все три документа в своём кабинете.<br><br>
-<b>Шаг 1:</b> «Очистить договоры и акты» (если уже создавали) → <b>Шаг 2:</b> «Создать». Live Server. Потом файл удалить.
+<b>Логика:</b> каждый объект — сплошной блок дней подряд. Этапы по порядку: замер → демонтаж → черновые → отделочные → сдача (один день, в конце). Воскресенье — выходной. В день максимум 2 объекта и только на разных стадиях (например, отделка на одном + замер нового). Период работ записывается в заказ (с… по…).<br><br>
+<b>Шаг 1:</b> «Очистить» → <b>Шаг 2:</b> «Создать график». Live Server. Потом файл удалить.
 </div>
-<button class="clear-btn" id="clearBtn">🗑 Очистить договоры и акты</button>
-<button id="runBtn">📑 Создать договоры и акты</button>
+<button class="clear-btn" id="clearBtn">🗑 Очистить старый календарь</button>
+<button id="runBtn">📅 Создать график работ</button>
 <div class="log" id="log">Готов к запуску...</div>
 
 <script type="module">
 import { db } from "./js/firebase.js";
-import { collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const log=(m,c="")=>{const el=document.getElementById("log");el.innerHTML+=`\n<span class="${c}">${m}</span>`;el.scrollTop=el.scrollHeight;};
 const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-
-/* раскладка суммы на работы — для акта */
-function buildWorks(total){
-    const parts=[
-        {name:"Демонтажные работы",k:0.10},
-        {name:"Черновые работы",k:0.30},
-        {name:"Отделочные работы",k:0.40},
-        {name:"Электрика и сантехника",k:0.20},
-    ];
-    const area=rnd(35,75);
-    return parts.map(p=>{const sum=Math.round(total*p.k);return {name:p.name,area,unit:Math.round(sum/area),sum};});
-}
+const WT_COLOR={"Замер":"#ffb547","Демонтаж":"#9333ea","Черновые работы":"#ef4444","Отделочные работы":"#22c55e","Сдача объекта":"#8b5cf6"};
+const fmt=(d)=>d.toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit"});
+const fmtFull=(d)=>d.toLocaleDateString("ru-RU");
 
 /* ОЧИСТКА */
 document.getElementById("clearBtn").addEventListener("click",async()=>{
-  if(!confirm("Удалить все документы типа Договор и Акт? Сметы не тронутся."))return;
+  if(!confirm("Удалить все записи календаря? Заказы и клиенты не тронутся."))return;
   const btn=document.getElementById("clearBtn");btn.disabled=true;
-  document.getElementById("log").innerHTML="Удаляю договоры и акты...";
+  document.getElementById("log").innerHTML="Очищаю календарь...";
   try{
-    const snap=await getDocs(collection(db,"documents"));
-    let n=0;
-    for(const d of snap.docs){const t=d.data().type;if(t==="Договор"||t==="Акт"){await deleteDoc(doc(db,"documents",d.id));n++;}}
-    log(`✅ Удалено: ${n}`,"ok");
+    const snap=await getDocs(collection(db,"calendarEvents"));
+    let n=0;for(const d of snap.docs){await deleteDoc(doc(db,"calendarEvents",d.id));n++;}
+    log(`✅ Удалено записей: ${n}`,"ok");log("Теперь «Создать график работ».","dim");
   }catch(e){log("❌ Ошибка: "+e.message,"err");}
   btn.disabled=false;
 });
 
-/* СОЗДАНИЕ */
+/* построить этапы объекта: массив рабочих дней с типом работ */
+function buildStages(service){
+    const s=(service||"").toLowerCase();
+    const days=["Замер"]; // замер всегда первый
+    const rep=(type,n)=>{for(let i=0;i<n;i++)days.push(type);};
+
+    if(s.includes("косметическ")){
+        // косметика: без демонтажа, в основном отделка
+        rep("Отделочные работы",rnd(3,5));
+    }else if(s.includes("ванн")||s.includes("кухн")){
+        // санузел/кухня: демонтаж, черновые (плитка/сантехника), отделка
+        rep("Демонтаж",1);
+        rep("Черновые работы",rnd(2,4));
+        rep("Отделочные работы",rnd(2,4));
+    }else if(s.includes("капитальн")||s.includes("дизайн")||s.includes("ключ")){
+        // капитальный/дизайн: всё по полной
+        rep("Демонтаж",rnd(1,2));
+        rep("Черновые работы",rnd(4,6));
+        rep("Отделочные работы",rnd(4,7));
+    }else if(s.includes("новостро")){
+        // новостройка: без демонтажа, черновые + отделка
+        rep("Черновые работы",rnd(3,5));
+        rep("Отделочные работы",rnd(3,6));
+    }else{
+        // прочее / студия — средний набор
+        rep("Демонтаж",1);
+        rep("Черновые работы",rnd(2,4));
+        rep("Отделочные работы",rnd(3,5));
+    }
+
+    days.push("Сдача объекта"); // сдача всегда последняя
+    return days;
+}
+
+/* следующий рабочий день (пропуск вс) */
+function nextWorkday(d){const x=new Date(d);x.setDate(x.getDate()+1);if(x.getDay()===0)x.setDate(x.getDate()+1);return x;}
+function isSunday(d){return d.getDay()===0;}
+
 document.getElementById("runBtn").addEventListener("click",async()=>{
   const btn=document.getElementById("runBtn");btn.disabled=true;
   document.getElementById("log").innerHTML="Загружаю заказы...";
   try{
     const snap=await getDocs(collection(db,"projects"));
     let orders=[];
-    snap.forEach(d=>{const p=d.data();orders.push({id:d.id,...p});});
-    if(!orders.length){log("❌ Заказов нет.","err");btn.disabled=false;return;}
+    snap.forEach(d=>{const p=d.data();const st=p.status;
+      if(st==="Завершён"||st==="Завершен"||st==="В работе"){
+        const ownerUid=p.uid||p.userId||p.clientUid||d.id;
+        orders.push({id:d.id,...p,uid:ownerUid});
+      }});
+    if(!orders.length){log("❌ Нет завершённых или активных заказов.","err");btn.disabled=false;return;}
+    orders.sort(()=>Math.random()-0.5);
+    log(`✅ Объектов: ${orders.length}. Строю последовательный график...\n`,"ok");
 
-    let num=2000, contracts=0, acts=0;
-    for(const p of orders){
-      const status=p.status;
-      // документы для тех, у кого работы идут или завершены (т.е. был замер)
-      if(status!=="Завершён"&&status!=="Завершен"&&status!=="В работе")continue;
-      const total=Number(p.budget||0);
-      if(!total){log(`⚠ ${p.clientName}: нет бюджета, пропуск`,"dim");continue;}
+    // занятость дня: ключ "YYYY-MM-DD" -> сколько объектов уже в этот день (макс 2)
+    const dayLoad={};
+    const dayKey=(d)=>d.toISOString().slice(0,10);
 
-      const base=p.createdAt||Date.now();
-      const className=p.service&&/(капитальн|дизайн|ключ)/i.test(p.service)?"Капитальный":"Косметический";
-
-      // ДОГОВОР — всем (после замера заключается)
-      await addDoc(collection(db,"documents"),{
-        uid:p.uid,
-        title:"Договор № "+(num),
-        num:num,
-        type:"Договор",
-        url:"",
-        fileName:"Договор подряда на ремонт",
-        clientName:p.clientName||"",
-        address:p.address||"",
-        area:rnd(35,75),
-        className,
-        total,
-        createdBy:"Менеджер BuildHouse",
-        createdAt:base+rnd(2,6)*86400000
+    async function addEvent(order,date,workType,half){
+      const dt=new Date(date);
+      dt.setHours(half==="pm"?14:9,0,0,0);
+      const iso=dt.toISOString();
+      await addDoc(collection(db,"calendarEvents"),{
+        uid:order.uid, client:order.clientName||"", clientName:order.clientName||"",
+        phone:order.phone||"", address:order.address||"",
+        workType,
+        comment:(half==="pm"?"После обеда. ":"")+"Объект: "+(order.service||order.title||""),
+        orderId:order.id,
+        date:iso, dateStart:iso.slice(0,10), dateEnd:iso.slice(0,10),
+        color:WT_COLOR[workType]||"#ffb547", manager:"Бригада BuildHouse", createdAt:Date.now()
       });
-      contracts++;num++;
-      log(`📑 ${p.clientName} — Договор (${total.toLocaleString("ru-RU")}₽)`,"dim");
-
-      // АКТ — только завершённым
-      if(status==="Завершён"||status==="Завершен"){
-        const works=buildWorks(total);
-        await addDoc(collection(db,"documents"),{
-          uid:p.uid,
-          title:"Акт № "+(num),
-          num:num,
-          type:"Акт",
-          url:"",
-          fileName:"Акт выполненных работ",
-          clientName:p.clientName||"",
-          address:p.address||"",
-          estimate:works,
-          total,
-          createdBy:"Менеджер BuildHouse",
-          createdAt:base+rnd(30,55)*86400000
-        });
-        acts++;num++;
-        log(`✅ ${p.clientName} — Акт (объект сдан)`,"ok");
-      }
     }
-    log(`\n🎉 Готово! Договоров: ${contracts}, Актов: ${acts}`,"ok");
-    log("У клиентов в «Документах» теперь смета + договор, у завершённых ещё акт. Все три скачиваются. Файл можно удалить.","ok");
+
+    let cursor=new Date(2026,0,6,9,0); // старт пн 6 янв
+    const limit=new Date(2026,6,1);    // до 1 июля (весь июнь включительно)
+    let created=0, placedObjects=0;
+
+    let round=0;
+    while(cursor<limit && round<6){  // несколько кругов, пока не заполним июнь
+      for(const order of orders){
+        if(cursor>=limit)break;
+        const stages=buildStages(order.service||order.title);
+        let firstDay=null,lastDay=null;
+        const stageStart={}; // тип этапа -> дата первого появления
+
+        for(const wt of stages){
+          if(cursor>=limit)break;
+          while(isSunday(cursor) || (dayLoad[dayKey(cursor)]||0)>=2){
+            cursor=nextWorkday(cursor);
+            if(cursor>=limit)break;
+          }
+          if(cursor>=limit)break;
+
+          const load=dayLoad[dayKey(cursor)]||0;
+          const half=load===0?"am":"pm";
+          await addEvent(order,cursor,wt,half);
+          dayLoad[dayKey(cursor)]=load+1;
+          created++;
+          if(!firstDay)firstDay=new Date(cursor);
+          if(!stageStart[wt])stageStart[wt]=new Date(cursor); // запоминаем старт этапа
+          lastDay=new Date(cursor);
+          cursor=nextWorkday(cursor);
+        }
+
+        // период работ пишем в заказ только в первом круге (последний реальный объект)
+        if(firstDay&&lastDay){
+          // собираем осмысленную историю заказа
+          const createdDate=order.createdAt?new Date(order.createdAt):new Date(firstDay.getTime()-7*86400000);
+          const history=[{title:"Заявка получена",date:fmtFull(createdDate)}];
+          history.push({title:"Заявка одобрена, назначен замер",date:fmtFull(firstDay)});
+          // этапы в порядке появления
+          const order2=["Демонтаж","Черновые работы","Отделочные работы"];
+          order2.forEach(t=>{
+            if(stageStart[t])history.push({title:"Начаты: "+t.toLowerCase(),date:fmtFull(stageStart[t])});
+          });
+          const isDone=(order.status==="Завершён"||order.status==="Завершен");
+          if(isDone){
+            history.push({title:"Объект сдан, работы завершены",date:fmtFull(lastDay)});
+          }else{
+            history.push({title:"Проект в работе",date:fmtFull(firstDay)});
+          }
+
+          try{
+            await updateDoc(doc(db,"projects",order.id),{
+              measureDate:fmtFull(firstDay),
+              deadline:fmtFull(lastDay),
+              workStart:fmtFull(firstDay),
+              workEnd:fmtFull(lastDay),
+              workPeriod:fmt(firstDay)+" — "+fmt(lastDay),
+              history:history
+            });
+          }catch(e){}
+          placedObjects++;
+          log(`🏠 ${order.clientName} · ${order.service||order.title}\n     работы: ${fmtFull(firstDay)} — ${fmtFull(lastDay)} (${stages.length} раб. дн.)`,"hl");
+        }
+      }
+      round++;
+    }
+
+    log(`\n🎉 Готово! Объектов в графике: ${placedObjects}, записей: ${created}`,"ok");
+    log("В заказах появился период «работы с… по…». Откройте «Замеры». Файл можно удалить.","ok");
   }catch(e){log("❌ Ошибка: "+e.message,"err");}
   btn.disabled=false;
 });
