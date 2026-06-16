@@ -66,37 +66,53 @@ a{text-decoration:none;}
 .event-item p{color:#55606f;font-size:13px;margin-bottom:4px;}
 .empty-day{text-align:center;color:var(--muted);padding:30px 10px;}
 
-/* FullCalendar тюнинг */
+/* FullCalendar — компактный изящный вид */
 .fc{font-family:'Inter',sans-serif;}
-.fc .fc-toolbar.fc-header-toolbar{margin-bottom:22px;}
-.fc .fc-button-primary{background:#f5f6fa;color:#1b2430;border:none;border-radius:12px;font-weight:600;text-transform:capitalize;padding:9px 16px;box-shadow:none;transition:.2s;}
+.fc .fc-toolbar.fc-header-toolbar{margin-bottom:18px;gap:10px;}
+.fc .fc-toolbar-chunk{display:flex;align-items:center;gap:8px;}
+/* кнопки — небольшие, мягкие */
+.fc .fc-button-primary{background:#f3f5f9;color:#3a4452;border:none;border-radius:10px;font-weight:600;font-size:13px;text-transform:capitalize;padding:7px 13px;box-shadow:none;transition:.2s;}
 .fc .fc-button-primary:hover{background:#e9edf3;color:#111;}
-.fc .fc-button-primary:disabled{background:#f0f2f6;color:#b8c0cc;opacity:1;}
+.fc .fc-button-primary:disabled{background:#f3f5f9;color:#c2c9d4;opacity:1;}
 .fc .fc-button-primary:not(:disabled):active,
-.fc .fc-button-active{background:var(--primary)!important;color:#111!important;box-shadow:0 4px 12px rgba(255,181,71,.4);}
-.fc .fc-button-primary:focus{box-shadow:none!important;}
-.fc .fc-today-button{background:var(--navy);color:#fff;}
+.fc .fc-button-active{background:var(--primary)!important;color:#111!important;box-shadow:none;}
+.fc .fc-button-primary:focus{box-shadow:none!important;outline:none;}
+/* стрелки навигации — кругленькие */
+.fc .fc-prev-button,.fc .fc-next-button{width:34px;height:34px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.fc .fc-today-button{background:var(--navy);color:#fff;border-radius:10px;font-size:12px;padding:7px 14px;}
 .fc .fc-today-button:hover{background:#1d2638;color:#fff;}
-.fc .fc-toolbar-title{font-size:24px;font-weight:800;white-space:nowrap;letter-spacing:-.3px;}
+.fc .fc-today-button:disabled{background:#e9edf3;color:#b8c0cc;}
+/* заголовок месяца — компактнее */
+.fc .fc-toolbar-title{font-size:18px;font-weight:700;white-space:nowrap;letter-spacing:-.2px;color:#1b2430;}
 .fc .fc-toolbar-title::first-letter{text-transform:uppercase;}
 
-/* сетка */
+/* сетка — чистая, без жёстких рамок */
 .fc .fc-scrollgrid{border:none;}
-.fc .fc-scrollgrid td,.fc .fc-scrollgrid th{border-color:#eef1f6;}
-.fc .fc-col-header-cell{background:#fafbfd;}
-.fc .fc-col-header-cell-cushion{color:var(--muted);font-weight:700;padding:12px;text-transform:capitalize;font-size:13px;}
-.fc .fc-daygrid-day{transition:.18s;}
+.fc .fc-scrollgrid td,.fc .fc-scrollgrid th{border-color:#f0f2f6;}
+.fc .fc-col-header-cell{background:transparent;}
+.fc .fc-col-header-cell-cushion{color:#9aa3b0;font-weight:600;padding:10px 6px;text-transform:uppercase;font-size:11px;letter-spacing:.4px;}
+.fc .fc-daygrid-day{transition:.15s;}
 .fc .fc-daygrid-day:hover{background:#fff8eb;cursor:pointer;}
-.fc .fc-daygrid-day.fc-day-today{background:#fff4dd;}
-.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{background:var(--primary);color:#111;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;margin:4px;font-weight:800;}
-.fc .fc-daygrid-day-number{padding:8px;font-weight:600;color:#3a4452;}
-.fc .fc-day-sun .fc-daygrid-day-number,.fc .fc-day-sat .fc-daygrid-day-number{color:#c0392b;}
+.fc .fc-daygrid-day.fc-day-today{background:#fff7e8;}
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{background:var(--primary);color:#111;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;margin:5px;font-weight:800;font-size:13px;}
+.fc .fc-daygrid-day-number{padding:7px 8px;font-weight:600;color:#5a6472;font-size:13px;}
+.fc .fc-day-sun .fc-daygrid-day-number,.fc .fc-day-sat .fc-daygrid-day-number{color:#d77;}
+.fc .fc-daygrid-day-frame{min-height:78px;}
 
-/* события */
-.fc-event{border:none!important;border-radius:8px;padding:3px 8px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.08);transition:.15s;}
-.fc-event:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15);}
+/* события — компактные «пилюли», текст в одну строку с многоточием */
+.fc-daygrid-event{border:none!important;border-radius:7px;margin:1px 4px;padding:2px 7px;font-size:11.5px;font-weight:600;cursor:pointer;box-shadow:none;transition:.15s;overflow:hidden;}
+.fc-daygrid-event:hover{filter:brightness(.96);}
+.fc-daygrid-event .fc-event-title,
+.fc-daygrid-event .fc-event-main{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    display:block;
+}
 .fc .fc-daygrid-event-dot{display:none;}
-.fc .fc-more-link{font-weight:700;color:var(--accent);font-size:12px;}
+.fc .fc-daygrid-event-harness{margin-top:2px;}
+.fc .fc-more-link{font-weight:700;color:var(--accent);font-size:11px;padding:1px 6px;}
+.fc .fc-event-time{display:none;} /* время не пишем в ячейке — компактнее */
 
 /* MODAL */
 .modal{position:fixed;inset:0;background:rgba(11,18,32,.6);display:none;justify-content:center;align-items:center;z-index:9999;padding:20px;}
@@ -143,17 +159,23 @@ a{text-decoration:none;}
 @media(max-width:768px){
     .calendar-top{flex-direction:column;align-items:flex-start;}
     #openModalBtn{width:100%;}
-    .calendar-wrapper{padding:16px;}
-    .fc .fc-toolbar{flex-direction:column;gap:12px;}
-    .fc .fc-toolbar-title{font-size:20px;white-space:nowrap;}
-    .fc .fc-button-primary{padding:7px 10px;font-size:13px;}
-    /* крупные кликабельные клетки */
-    .fc .fc-daygrid-day-frame{min-height:62px;}
-    .fc .fc-daygrid-day-number{padding:10px;font-size:16px;}
-    .fc .fc-col-header-cell-cushion{padding:8px 4px;font-size:12px;}
-    .fc-event{font-size:10px;padding:1px 4px;}
-    /* увеличиваем зону тапа по дню */
+    .calendar-wrapper{padding:14px;}
+    .fc .fc-toolbar{flex-direction:column;gap:10px;}
+    .fc .fc-toolbar-title{font-size:17px;white-space:nowrap;}
+    .fc .fc-button-primary{padding:6px 11px;font-size:12px;}
+    .fc .fc-daygrid-day-frame{min-height:58px;}
+    .fc .fc-daygrid-day-number{padding:6px;font-size:13px;}
+    .fc .fc-col-header-cell-cushion{padding:7px 3px;font-size:10px;}
+    .fc-daygrid-event{font-size:10px;padding:1px 5px;margin:1px 2px;}
     .fc .fc-daygrid-day{cursor:pointer;}
+}
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 }
 </style>
 </head>
