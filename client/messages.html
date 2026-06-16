@@ -122,6 +122,14 @@ a{text-decoration:none;}
 @media(max-width:768px){
     .message{max-width:85%;}
 }
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
 </style>
 </head>
 
