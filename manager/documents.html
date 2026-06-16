@@ -532,14 +532,87 @@ function docMeta(){
 }
 
 /* ===== ГЕНЕРАЦИЯ WORD ===== */
-let Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle;
+let Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle,ImageRun;
 function docxLib(){
     if(!window.docx || !window.docx.Document){
         alert("Библиотека для Word не найдена.\n\nУбедитесь, что файл docx.js лежит в папке js рядом с сайтом, и обновите страницу (F5).");
         return false;
     }
-    ({Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle}=window.docx);
+    ({Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle,ImageRun}=window.docx);
     return true;
+}
+
+/* подпись «АВ» с росчерком — рисуем на canvas, отдаём PNG (Uint8Array) */
+function makeSignature(){
+    const w=240,h=110;
+    const c=document.createElement("canvas");
+    c.width=w;c.height=h;
+    const ctx=c.getContext("2d");
+    ctx.strokeStyle="#15307a";
+    ctx.lineCap="round";
+    ctx.lineJoin="round";
+
+    // буква А
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(20,80);
+    ctx.lineTo(42,26);              // левая ножка вверх
+    ctx.lineTo(64,80);              // правая ножка вниз
+    ctx.moveTo(30,60);
+    ctx.lineTo(56,60);              // перекладина
+    ctx.stroke();
+
+    // буква В
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(86,28);
+    ctx.lineTo(86,82);              // вертикаль В
+    // верхняя петля
+    ctx.moveTo(86,30);
+    ctx.bezierCurveTo(120,24, 122,50, 90,54);
+    // нижняя петля
+    ctx.moveTo(90,54);
+    ctx.bezierCurveTo(128,54, 126,86, 86,80);
+    ctx.stroke();
+
+    // росчерк-петля от В
+    ctx.lineWidth=2.4;
+    ctx.beginPath();
+    ctx.moveTo(112,60);
+    ctx.bezierCurveTo(150,30, 175,40, 168,62);
+    ctx.bezierCurveTo(163,78, 150,72, 158,58);
+    ctx.bezierCurveTo(168,40, 195,42, 224,66);
+    ctx.stroke();
+
+    // лёгкое подчёркивание-завиток
+    ctx.lineWidth=1.6;
+    ctx.beginPath();
+    ctx.moveTo(28,92);
+    ctx.bezierCurveTo(90,100, 170,98, 220,86);
+    ctx.stroke();
+
+    const dataUrl=c.toDataURL("image/png");
+    const bin=atob(dataUrl.split(",")[1]);
+    const arr=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+    return arr;
+}
+
+/* блок подписи: картинка-росчерк над строкой ФИО */
+function signatureBlock(who){
+    const {ImageRun}=window.docx;
+    const paras=[];
+    try{
+        paras.push(new Paragraph({
+            spacing:{before:100,after:0},
+            children:[new ImageRun({data:makeSignature(),transformation:{width:150,height:68}})]
+        }));
+    }catch(e){}
+    paras.push(new Paragraph({
+        spacing:{after:120},
+        children:[new TextRun({text:"_______________ / "+(who||"А. В. Позолотина")+" /",size:24,font:"Times New Roman"})]
+    }));
+    return paras;
 }
 
 function P(text,opts={}){
@@ -622,9 +695,12 @@ function buildEstimate(){
     }
 
     children.push(P("ИТОГО К ОПЛАТЕ: "+total.toLocaleString("ru-RU")+" руб.",{bold:true,size:28,after:200}));
-    children.push(P("Срок выполнения работ: "+m.deadline,{after:200}));
-    children.push(P("Исполнитель: ООО «BuildHouse» / "+m.manager));
-    children.push(P("Заказчик: _______________ / "+m.client));
+    children.push(P("Срок выполнения работ: "+m.deadline,{after:160}));
+    children.push(P("Исполнитель: ООО «BuildHouse»",{bold:true,after:20}));
+    children.push(P("Смету составил:",{after:20}));
+    signatureBlock(m.manager).forEach(p=>children.push(p));
+    children.push(P("",{after:80}));
+    children.push(P("Заказчик: _______________ / "+m.client+" /  (подпись)"));
 
     const doc=new Document({sections:[{children}]});
     download(doc,"Смета_"+m.client.replace(/\s/g,"_")+".docx");
@@ -635,40 +711,72 @@ function buildContract(){
     if(!docxLib())return;
     const m=docMeta(); const items=collectItems();
     const total=items.reduce((s,i)=>s+i.sum,0);
-    const doc=new Document({sections:[{children:[
+    const half=Math.round(total/2);
+    const H=(t)=>P(t,{bold:true,size:26,after:100});
+    const J=(t,o={})=>new Paragraph({alignment:AlignmentType.JUSTIFIED,spacing:{after:o.after!=null?o.after:120},children:[new TextRun({text:t,size:24,font:"Times New Roman"})]});
+
+    const children=[
         P("ДОГОВОР ПОДРЯДА № "+m.num,{bold:true,size:30,center:true,after:80}),
-        P("на выполнение ремонтно-отделочных работ",{center:true,after:160}),
-        P("г. Астрахань",{}, ),
-        P("Дата: "+m.today,{after:160}),
+        P("на выполнение ремонтно-отделочных работ",{center:true,after:140}),
+        P("г. Астрахань                                                            "+m.today,{after:150}),
 
-        P("ООО «BuildHouse», именуемое в дальнейшем «Подрядчик», в лице менеджера "+m.manager+", с одной стороны, и "+m.client+", именуемый в дальнейшем «Заказчик», с другой стороны, заключили настоящий договор о нижеследующем:",{after:160}),
+        J("ООО «BuildHouse», именуемое в дальнейшем «Подрядчик», в лице "+m.manager+", действующего на основании Устава, с одной стороны, и гражданин(ка) "+m.client+", именуемый(ая) в дальнейшем «Заказчик», с другой стороны, совместно именуемые «Стороны», заключили настоящий Договор о нижеследующем:",{after:160}),
 
-        P("1. ПРЕДМЕТ ДОГОВОРА",{bold:true,size:26}),
-        P("1.1. Подрядчик обязуется выполнить ремонтно-отделочные работы на объекте Заказчика по адресу: "+m.address+", общей площадью "+m.area+" м²."),
-        P("1.2. Класс ремонта: "+m.className+"."),
-        P("1.3. Состав и стоимость работ определяются Сметой, являющейся неотъемлемой частью настоящего договора.",{after:160}),
+        H("1. ПРЕДМЕТ ДОГОВОРА"),
+        J("1.1. Подрядчик обязуется по заданию Заказчика выполнить комплекс ремонтно-отделочных работ на объекте по адресу: "+m.address+", общей площадью "+m.area+" кв. м, а Заказчик обязуется принять результат и оплатить его."),
+        P("1.2. Класс (категория) ремонта: "+m.className+"."),
+        P("1.3. Перечень, объём и стоимость работ определяются Сметой (Приложение № 1), являющейся неотъемлемой частью Договора."),
+        P("1.4. Работы выполняются из материалов Подрядчика либо Заказчика по согласованию Сторон.",{after:160}),
 
-        P("2. СТОИМОСТЬ И ПОРЯДОК РАСЧЁТОВ",{bold:true,size:26}),
-        P("2.1. Общая стоимость работ составляет "+total.toLocaleString("ru-RU")+" (рублей)."),
-        P("2.2. Оплата производится в два этапа: 50% — аванс перед началом работ, 50% — после подписания Акта выполненных работ."),
-        P("2.3. Стоимость материалов в смету не включена, если иное не оговорено отдельно.",{after:160}),
+        H("2. СТОИМОСТЬ РАБОТ И ПОРЯДОК РАСЧЁТОВ"),
+        P("2.1. Общая стоимость работ составляет "+total.toLocaleString("ru-RU")+" (рублей), НДС не облагается."),
+        P("2.2. Оплата производится в следующем порядке:"),
+        P("— аванс 50% ("+half.toLocaleString("ru-RU")+" руб.) — в течение 3 дней с момента подписания Договора, до начала работ;"),
+        P("— окончательный расчёт 50% ("+(total-half).toLocaleString("ru-RU")+" руб.) — в течение 3 дней после подписания Акта."),
+        P("2.3. Стоимость материалов в указанную сумму не включена, если иное не предусмотрено Сметой."),
+        P("2.4. Цена Договора фиксированная, изменяется только при согласовании дополнительных работ.",{after:160}),
 
-        P("3. СРОКИ ВЫПОЛНЕНИЯ",{bold:true,size:26}),
+        H("3. СРОКИ ВЫПОЛНЕНИЯ РАБОТ"),
         P("3.1. Срок выполнения работ: "+m.deadline+"."),
-        P("3.2. Подрядчик вправе досрочно завершить работы.",{after:160}),
+        P("3.2. Подрядчик приступает к работам после внесения аванса и обеспечения доступа на объект."),
+        P("3.3. Подрядчик вправе завершить работы досрочно.",{after:160}),
 
-        P("4. ОБЯЗАТЕЛЬСТВА СТОРОН",{bold:true,size:26}),
-        P("4.1. Подрядчик обязуется выполнить работы качественно и в срок, с соблюдением строительных норм."),
-        P("4.2. Заказчик обязуется обеспечить доступ к объекту и своевременно произвести оплату."),
-        P("4.3. Гарантия на выполненные работы — 24 месяца с момента подписания Акта.",{after:160}),
+        H("4. ПРАВА И ОБЯЗАННОСТИ СТОРОН"),
+        J("4.1. Подрядчик обязуется: выполнить работы качественно, в срок, с соблюдением строительных норм и правил (СНиП); использовать материалы надлежащего качества; обеспечить уборку строительного мусора по завершении работ."),
+        J("4.2. Заказчик обязуется: обеспечить беспрепятственный доступ на объект; своевременно производить оплату; принять результат работ в установленном порядке."),
+        P("4.3. Заказчик вправе проверять ход и качество работ, не вмешиваясь в деятельность Подрядчика.",{after:160}),
 
-        P("5. РЕКВИЗИТЫ И ПОДПИСИ СТОРОН",{bold:true,size:26}),
-        P("Подрядчик: ООО «BuildHouse», г. Астрахань, ул. Антокольского, д. 6"),
-        P("Тел.: +7 903 349-11-91, e-mail: vitalikpozolotin@yandex.ru"),
-        P("_______________ / "+m.manager+" /",{after:120}),
-        P("Заказчик: "+m.client+", тел. "+m.phone),
-        P("_______________ / "+m.client+" /")
-    ]}]});
+        H("5. КАЧЕСТВО И ГАРАНТИЯ"),
+        P("5.1. Качество работ должно соответствовать требованиям, обычно предъявляемым к работам данного рода."),
+        P("5.2. Гарантийный срок на выполненные работы — 24 (двадцать четыре) месяца с момента подписания Акта."),
+        P("5.3. В период гарантии Подрядчик безвозмездно устраняет недостатки, возникшие по его вине.",{after:160}),
+
+        H("6. ПОРЯДОК СДАЧИ И ПРИЁМКИ РАБОТ"),
+        P("6.1. По завершении работ Подрядчик уведомляет Заказчика и предоставляет Акт выполненных работ."),
+        P("6.2. Заказчик в течение 3 дней принимает работы либо предоставляет мотивированный отказ."),
+        P("6.3. При отсутствии отказа в указанный срок работы считаются принятыми.",{after:160}),
+
+        H("7. ОТВЕТСТВЕННОСТЬ СТОРОН"),
+        P("7.1. За нарушение сроков оплаты Заказчик уплачивает пеню 0,1% от суммы задолженности за каждый день просрочки."),
+        P("7.2. За нарушение сроков работ Подрядчик уплачивает пеню 0,1% от стоимости невыполненных работ за каждый день просрочки."),
+        P("7.3. Стороны освобождаются от ответственности при обстоятельствах непреодолимой силы (форс-мажор).",{after:160}),
+
+        H("8. РАЗРЕШЕНИЕ СПОРОВ И СРОК ДЕЙСТВИЯ"),
+        P("8.1. Споры решаются путём переговоров, при недостижении согласия — в судебном порядке по месту нахождения Подрядчика."),
+        P("8.2. Договор вступает в силу с момента подписания и действует до полного исполнения обязательств."),
+        P("8.3. Составлен в двух экземплярах равной юридической силы, по одному для каждой из Сторон.",{after:200}),
+
+        H("9. РЕКВИЗИТЫ И ПОДПИСИ СТОРОН"),
+        P("Подрядчик: ООО «BuildHouse»",{bold:true}),
+        P("Адрес: г. Астрахань, ул. Антокольского, д. 6"),
+        P("Тел.: +7 903 349-11-91, e-mail: vitalikpozolotin@yandex.ru",{after:60}),
+        ...signatureBlock(m.manager),
+        P("",{after:100}),
+        P("Заказчик: "+m.client,{bold:true}),
+        P("Тел.: "+m.phone,{after:60}),
+        P("_______________ / "+m.client+" /  (подпись)")
+    ];
+    const doc=new Document({sections:[{children}]});
     download(doc,"Договор_"+m.client.replace(/\s/g,"_")+".docx");
 }
 
@@ -687,8 +795,10 @@ function buildAct(){
         P("Всего выполнено работ на сумму: "+total.toLocaleString("ru-RU")+" руб.",{bold:true,size:26}),
         P("Работы выполнены в полном объёме, в установленные сроки и с надлежащим качеством. Заказчик претензий не имеет.",{after:200}),
         P("Гарантийный срок на выполненные работы — 24 месяца.",{after:200}),
-        P("Подрядчик: _______________ / "+m.manager+" /",{after:120}),
-        P("Заказчик: _______________ / "+m.client+" /")
+        P("Подрядчик: ООО «BuildHouse»",{bold:true,after:40}),
+        ...signatureBlock(m.manager),
+        P("",{after:80}),
+        P("Заказчик: _______________ / "+m.client+" /  (подпись)")
     ]}]});
     download(doc,"Акт_"+m.client.replace(/\s/g,"_")+".docx");
 }
