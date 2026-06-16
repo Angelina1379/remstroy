@@ -144,6 +144,14 @@ textarea{resize:none;min-height:90px;grid-column:1/-1;}
     .burger{display:block;}
     .topbar{flex-direction:column;align-items:flex-start;}
 }
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
 </style>
 </head>
 
@@ -224,8 +232,18 @@ textarea{resize:none;min-height:90px;grid-column:1/-1;}
 import { auth, db } from "../js/firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-    collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, onSnapshot, arrayUnion
+    collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, onSnapshot, arrayUnion, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* уведомление клиенту: notifications/{uid}/items */
+async function notify(uid,text){
+    if(!uid||!text)return;
+    try{
+        await addDoc(collection(db,"notifications",uid,"items"),{
+            text, read:false, time:serverTimestamp(), clientTime:Date.now()
+        });
+    }catch(e){console.warn("Не удалось отправить уведомление:",e);}
+}
 
 const $ = (id)=>document.getElementById(id);
 
@@ -478,6 +496,7 @@ function bindRightActions(o,st){
             manager:managerName,
             history:arrayUnion({title:"Заявка одобрена менеджером",date:now()})
         });
+        await notify(o.uid,"✅ Ваша заявка одобрена и переведена в работу!");
         alert("Заявка одобрена и переведена в работу");
     });
 
@@ -488,6 +507,7 @@ function bindRightActions(o,st){
             status:"Отменён",
             history:arrayUnion({title:"Заявка отклонена",date:now()})
         });
+        await notify(o.uid,"К сожалению, ваша заявка отклонена. Свяжитесь с нами для уточнения деталей.");
         alert("Заявка отклонена");
     });
 
@@ -513,6 +533,7 @@ function bindRightActions(o,st){
                 createdAt:Date.now()
             });
             alert("Замер назначен и добавлен в календарь");
+            await notify(o.uid,"📅 Назначен замер на "+new Date(date).toLocaleDateString("ru-RU")+". Ждём встречи!");
         }catch(e){alert("Ошибка: "+e.message);}
     });
 
@@ -523,6 +544,7 @@ function bindRightActions(o,st){
         data.history=arrayUnion({title:"Проект оформлен и запущен в работу",date:now()});
         try{
             await updateDoc(doc(db,"projects",o.id),data);
+            await notify(o.uid,"🔨 Ваш проект оформлен и запущен в работу! Следите за этапами в кабинете.");
             alert("Проект запущен в работу — клиент видит детали в кабинете");
         }catch(e){alert("Ошибка: "+e.message);}
     });
@@ -533,6 +555,19 @@ function bindRightActions(o,st){
         data.history=arrayUnion({title:"Проект обновлён ("+normStatus(data.status)+")",date:now()});
         try{
             await updateDoc(doc(db,"projects",o.id),data);
+            // уведомляем клиента о том, что изменилось
+            const oldStatus=normStatus(o.status), newStatus=normStatus(data.status);
+            const oldProg=o.progress!=null?Number(o.progress):null;
+            const newProg=data.progress!=null?Number(data.progress):null;
+            if(newStatus!==oldStatus){
+                await notify(o.uid,"📌 Статус вашего проекта изменён: «"+newStatus+"»");
+            }
+            if(newProg!=null && newProg!==oldProg){
+                await notify(o.uid,"📊 Готовность проекта обновлена: "+newProg+"%");
+            }
+            if(newStatus==="Завершён"){
+                await notify(o.uid,"🎉 Ваш объект сдан! Спасибо, что выбрали BuildHouse.");
+            }
             alert("Изменения сохранены");
         }catch(e){alert("Ошибка: "+e.message);}
     });
