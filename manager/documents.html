@@ -120,12 +120,32 @@ a{text-decoration:none;}
 ::-webkit-scrollbar{width:8px;}::-webkit-scrollbar-thumb{background:#d6dce5;border-radius:20px;}
 
 @media(max-width:1000px){.layout{grid-template-columns:1fr;}}
+@media(max-width:1000px){
+    .layout{grid-template-columns:1fr;}
+}
 @media(max-width:900px){
     .sidebar{transform:translateX(-100%);transition:.3s;}
     .sidebar.open{transform:translateX(0);}
     .main-content{margin-left:0;padding:24px;}
     .burger{display:block;}
     .top-bar{flex-direction:column;align-items:flex-start;}
+}
+@media(max-width:600px){
+    .main-content{padding:16px;}
+    .form-grid{grid-template-columns:1fr;}
+    .works-grid{grid-template-columns:1fr;}
+    .cdoc{flex-wrap:wrap;}
+    .cdoc .cd-body{flex:1 1 100%;order:-1;}
+    .doc-actions{flex-direction:column;}
+    .doc-actions .doc-btn{width:100%;justify-content:center;}
+}
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 }
 </style>
 </head>
