@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Настройки | BuildHouse CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --accent:#ff8c42;
+    --navy:#0b1220;
+    --bg:#f5f6fa;
+    --white:#fff;
+    --border:#e8edf4;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --danger:#ef4444;
+    --shadow:0 4px 14px rgba(0,0,0,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+a{text-decoration:none;}
+.dashboard{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--navy);padding:30px 20px;display:flex;flex-direction:column;z-index:1000;}
+.logo h2{color:var(--primary);font-size:28px;font-weight:900;}
+.logo p{color:#8f9aad;margin-top:6px;font-size:14px;}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex-grow:1;}
+.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;font-weight:500;cursor:pointer;}
+.menu a .m-ic{font-size:19px;}
+.menu a:hover{background:#1d2638;color:white;}
+.menu .active{background:var(--primary);color:#111;font-weight:700;}
+#logoutBtnSide{width:100%;border:none;padding:14px;border-radius:14px;background:#1d2638;color:#ff9b9b;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:auto;}
+#logoutBtnSide:hover{background:#26344a;}
+
+/* MAIN */
+.main-content{flex:1;margin-left:260px;padding:35px;}
+.top-bar{display:flex;align-items:center;gap:16px;margin-bottom:28px;}
+.burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
+.top-bar h1{font-size:32px;margin-bottom:6px;}
+.top-bar p{color:var(--muted);}
+
+/* PROFILE HEAD */
+.profile-head{background:linear-gradient(135deg,var(--navy),#172133);border-radius:24px;padding:30px;display:flex;align-items:center;gap:20px;margin-bottom:26px;box-shadow:var(--shadow);color:white;position:relative;overflow:hidden;}
+.profile-head::before{content:"";position:absolute;top:-70px;right:-70px;width:180px;height:180px;border-radius:50%;background:rgba(255,181,71,.15);}
+.ph-avatar{width:80px;height:80px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:#111;}
+.ph-info h2{font-size:26px;}
+.ph-info p{opacity:.8;}
+.ph-role{display:inline-block;background:var(--primary);color:#111;padding:4px 12px;border-radius:10px;font-size:12px;font-weight:800;margin-top:8px;}
+
+/* CARDS */
+.settings-card{background:white;border-radius:24px;padding:30px;box-shadow:var(--shadow);margin-bottom:24px;}
+.settings-card h3{font-size:20px;margin-bottom:6px;}
+.settings-card .sub{color:var(--muted);font-size:14px;margin-bottom:22px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;margin-bottom:8px;font-weight:600;font-size:14px;}
+.form-group input{width:100%;padding:15px;border:1px solid var(--border);border-radius:14px;font-family:inherit;font-size:15px;background:#fafbfd;}
+.form-group input:focus{outline:none;border-color:var(--primary);background:white;box-shadow:0 0 0 3px rgba(255,181,71,.15);}
+.save-btn{border:none;background:var(--primary);color:#111;padding:15px 28px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;transition:.2s;}
+.save-btn:hover{background:var(--primary-dark);}
+.save-btn:disabled{background:#ffd699;cursor:not-allowed;}
+
+/* TOGGLES */
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.tr-info b{display:block;}
+.tr-info span{color:var(--muted);font-size:14px;}
+.switch{position:relative;width:52px;height:30px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;inset:0;background:#d6dce5;border-radius:999px;cursor:pointer;transition:.25s;}
+.slider::before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;background:white;border-radius:50%;transition:.25s;}
+.switch input:checked + .slider{background:var(--primary);}
+.switch input:checked + .slider::before{transform:translateX(22px);}
+
+/* DANGER */
+.danger-card{background:white;border:2px solid #ffe0e0;border-radius:24px;padding:30px;box-shadow:var(--shadow);}
+.danger-card h3{color:var(--danger);font-size:20px;margin-bottom:6px;}
+.danger-card .sub{color:var(--muted);font-size:14px;margin-bottom:22px;}
+.btn-logout{border:none;background:#f4f7fb;color:#333;padding:14px 24px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;}
+.btn-logout:hover{background:#e9edf3;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
+.overlay.show{display:block;}
+
+@media(max-width:900px){
+    .sidebar{transform:translateX(-100%);transition:.3s;}
+    .sidebar.open{transform:translateX(0);}
+    .main-content{margin-left:0;padding:24px;}
+    .burger{display:block;}
+    .form-row{grid-template-columns:1fr;}
+    .profile-head{flex-direction:column;text-align:center;}
+}
+</style>
+</head>
+
+<body>
+<div class="dashboard">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>BuildHouse</h2>
+            <p>Панель менеджера</p>
+        </div>
+        <nav class="menu">
+            <a href="manager-panel.html"><span class="m-ic">📊</span> Главная</a>
+            <a href="projects.html"><span class="m-ic">📦</span> Заказы</a>
+            <a href="klients.html"><span class="m-ic">👥</span> Клиенты</a>
+            <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
+            <a href="calendar.html"><span class="m-ic">📅</span> Замеры</a>
+            <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
+            <a class="active"><span class="m-ic">⚙️</span> Настройки</a>
+        </nav>
+        <button id="logoutBtnSide">Выйти</button>
+    </aside>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="main-content">
+
+        <div class="top-bar">
+            <button class="burger" id="burger">☰</button>
+            <div>
+                <h1>Настройки</h1>
+                <p>Профиль, безопасность и реквизиты компании</p>
+            </div>
+        </div>
+
+        <!-- ШАПКА -->
+        <div class="profile-head">
+            <div class="ph-avatar" id="phAvatar">М</div>
+            <div class="ph-info">
+                <h2 id="phName">Менеджер</h2>
+                <p id="phEmail">—</p>
+                <span class="ph-role">Менеджер</span>
+            </div>
+        </div>
+
+        <!-- ПРОФИЛЬ -->
+        <div class="settings-card">
+            <h3>Профиль сотрудника</h3>
+            <p class="sub">Эти данные подставляются в документы как «ответственный менеджер»</p>
+            <div class="form-row">
+                <div class="form-group"><label>Имя</label><input type="text" id="setName" placeholder="Ваше имя"></div>
+                <div class="form-group"><label>Телефон</label><input type="text" id="setPhone" placeholder="+7 ___ ___-__-__"></div>
+            </div>
+            <button class="save-btn" id="saveProfileBtn">Сохранить</button>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="settings-card">
+            <h3>Email</h3>
+            <p class="sub">Адрес для входа в систему</p>
+            <div class="form-group"><label>Новый email</label><input type="email" id="setEmail" placeholder="manager@buildhouse.ru"></div>
+            <button class="save-btn" id="saveEmailBtn">Изменить email</button>
+        </div>
+
+        <!-- ПАРОЛЬ -->
+        <div class="settings-card">
+            <h3>Смена пароля</h3>
+            <p class="sub">Минимум 6 символов</p>
+            <div class="form-row">
+                <div class="form-group"><label>Новый пароль</label><input type="password" id="setPass1" placeholder="••••••"></div>
+                <div class="form-group"><label>Повторите пароль</label><input type="password" id="setPass2" placeholder="••••••"></div>
+            </div>
+            <button class="save-btn" id="savePassBtn">Изменить пароль</button>
+        </div>
+
+        <!-- РЕКВИЗИТЫ КОМПАНИИ -->
+        <div class="settings-card">
+            <h3>Реквизиты компании</h3>
+            <p class="sub">Используются в договорах, сметах и актах</p>
+            <div class="form-row">
+                <div class="form-group"><label>Название</label><input type="text" id="coName" placeholder="ООО «BuildHouse»"></div>
+                <div class="form-group"><label>Телефон</label><input type="text" id="coPhone" placeholder="+7 903 349-11-91"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Email</label><input type="text" id="coEmail" placeholder="vitalikpozolotin@yandex.ru"></div>
+                <div class="form-group"><label>Адрес</label><input type="text" id="coAddress" placeholder="г. Астрахань, ул. Антокольского, д. 6"></div>
+            </div>
+            <button class="save-btn" id="saveCompanyBtn">Сохранить реквизиты</button>
+        </div>
+
+        <!-- УВЕДОМЛЕНИЯ -->
+        <div class="settings-card">
+            <h3>Уведомления</h3>
+            <p class="sub">Что показывать в панели</p>
+            <div class="toggle-row">
+                <div class="tr-info"><b>Новые заявки</b><span>Когда клиент оставляет заявку</span></div>
+                <label class="switch"><input type="checkbox" id="ntOrders" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+                <div class="tr-info"><b>Новые сообщения</b><span>Сообщения от клиентов в чате</span></div>
+                <label class="switch"><input type="checkbox" id="ntMessages" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+                <div class="tr-info"><b>Новые отзывы</b><span>Когда клиент оставляет отзыв</span></div>
+                <label class="switch"><input type="checkbox" id="ntReviews" checked><span class="slider"></span></label>
+            </div>
+            <button class="save-btn" id="saveNotifBtn" style="margin-top:18px;">Сохранить настройки</button>
+        </div>
+
+        <!-- ВЫХОД -->
+        <div class="danger-card">
+            <h3>Аккаунт</h3>
+            <p class="sub">Завершить текущую сессию</p>
+            <button class="btn-logout" id="logoutBtn">Выйти из аккаунта</button>
+        </div>
+
+    </main>
+</div>
+
+
+<script type="module">
+import { auth, db } from "../js/firebase.js";
+import {
+    onAuthStateChanged, signOut, updateEmail, updatePassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    doc, getDoc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $ = (id)=>document.getElementById(id);
+let currentUser=null;
+
+/* БУРГЕР */
+const sidebar=$("sidebar"), overlay=$("overlay");
+$("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
+overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
+
+/* LOGOUT */
+async function doLogout(){await signOut(auth);window.location.href="../login.html";}
+$("logoutBtnSide").addEventListener("click",doLogout);
+$("logoutBtn").addEventListener("click",doLogout);
+
+/* AUTH + роль + профиль */
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){window.location.href="../login.html";return;}
+    currentUser=user;
+    let name="Менеджер";
+    try{
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists()){
+            const d=snap.data();
+            if(d.role!=="manager"){window.location.href="../client-cabinet.html";return;}
+            name=d.name||"Менеджер";
+            $("setName").value=d.name||"";
+            $("setPhone").value=d.phone||"";
+            if(d.notifications){
+                $("ntOrders").checked=d.notifications.orders!==false;
+                $("ntMessages").checked=d.notifications.messages!==false;
+                $("ntReviews").checked=d.notifications.reviews!==false;
+            }
+            const co=d.company||{};
+            $("coName").value=co.name||"ООО «BuildHouse»";
+            $("coPhone").value=co.phone||"+7 903 349-11-91";
+            $("coEmail").value=co.email||"vitalikpozolotin@yandex.ru";
+            $("coAddress").value=co.address||"г. Астрахань, ул. Антокольского, д. 6";
+        }
+    }catch(e){}
+    $("phName").textContent=name;
+    $("phEmail").textContent=user.email||"—";
+    $("phAvatar").textContent=name.charAt(0).toUpperCase();
+    $("setEmail").value=user.email||"";
+});
+
+/* ПРОФИЛЬ */
+$("saveProfileBtn").addEventListener("click",async()=>{
+    const name=$("setName").value.trim();
+    const phone=$("setPhone").value.trim();
+    if(!name){alert("Введите имя");return;}
+    const btn=$("saveProfileBtn");btn.disabled=true;btn.textContent="Сохраняем...";
+    try{
+        await setDoc(doc(db,"users",currentUser.uid),{name,phone},{merge:true});
+        $("phName").textContent=name;
+        $("phAvatar").textContent=name.charAt(0).toUpperCase();
+        alert("Сохранено!");
+    }catch(e){alert("Ошибка: "+e.message);}
+    btn.disabled=false;btn.textContent="Сохранить";
+});
+
+/* EMAIL */
+$("saveEmailBtn").addEventListener("click",async()=>{
+    const email=$("setEmail").value.trim();
+    if(!email){alert("Введите email");return;}
+    const btn=$("saveEmailBtn");btn.disabled=true;btn.textContent="Меняем...";
+    try{
+        await updateEmail(currentUser,email);
+        await setDoc(doc(db,"users",currentUser.uid),{email},{merge:true});
+        $("phEmail").textContent=email;
+        alert("Email изменён!");
+    }catch(e){
+        if(e.code==="auth/requires-recent-login")alert("Нужно заново войти. Выйдите и зайдите снова, затем повторите.");
+        else alert("Ошибка: "+e.message);
+    }
+    btn.disabled=false;btn.textContent="Изменить email";
+});
+
+/* ПАРОЛЬ */
+$("savePassBtn").addEventListener("click",async()=>{
+    const p1=$("setPass1").value, p2=$("setPass2").value;
+    if(p1.length<6){alert("Минимум 6 символов");return;}
+    if(p1!==p2){alert("Пароли не совпадают");return;}
+    const btn=$("savePassBtn");btn.disabled=true;btn.textContent="Меняем...";
+    try{
+        await updatePassword(currentUser,p1);
+        $("setPass1").value="";$("setPass2").value="";
+        alert("Пароль изменён!");
+    }catch(e){
+        if(e.code==="auth/requires-recent-login")alert("Нужно заново войти. Выйдите и зайдите снова, затем повторите.");
+        else alert("Ошибка: "+e.message);
+    }
+    btn.disabled=false;btn.textContent="Изменить пароль";
+});
+
+/* РЕКВИЗИТЫ */
+$("saveCompanyBtn").addEventListener("click",async()=>{
+    const company={
+        name:$("coName").value.trim(),
+        phone:$("coPhone").value.trim(),
+        email:$("coEmail").value.trim(),
+        address:$("coAddress").value.trim()
+    };
+    const btn=$("saveCompanyBtn");btn.disabled=true;btn.textContent="Сохраняем...";
+    try{
+        await setDoc(doc(db,"users",currentUser.uid),{company},{merge:true});
+        alert("Реквизиты сохранены!");
+    }catch(e){alert("Ошибка: "+e.message);}
+    btn.disabled=false;btn.textContent="Сохранить реквизиты";
+});
+
+/* УВЕДОМЛЕНИЯ */
+$("saveNotifBtn").addEventListener("click",async()=>{
+    const notifications={
+        orders:$("ntOrders").checked,
+        messages:$("ntMessages").checked,
+        reviews:$("ntReviews").checked
+    };
+    const btn=$("saveNotifBtn");btn.disabled=true;btn.textContent="Сохраняем...";
+    try{
+        await setDoc(doc(db,"users",currentUser.uid),{notifications},{merge:true});
+        alert("Настройки сохранены!");
+    }catch(e){alert("Ошибка: "+e.message);}
+    btn.disabled=false;btn.textContent="Сохранить настройки";
+});
+</script>
+
+</body>
+</html>
