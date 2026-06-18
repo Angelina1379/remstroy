@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Календарь замеров | BuildHouse CRM</title>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --accent:#ff8c42;
+    --navy:#0b1220;
+    --bg:#f5f6fa;
+    --white:#fff;
+    --border:#e8edf4;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --shadow:0 4px 14px rgba(0,0,0,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+a{text-decoration:none;}
+.dashboard{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--navy);padding:30px 20px;display:flex;flex-direction:column;z-index:1000;}
+.logo h2{color:var(--primary);font-size:28px;font-weight:900;}
+.logo p{color:#8f9aad;margin-top:6px;font-size:14px;}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex-grow:1;}
+.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;font-weight:500;cursor:pointer;}
+.menu a .m-ic{font-size:19px;}
+.menu a:hover{background:#1d2638;color:white;}
+.menu .active{background:var(--primary);color:#111;font-weight:700;}
+#logoutBtn{width:100%;border:none;padding:14px;border-radius:14px;background:#1d2638;color:#ff9b9b;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:auto;}
+#logoutBtn:hover{background:#26344a;}
+
+/* MAIN */
+.main-content{margin-left:260px;padding:35px;width:100%;}
+.calendar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;gap:20px;}
+.ct-left{display:flex;align-items:center;gap:16px;}
+.calendar-top h1{font-size:32px;margin-bottom:6px;}
+.calendar-top p{color:var(--muted);}
+.burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
+#openModalBtn{border:none;background:var(--primary);color:#111;padding:14px 22px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;white-space:nowrap;}
+#openModalBtn:hover{background:var(--primary-dark);}
+
+/* LAYOUT */
+.calendar-layout{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
+.calendar-wrapper{background:white;border-radius:24px;padding:26px;box-shadow:var(--shadow);}
+
+/* типы работ — легенда */
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.lg{display:flex;align-items:center;gap:7px;font-size:13px;color:#555;font-weight:600;}
+.lg .dot{width:12px;height:12px;border-radius:50%;}
+
+/* DAY EVENTS */
+.day-events{background:white;border-radius:24px;padding:26px;box-shadow:var(--shadow);position:sticky;top:20px;}
+.day-events h2{font-size:20px;margin-bottom:6px;}
+.day-events .day-sub{color:var(--muted);font-size:14px;margin-bottom:20px;}
+.event-item{padding:16px;border-radius:16px;background:#f8f9fc;margin-bottom:12px;border-left:5px solid var(--primary);}
+.event-item strong{display:block;margin-bottom:8px;font-size:15px;}
+.event-item p{color:#55606f;font-size:13px;margin-bottom:4px;}
+.empty-day{text-align:center;color:var(--muted);padding:30px 10px;}
+
+/* FullCalendar — компактный изящный вид */
+.fc{font-family:'Inter',sans-serif;}
+.fc .fc-toolbar.fc-header-toolbar{margin-bottom:18px;gap:10px;}
+.fc .fc-toolbar-chunk{display:flex;align-items:center;gap:8px;}
+/* кнопки — небольшие, мягкие */
+.fc .fc-button-primary{background:#f3f5f9;color:#3a4452;border:none;border-radius:10px;font-weight:600;font-size:13px;text-transform:capitalize;padding:7px 13px;box-shadow:none;transition:.2s;}
+.fc .fc-button-primary:hover{background:#e9edf3;color:#111;}
+.fc .fc-button-primary:disabled{background:#f3f5f9;color:#c2c9d4;opacity:1;}
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-active{background:var(--primary)!important;color:#111!important;box-shadow:none;}
+.fc .fc-button-primary:focus{box-shadow:none!important;outline:none;}
+/* стрелки навигации — кругленькие */
+.fc .fc-prev-button,.fc .fc-next-button{width:34px;height:34px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.fc .fc-today-button{background:var(--navy);color:#fff;border-radius:10px;font-size:12px;padding:7px 14px;}
+.fc .fc-today-button:hover{background:#1d2638;color:#fff;}
+.fc .fc-today-button:disabled{background:#e9edf3;color:#b8c0cc;}
+/* заголовок месяца — компактнее */
+.fc .fc-toolbar-title{font-size:18px;font-weight:700;white-space:nowrap;letter-spacing:-.2px;color:#1b2430;}
+.fc .fc-toolbar-title::first-letter{text-transform:uppercase;}
+
+/* сетка — чистая, без жёстких рамок */
+.fc .fc-scrollgrid{border:none;}
+.fc .fc-scrollgrid td,.fc .fc-scrollgrid th{border-color:#f0f2f6;}
+.fc .fc-col-header-cell{background:transparent;}
+.fc .fc-col-header-cell-cushion{color:#9aa3b0;font-weight:600;padding:10px 6px;text-transform:uppercase;font-size:11px;letter-spacing:.4px;}
+.fc .fc-daygrid-day{transition:.15s;}
+.fc .fc-daygrid-day:hover{background:#fff8eb;cursor:pointer;}
+.fc .fc-daygrid-day.fc-day-today{background:#fff7e8;}
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{background:var(--primary);color:#111;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;margin:5px;font-weight:800;font-size:13px;}
+.fc .fc-daygrid-day-number{padding:7px 8px;font-weight:600;color:#5a6472;font-size:13px;}
+.fc .fc-day-sun .fc-daygrid-day-number,.fc .fc-day-sat .fc-daygrid-day-number{color:#d77;}
+.fc .fc-daygrid-day-frame{min-height:78px;}
+
+/* события — компактные «пилюли», текст в одну строку с многоточием */
+.fc-daygrid-event{border:none!important;border-radius:7px;margin:1px 4px;padding:2px 7px;font-size:11.5px;font-weight:600;cursor:pointer;box-shadow:none;transition:.15s;overflow:hidden;}
+.fc-daygrid-event:hover{filter:brightness(.96);}
+.fc-daygrid-event .fc-event-title,
+.fc-daygrid-event .fc-event-main{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    display:block;
+}
+.fc .fc-daygrid-event-dot{display:none;}
+.fc .fc-daygrid-event-harness{margin-top:2px;}
+.fc .fc-more-link{font-weight:700;color:var(--accent);font-size:11px;padding:1px 6px;}
+.fc .fc-event-time{display:none;} /* время не пишем в ячейке — компактнее */
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(11,18,32,.6);display:none;justify-content:center;align-items:center;z-index:9999;padding:20px;}
+.modal.open{display:flex;}
+.modal-content{width:100%;max-width:560px;background:white;border-radius:26px;padding:32px;box-shadow:0 30px 60px rgba(0,0,0,.25);max-height:92vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+.modal-header h2{font-size:24px;}
+.modal-header button{width:40px;height:40px;border:none;border-radius:12px;cursor:pointer;background:#f3f5f8;font-size:18px;}
+.modal-grid{display:grid;gap:14px;}
+.modal-grid label{font-weight:600;font-size:13px;color:#555;margin-bottom:-6px;}
+.modal-grid input,.modal-grid select,.modal-grid textarea{width:100%;padding:14px;border:none;background:#f5f6fa;border-radius:13px;font-family:inherit;font-size:15px;}
+.modal-grid input:focus,.modal-grid select:focus,.modal-grid textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(255,181,71,.2);}
+.modal-grid textarea{resize:none;min-height:80px;}
+
+/* поиск клиента с подсказками */
+.suggest-box{position:absolute;top:calc(100% + 4px);left:0;right:0;background:white;border-radius:13px;box-shadow:0 12px 30px rgba(0,0,0,.15);max-height:240px;overflow-y:auto;z-index:50;display:none;}
+.suggest-box.show{display:block;}
+.suggest-item{padding:12px 14px;cursor:pointer;border-bottom:1px solid #f2f4f8;transition:.15s;}
+.suggest-item:last-child{border-bottom:none;}
+.suggest-item:hover,.suggest-item.hl{background:#fff8eb;}
+.suggest-item b{font-size:14px;display:block;}
+.suggest-item span{font-size:12px;color:var(--muted);}
+.suggest-empty{padding:14px;color:var(--muted);font-size:13px;text-align:center;}
+.modal-actions{display:flex;gap:12px;margin-top:22px;}
+.modal-actions button{flex:1;border:none;padding:15px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;}
+#saveTaskBtn{background:var(--primary);color:#111;}
+#saveTaskBtn:hover{background:var(--primary-dark);}
+.delete-btn{background:#fdecea;color:#ef4444;}
+.delete-btn:hover{background:#fbd9d6;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
+.overlay.show{display:block;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:#d6dce5;border-radius:20px;}
+
+@media(max-width:1100px){
+    .sidebar{transform:translateX(-100%);transition:.3s;}
+    .sidebar.open{transform:translateX(0);}
+    .main-content{margin-left:0;padding:24px;}
+    .burger{display:block;}
+    .calendar-layout{grid-template-columns:1fr;}
+    .day-events{position:relative;}
+}
+@media(max-width:768px){
+    .calendar-top{flex-direction:column;align-items:flex-start;}
+    #openModalBtn{width:100%;}
+    .calendar-wrapper{padding:14px;}
+    .fc .fc-toolbar{flex-direction:column;gap:10px;}
+    .fc .fc-toolbar-title{font-size:17px;white-space:nowrap;}
+    .fc .fc-button-primary{padding:6px 11px;font-size:12px;}
+    .fc .fc-daygrid-day-frame{min-height:58px;}
+    .fc .fc-daygrid-day-number{padding:6px;font-size:13px;}
+    .fc .fc-col-header-cell-cushion{padding:7px 3px;font-size:10px;}
+    .fc-daygrid-event{font-size:10px;padding:1px 5px;margin:1px 2px;}
+    .fc .fc-daygrid-day{cursor:pointer;}
+}
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
+</style>
+</head>
+
+<body>
+<div class="dashboard">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>BuildHouse</h2>
+            <p>Панель менеджера</p>
+        </div>
+        <nav class="menu">
+            <a href="manager-panel.html"><span class="m-ic">📊</span> Главная</a>
+            <a href="projects.html"><span class="m-ic">📦</span> Заказы</a>
+            <a href="klients.html"><span class="m-ic">👥</span> Клиенты</a>
+            <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
+            <a class="active"><span class="m-ic">📅</span> Замеры</a>
+            <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
+            <a href="setting.html"><span class="m-ic">⚙️</span> Настройки</a>
+        </nav>
+        <button id="logoutBtn">Выйти</button>
+    </aside>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="main-content">
+
+        <div class="calendar-top">
+            <div class="ct-left">
+                <button class="burger" id="burger">☰</button>
+                <div>
+                    <h1>Календарь замеров и работ</h1>
+                    <p>Планирование выездов, замеров и этапов ремонта</p>
+                </div>
+            </div>
+            <button id="openModalBtn">+ Добавить запись</button>
+        </div>
+
+        <div class="legend">
+            <div class="lg"><span class="dot" style="background:#ffb547"></span>Замер</div>
+            <div class="lg"><span class="dot" style="background:#2563eb"></span>Смета</div>
+            <div class="lg"><span class="dot" style="background:#ef4444"></span>Черновые</div>
+            <div class="lg"><span class="dot" style="background:#22c55e"></span>Отделочные</div>
+            <div class="lg"><span class="dot" style="background:#8b5cf6"></span>Сдача</div>
+        </div>
+
+        <div class="calendar-layout">
+            <div class="calendar-wrapper">
+                <div id="calendar"></div>
+            </div>
+
+            <div class="day-events">
+                <h2>План на день</h2>
+                <p class="day-sub" id="daySub">Выберите дату в календаре</p>
+                <div id="eventsList">
+                    <div class="empty-day">Кликните на дату, чтобы увидеть записи</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+
+<!-- MODAL -->
+<div id="taskModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Новая запись</h2>
+            <button id="closeModal">✕</button>
+        </div>
+        <div class="modal-grid">
+            <label>Клиент</label>
+            <div style="position:relative;">
+                <input id="clientSearch" type="text" placeholder="Начните вводить имя или телефон..." autocomplete="off">
+                <input type="hidden" id="clientUid">
+                <div id="clientSuggest" class="suggest-box"></div>
+            </div>
+
+            <label>Тип работ</label>
+            <select id="workType">
+                <option value="Замер">Замер</option>
+                <option value="Смета">Смета</option>
+                <option value="Черновые работы">Черновые работы</option>
+                <option value="Отделочные работы">Отделочные работы</option>
+                <option value="Сдача объекта">Сдача объекта</option>
+            </select>
+
+            <label>Адрес объекта</label>
+            <input id="clientAddress" type="text" placeholder="Адрес">
+
+            <label>Дата и время</label>
+            <input id="eventDate" type="datetime-local">
+
+            <label>Ответственный</label>
+            <input id="manager" type="text" placeholder="Сотрудник">
+
+            <label>Комментарий</label>
+            <textarea id="comment" placeholder="Детали записи"></textarea>
+        </div>
+        <div class="modal-actions">
+            <button id="saveTaskBtn">Сохранить</button>
+            <button class="delete-btn" id="deleteTaskBtn">Удалить</button>
+        </div>
+    </div>
+</div>
+
+
+<script type="module">
+import { auth, db } from "../js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    collection, addDoc, getDocs, getDoc, updateDoc, deleteDoc, doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $ = (id)=>document.getElementById(id);
+
+let calendar=null;
+let currentDocId=null;
+let selectedDate=null;
+let clients=[];
+let managerName="Менеджер";
+
+/* БУРГЕР */
+const sidebar=$("sidebar"), overlay=$("overlay");
+$("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
+overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
+
+/* LOGOUT */
+$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="../login.html";});
+
+const modal=$("taskModal");
+function openModal(){modal.classList.add("open");}
+function closeModal(){modal.classList.remove("open");}
+$("closeModal").addEventListener("click",closeModal);
+window.addEventListener("click",e=>{if(e.target===modal)closeModal();});
+
+function getColor(type){
+    switch(type){
+        case "Замер":return "#ffb547";
+        case "Смета":return "#2563eb";
+        case "Черновые работы":return "#ef4444";
+        case "Отделочные работы":return "#22c55e";
+        case "Сдача объекта":return "#8b5cf6";
+        default:return "#3b82f6";
+    }
+}
+
+/* AUTH + роль */
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){window.location.href="../login.html";return;}
+    try{
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists()){
+            const d=snap.data();
+            if(d.role!=="manager"){window.location.href="../client-cabinet.html";return;}
+            managerName=d.name||"Менеджер";
+        }
+    }catch(e){}
+    await loadClients();
+    initCalendar();
+});
+
+/* клиенты — грузим в массив для поиска */
+async function loadClients(){
+    try{
+        const snap=await getDocs(collection(db,"users"));
+        clients=[];
+        snap.forEach(d=>{const u=d.data();if(u.role!=="manager")clients.push(u);});
+    }catch(e){console.error(e);}
+}
+
+/* ПОИСК КЛИЕНТА С АВТОДОПОЛНЕНИЕМ */
+const clientSearch=$("clientSearch");
+const clientSuggest=$("clientSuggest");
+let suggestList=[];
+let hlIndex=-1;
+
+clientSearch.addEventListener("input",()=>{
+    $("clientUid").value=""; // сбрасываем выбор при ручном вводе
+    const q=clientSearch.value.trim().toLowerCase();
+    if(!q){clientSuggest.classList.remove("show");return;}
+    suggestList=clients.filter(c=>((c.name||"")+" "+(c.phone||"")+" "+(c.email||"")).toLowerCase().includes(q)).slice(0,30);
+    hlIndex=-1;
+    renderSuggest();
+});
+
+clientSearch.addEventListener("focus",()=>{
+    if(clientSearch.value.trim() && suggestList.length)clientSuggest.classList.add("show");
+});
+
+function renderSuggest(){
+    if(!suggestList.length){
+        clientSuggest.innerHTML='<div class="suggest-empty">Клиент не найден</div>';
+        clientSuggest.classList.add("show");
+        return;
+    }
+    clientSuggest.innerHTML=suggestList.map((c,i)=>`
+        <div class="suggest-item ${i===hlIndex?'hl':''}" data-uid="${c.uid}">
+            <b>${c.name||"Без имени"}</b>
+            <span>${c.phone||""}${c.email?" · "+c.email:""}</span>
+        </div>`).join("");
+    clientSuggest.classList.add("show");
+    clientSuggest.querySelectorAll(".suggest-item").forEach(el=>{
+        el.addEventListener("click",()=>pickClient(el.dataset.uid));
+    });
+}
+
+function pickClient(uid){
+    const c=clients.find(x=>x.uid===uid);
+    if(!c)return;
+    clientSearch.value=c.name||c.email||"";
+    $("clientUid").value=uid;
+    if(!$("clientAddress").value && c.address)$("clientAddress").value=c.address;
+    clientSuggest.classList.remove("show");
+}
+
+/* навигация стрелками */
+clientSearch.addEventListener("keydown",(e)=>{
+    if(!clientSuggest.classList.contains("show"))return;
+    if(e.key==="ArrowDown"){e.preventDefault();hlIndex=Math.min(hlIndex+1,suggestList.length-1);renderSuggest();}
+    else if(e.key==="ArrowUp"){e.preventDefault();hlIndex=Math.max(hlIndex-1,0);renderSuggest();}
+    else if(e.key==="Enter"){e.preventDefault();if(hlIndex>=0&&suggestList[hlIndex])pickClient(suggestList[hlIndex].uid);}
+    else if(e.key==="Escape"){clientSuggest.classList.remove("show");}
+});
+
+/* клик вне — закрыть подсказки */
+document.addEventListener("click",(e)=>{
+    if(!e.target.closest("#clientSearch") && !e.target.closest("#clientSuggest")){
+        clientSuggest.classList.remove("show");
+    }
+});
+
+/* инициализация календаря */
+function initCalendar(){
+    const calendarEl=$("calendar");
+    calendar=new FullCalendar.Calendar(calendarEl,{
+        locale:"ru",
+        initialView:"dayGridMonth",
+        titleFormat:(arg)=>{
+            const months=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+            return months[arg.date.month]+" "+arg.date.year;
+        },
+        dayMaxEvents:3,
+        fixedWeekCount:false,
+        selectable:true,
+        editable:true,
+        nowIndicator:true,
+        height:"auto",
+        longPressDelay:0,
+        selectLongPressDelay:0,
+        eventLongPressDelay:200,
+        headerToolbar:{left:"prev,next today",center:"title",right:"dayGridMonth,timeGridWeek,timeGridDay"},
+        dateClick(info){
+            selectedDate=info.dateStr.slice(0,10);
+            renderDayTasks();
+            scrollToPlan();
+        },
+        select(info){
+            // срабатывает на тач-экранах, где dateClick капризничает
+            selectedDate=info.startStr.slice(0,10);
+            renderDayTasks();
+            scrollToPlan();
+        },
+        eventClick(info){
+            currentDocId=info.event.id;
+            const p=info.event.extendedProps;
+            $("modalTitle").textContent="Редактировать запись";
+            $("clientUid").value=p.uid||"";
+            $("clientSearch").value=p.client||"";
+            $("workType").value=p.workType||"Замер";
+            $("clientAddress").value=p.address||"";
+            $("manager").value=p.manager||"";
+            $("comment").value=p.comment||"";
+            if(info.event.start) $("eventDate").value=toLocalInput(info.event.start);
+            openModal();
+        },
+        async eventDrop(info){
+            // перетащили — сохраняем новую дату
+            const iso=info.event.start.toISOString();
+            try{
+                await updateDoc(doc(db,"calendarEvents",info.event.id),{
+                    date:iso, dateStart:iso.slice(0,10), dateEnd:iso.slice(0,10)
+                });
+            }catch(e){console.error(e);}
+            renderDayTasks();
+        },
+        events:[]
+    });
+    calendar.render();
+    loadEvents();
+}
+
+/* загрузка событий */
+async function loadEvents(){
+    try{
+        const snap=await getDocs(collection(db,"calendarEvents"));
+        snap.forEach(docSnap=>{
+            const data=docSnap.data();
+            const start=data.date || data.dateStart || null;
+            if(!start)return;
+            const color=data.color||getColor(data.workType);
+            calendar.addEvent({
+                id:docSnap.id,
+                title:(data.workType||"Работа")+(data.client||data.clientName?(" · "+(data.client||data.clientName)):""),
+                start:start,
+                backgroundColor:color,
+                borderColor:color,
+                extendedProps:{
+                    uid:data.uid||"",
+                    client:data.client||data.clientName||"",
+                    phone:data.phone||"",
+                    address:data.address||"",
+                    workType:data.workType||"",
+                    manager:data.manager||"",
+                    comment:data.comment||""
+                }
+            });
+        });
+    }catch(e){console.error("Ошибка календаря:",e);}
+}
+
+/* открыть «новую запись» */
+$("openModalBtn").addEventListener("click",()=>{
+    currentDocId=null;
+    $("modalTitle").textContent="Новая запись";
+    clearForm();
+    if(selectedDate)$("eventDate").value=selectedDate+"T10:00";
+    $("manager").value=managerName;
+    openModal();
+});
+
+/* сохранить */
+$("saveTaskBtn").addEventListener("click",async()=>{
+    const uid=$("clientUid").value;
+    const client=clients.find(c=>c.uid===uid);
+    const workType=$("workType").value;
+    const address=$("clientAddress").value.trim();
+    const manager=$("manager").value.trim();
+    const comment=$("comment").value.trim();
+    const dateVal=$("eventDate").value;
+
+    if(!uid){alert("Выберите клиента из списка подсказок");return;}
+    if(!dateVal){alert("Укажите дату");return;}
+
+    const iso=new Date(dateVal).toISOString();
+    const color=getColor(workType);
+    const payload={
+        uid,
+        client:client?.name||"",
+        clientName:client?.name||"",
+        phone:client?.phone||"",
+        address, workType, manager, comment,
+        date:iso,
+        dateStart:iso.slice(0,10),
+        dateEnd:iso.slice(0,10),
+        color,
+        createdAt:Date.now()
+    };
+
+    try{
+        if(currentDocId){
+            await updateDoc(doc(db,"calendarEvents",currentDocId),payload);
+            const ev=calendar.getEventById(currentDocId);
+            if(ev)ev.remove();
+        }else{
+            const ref=await addDoc(collection(db,"calendarEvents"),payload);
+            currentDocId=ref.id;
+        }
+        // перерисуем событие
+        calendar.addEvent({
+            id:currentDocId,
+            title:workType+(payload.client?(" · "+payload.client):""),
+            start:iso,
+            backgroundColor:color,borderColor:color,
+            extendedProps:{uid,client:payload.client,phone:payload.phone,address,workType,manager,comment}
+        });
+        closeModal();
+        selectedDate=iso.slice(0,10);
+        renderDayTasks();
+    }catch(e){alert("Ошибка: "+e.message);}
+});
+
+/* удалить */
+$("deleteTaskBtn").addEventListener("click",async()=>{
+    if(!currentDocId){alert("Сначала откройте запись");return;}
+    if(!confirm("Удалить запись?"))return;
+    try{
+        await deleteDoc(doc(db,"calendarEvents",currentDocId));
+        const ev=calendar.getEventById(currentDocId);
+        if(ev)ev.remove();
+        currentDocId=null;
+        closeModal();
+        renderDayTasks();
+    }catch(e){alert("Ошибка: "+e.message);}
+});
+
+/* план на день */
+function renderDayTasks(){
+    const list=$("eventsList");
+    if(!selectedDate){
+        $("daySub").textContent="Выберите дату в календаре";
+        list.innerHTML='<div class="empty-day">Кликните на дату, чтобы увидеть записи</div>';
+        return;
+    }
+    const d=new Date(selectedDate);
+    $("daySub").textContent=d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
+
+    const events=calendar.getEvents().filter(ev=>{
+        if(!ev.start)return false;
+        return toLocalDate(ev.start)===selectedDate;
+    }).sort((a,b)=>a.start-b.start);
+
+    if(!events.length){
+        list.innerHTML='<div class="empty-day">На этот день записей нет.<br>Нажмите «+ Добавить запись».</div>';
+        return;
+    }
+    list.innerHTML=events.map(ev=>{
+        const p=ev.extendedProps;
+        const time=ev.start.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+        const color=ev.backgroundColor||"#ffb547";
+        return `<div class="event-item" style="border-left-color:${color}">
+            <strong>${p.workType||"Работа"}${p.client?" · "+p.client:""}</strong>
+            <p>🕒 ${time}</p>
+            <p>📍 ${p.address||"—"}</p>
+            <p>👤 ${p.manager||"—"}</p>
+            ${p.comment?`<p>💬 ${p.comment}</p>`:""}
+        </div>`;
+    }).join("");
+}
+
+/* хелперы */
+function scrollToPlan(){
+    // на узком экране прокручиваем к плану дня, чтобы было видно результат тапа
+    if(window.innerWidth<=1100){
+        document.querySelector(".day-events")?.scrollIntoView({behavior:"smooth",block:"start"});
+    }
+}
+function clearForm(){
+    $("clientSearch").value="";
+    $("clientUid").value="";
+    $("workType").value="Замер";
+    $("clientAddress").value="";
+    $("manager").value="";
+    $("comment").value="";
+    $("eventDate").value="";
+}
+function toLocalInput(date){
+    const off=date.getTimezoneOffset();
+    const d=new Date(date.getTime()-off*60000);
+    return d.toISOString().slice(0,16);
+}
+function toLocalDate(date){
+    const off=date.getTimezoneOffset();
+    const d=new Date(date.getTime()-off*60000);
+    return d.toISOString().slice(0,10);
+}
+</script>
+
+</body>
+</html>
