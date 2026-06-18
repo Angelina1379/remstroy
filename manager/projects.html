@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Заказы | BuildHouse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --accent:#ff8c42;
+    --navy:#0b1220;
+    --bg:#f5f6fa;
+    --white:#fff;
+    --border:#e8edf4;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --success:#22c55e;
+    --danger:#ef4444;
+    --info:#3b82f6;
+    --shadow:0 4px 14px rgba(0,0,0,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+a{text-decoration:none;}
+.dashboard{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--navy);padding:30px 20px;display:flex;flex-direction:column;z-index:100;}
+.logo h2{color:var(--primary);font-size:28px;font-weight:900;}
+.logo p{color:#8894a8;margin-top:6px;font-size:14px;}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex:1;}
+.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;cursor:pointer;font-weight:500;}
+.menu a .m-ic{font-size:19px;}
+.menu a:hover{background:#1d2638;color:white;}
+.menu .active{background:var(--primary);color:#111;font-weight:700;}
+#logoutBtn{border:none;background:#1d2638;color:#ff9b9b;padding:14px;border-radius:14px;font-weight:700;cursor:pointer;margin-top:auto;font-family:inherit;font-size:15px;}
+#logoutBtn:hover{background:#26344a;}
+
+/* MAIN */
+.main{margin-left:260px;padding:30px;width:100%;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;gap:20px;}
+.top-left{display:flex;align-items:center;gap:16px;}
+.topbar h1{font-size:32px;margin-bottom:6px;}
+.topbar p{color:var(--muted);}
+.burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
+.manager-card{display:flex;align-items:center;gap:12px;background:white;padding:10px 16px;border-radius:18px;box-shadow:var(--shadow);}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--primary);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
+.manager-card h4{font-size:15px;}.manager-card p{color:var(--muted);font-size:13px;}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;}
+
+/* LEFT */
+.left-panel{background:white;border-radius:24px;padding:22px;box-shadow:var(--shadow);height:calc(100vh - 130px);overflow-y:auto;position:sticky;top:20px;}
+.search{width:100%;border:none;background:#f5f6fa;padding:15px;border-radius:14px;margin-bottom:14px;font-family:inherit;font-size:15px;}
+.search:focus{outline:none;background:white;box-shadow:0 0 0 3px rgba(255,181,71,.2);}
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.ftab{border:none;background:#f5f6fa;padding:8px 12px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:#555;}
+.ftab.active{background:var(--primary);color:#111;}
+.project-card{background:#fafbfd;border-radius:18px;padding:18px;margin-bottom:12px;cursor:pointer;border:2px solid transparent;transition:.25s;}
+.project-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.project-card.active{border-color:var(--primary);background:#fff8eb;}
+.project-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;}
+.project-card h3{font-size:16px;}
+.project-card p{color:var(--muted);font-size:14px;}
+.status{padding:5px 11px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;}
+.st-new{background:#fff3df;color:#a86500;}
+.st-measure{background:#e6f0ff;color:#2563c0;}
+.st-work{background:#e6f4ff;color:#1677ff;}
+.st-done{background:#e3f9ea;color:#1e7c3a;}
+.st-cancel{background:#fdecea;color:#c0392b;}
+.empty-projects{text-align:center;padding:50px 20px;color:var(--muted);}
+
+/* RIGHT */
+.right-panel{display:flex;flex-direction:column;gap:22px;}
+.block{background:white;padding:28px;border-radius:24px;box-shadow:var(--shadow);}
+.block h2{margin-bottom:20px;font-size:20px;}
+.placeholder{text-align:center;padding:60px 20px;color:var(--muted);}
+.placeholder .big{font-size:50px;margin-bottom:14px;}
+
+/* CLIENT INFO */
+.client-row{display:flex;align-items:center;gap:16px;margin-bottom:6px;}
+.client-av{width:56px;height:56px;border-radius:50%;background:var(--primary);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;}
+.client-row h3{font-size:20px;}
+.client-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:18px;}
+.cm-box{background:#f8f9fc;padding:14px 16px;border-radius:14px;}
+.cm-box small{color:var(--muted);display:block;margin-bottom:4px;}
+.cm-box b{font-size:15px;}
+
+/* ACTIONS for new request */
+.req-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;}
+.btn{border:none;padding:14px 22px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;transition:.2s;color:white;}
+.btn:hover{transform:translateY(-2px);}
+.btn-approve{background:var(--success);}
+.btn-measure{background:var(--info);}
+.btn-reject{background:var(--danger);}
+.btn-primary{background:var(--primary);color:#111;}
+.btn-block{width:100%;}
+.measure-row{display:flex;gap:12px;align-items:flex-end;margin-top:16px;flex-wrap:wrap;}
+.measure-row .form-group{flex:1;min-width:160px;margin:0;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.form-group{margin-bottom:0;}
+.form-group label{display:block;margin-bottom:7px;font-weight:600;font-size:13px;color:#555;}
+.form-grid input,.form-grid select,.form-grid textarea,.form-group input,.form-group select{width:100%;border:none;background:#f5f6fa;padding:14px;border-radius:13px;font-family:inherit;font-size:15px;}
+.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{outline:none;background:white;box-shadow:0 0 0 3px rgba(255,181,71,.15);}
+textarea{resize:none;min-height:90px;grid-column:1/-1;}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;}
+
+/* INFO BOXES */
+.info-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+.info-box{background:#f8f9fc;padding:18px;border-radius:16px;}
+.info-box p{color:var(--muted);font-size:13px;margin-bottom:6px;}
+.info-box h3{font-size:17px;}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.timeline-item{display:flex;gap:14px;position:relative;padding-bottom:22px;}
+.timeline-item:last-child{padding-bottom:0;}
+.timeline-item::before{content:"";position:absolute;left:7px;top:18px;bottom:0;width:2px;background:var(--border);}
+.timeline-item:last-child::before{display:none;}
+.timeline-dot{width:16px;height:16px;background:var(--primary);border-radius:50%;margin-top:3px;flex-shrink:0;z-index:1;}
+.timeline-item h4{font-size:15px;margin-bottom:3px;}
+.timeline-item p{color:var(--muted);font-size:13px;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
+.overlay.show{display:block;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:#d9dee7;border-radius:20px;}
+
+@media(max-width:1100px){
+    .grid{grid-template-columns:1fr;}
+    .left-panel{height:auto;position:relative;max-height:500px;}
+}
+@media(max-width:900px){
+    .sidebar{transform:translateX(-100%);transition:.3s;}
+    .sidebar.open{transform:translateX(0);}
+    .main{margin-left:0;padding:24px;}
+    .burger{display:block;}
+    .topbar{flex-direction:column;align-items:flex-start;}
+}
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
+</style>
+</head>
+
+<body>
+<div class="dashboard">
+
+<aside class="sidebar" id="sidebar">
+    <div class="logo">
+        <h2>BuildHouse</h2>
+        <p>CRM система</p>
+    </div>
+    <nav class="menu">
+        <a href="manager-panel.html"><span class="m-ic">📊</span> Главная</a>
+        <a class="active"><span class="m-ic">📦</span> Заказы</a>
+        <a href="klients.html"><span class="m-ic">👥</span> Клиенты</a>
+        <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
+        <a href="calendar.html"><span class="m-ic">📅</span> Замеры</a>
+        <a href="documents.html"><span class="m-ic">📄</span> Документы</a>
+        <a href="setting.html"><span class="m-ic">⚙️</span> Настройки</a>
+    </nav>
+    <button id="logoutBtn">Выйти</button>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<main class="main">
+
+    <div class="topbar">
+        <div class="top-left">
+            <button class="burger" id="burger">☰</button>
+            <div>
+                <h1>Заказы</h1>
+                <p>Заявки клиентов и управление проектами</p>
+            </div>
+        </div>
+        <div class="manager-card">
+            <div class="avatar" id="mgrAvatar">М</div>
+            <div>
+                <h4 id="mgrName">Менеджер</h4>
+                <p>BuildHouse CRM</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+
+        <!-- LEFT: список заявок -->
+        <div class="left-panel">
+            <input type="text" id="searchInput" class="search" placeholder="Поиск по клиенту, услуге, адресу...">
+            <div class="filter-tabs">
+                <button class="ftab active" data-f="all">Все</button>
+                <button class="ftab" data-f="Новая заявка">Новые</button>
+                <button class="ftab" data-f="Назначен замер">Замер</button>
+                <button class="ftab" data-f="В работе">В работе</button>
+                <button class="ftab" data-f="Завершён">Завершён</button>
+            </div>
+            <div id="ordersList"></div>
+        </div>
+
+        <!-- RIGHT: работа с заявкой -->
+        <div class="right-panel" id="rightPanel">
+            <div class="block">
+                <div class="placeholder">
+                    <div class="big">📋</div>
+                    <h3>Выберите заявку слева</h3>
+                    <p>Здесь появятся действия, информация о заказе, история и данные клиента</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+</div>
+
+
+<script type="module">
+import { auth, db } from "../js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, onSnapshot, arrayUnion, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* уведомление клиенту: notifications/{uid}/items */
+async function notify(uid,text){
+    if(!uid||!text)return;
+    try{
+        await addDoc(collection(db,"notifications",uid,"items"),{
+            text, read:false, time:serverTimestamp(), clientTime:Date.now()
+        });
+    }catch(e){console.warn("Не удалось отправить уведомление:",e);}
+}
+
+const $ = (id)=>document.getElementById(id);
+
+let managerName="Менеджер";
+let allOrders=[];
+let clientsMap={};   // uid -> данные клиента
+let selectedId=null;
+let activeFilter="all";
+
+/* БУРГЕР */
+const sidebar=$("sidebar"), overlay=$("overlay");
+$("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
+overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
+
+/* LOGOUT */
+$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="../login.html";});
+
+/* AUTH + роль */
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){window.location.href="../login.html";return;}
+    try{
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists()){
+            const d=snap.data();
+            if(d.role!=="manager"){window.location.href="../client-cabinet.html";return;}
+            managerName=d.name||"Менеджер";
+            $("mgrName").textContent=managerName;
+            $("mgrAvatar").textContent=managerName.charAt(0).toUpperCase();
+        }
+    }catch(e){console.error(e);}
+    await loadClients();
+    loadOrders();
+});
+
+/* статусы */
+function normStatus(s){
+    if(s==="Назначен замер")return "Назначен замер";
+    if(s==="В работе")return "В работе";
+    if(s==="Завершён"||s==="Завершен")return "Завершён";
+    if(s==="Отменён"||s==="Отменен")return "Отменён";
+    return "Новая заявка";
+}
+function statusClass(s){
+    const n=normStatus(s);
+    if(n==="Назначен замер")return "st-measure";
+    if(n==="В работе")return "st-work";
+    if(n==="Завершён")return "st-done";
+    if(n==="Отменён")return "st-cancel";
+    return "st-new";
+}
+
+/* КЛИЕНТЫ */
+async function loadClients(){
+    try{
+        const snap=await getDocs(collection(db,"users"));
+        clientsMap={};
+        snap.forEach(d=>{const u=d.data();if(u.uid)clientsMap[u.uid]=u;});
+    }catch(e){console.error(e);}
+}
+
+/* ЗАГРУЗКА ЗАЯВОК — живое обновление */
+function loadOrders(){
+    onSnapshot(collection(db,"projects"),(snap)=>{
+        allOrders=[];
+        snap.forEach(d=>allOrders.push({id:d.id,...d.data()}));
+        allOrders.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        renderList();
+        // если выбранная заявка обновилась — перерисуем правую часть
+        if(selectedId){
+            const sel=allOrders.find(o=>o.id===selectedId);
+            if(sel) renderRight(sel);
+        }
+    });
+}
+
+/* СПИСОК СЛЕВА */
+function renderList(){
+    const search=$("searchInput").value.toLowerCase();
+    const list=allOrders.filter(o=>{
+        const text=((o.clientName||"")+" "+(o.service||o.title||"")+" "+(o.address||"")).toLowerCase();
+        const matchSearch=text.includes(search);
+        const matchFilter=activeFilter==="all"||normStatus(o.status)===activeFilter;
+        return matchSearch&&matchFilter;
+    });
+
+    const wrap=$("ordersList");
+    if(!list.length){
+        wrap.innerHTML='<div class="empty-projects"><h3>Заявок нет</h3><p>Здесь появятся заявки клиентов</p></div>';
+        return;
+    }
+    wrap.innerHTML="";
+    list.forEach(o=>{
+        const card=document.createElement("div");
+        card.className="project-card"+(o.id===selectedId?" active":"");
+        card.innerHTML=`
+            <div class="project-top">
+                <h3>${o.clientName||"Клиент"}</h3>
+                <span class="status ${statusClass(o.status)}">${normStatus(o.status)}</span>
+            </div>
+            <p>${o.service||o.title||"Заявка"}</p>
+            <p style="font-size:13px;margin-top:4px;">${o.address||"адрес не указан"}</p>`;
+        card.addEventListener("click",()=>{selectedId=o.id;renderList();renderRight(o);});
+        wrap.appendChild(card);
+    });
+}
+
+$("searchInput").addEventListener("input",renderList);
+document.querySelectorAll(".ftab").forEach(t=>{
+    t.addEventListener("click",()=>{
+        document.querySelectorAll(".ftab").forEach(x=>x.classList.remove("active"));
+        t.classList.add("active");
+        activeFilter=t.dataset.f;
+        renderList();
+    });
+});
+
+/* ПРАВАЯ ЧАСТЬ */
+function renderRight(o){
+    const client=clientsMap[o.uid]||{};
+    const st=normStatus(o.status);
+    const panel=$("rightPanel");
+
+    // данные клиента
+    const clientName=o.clientName||client.name||"Клиент";
+    const clientBlock=`
+        <div class="block">
+            <h2>Клиент</h2>
+            <div class="client-row">
+                <div class="client-av">${clientName.charAt(0).toUpperCase()}</div>
+                <div><h3>${clientName}</h3></div>
+            </div>
+            <div class="client-meta">
+                <div class="cm-box"><small>Телефон</small><b>${client.phone||o.phone||"—"}</b></div>
+                <div class="cm-box"><small>Email</small><b>${client.email||o.email||"—"}</b></div>
+                <div class="cm-box"><small>Адрес объекта</small><b>${o.address||"—"}</b></div>
+            </div>
+        </div>`;
+
+    // блок действий зависит от статуса
+    let actionBlock="";
+    if(st==="Новая заявка"){
+        actionBlock=`
+            <div class="block">
+                <h2>Действия по заявке</h2>
+                <p style="color:var(--muted);margin-bottom:16px;">Новая заявка от клиента. Одобрите, назначьте замер или отклоните.</p>
+                <div class="req-actions">
+                    <button class="btn btn-approve" id="approveBtn">✓ Одобрить</button>
+                    <button class="btn btn-reject" id="rejectBtn">✕ Отказать</button>
+                </div>
+                <div class="measure-row">
+                    <div class="form-group">
+                        <label>Дата замера</label>
+                        <input type="date" id="measureDate">
+                    </div>
+                    <button class="btn btn-measure" id="measureBtn">📅 Записать на замер</button>
+                </div>
+            </div>`;
+    }else if(st==="Назначен замер"){
+        actionBlock=`
+            <div class="block">
+                <h2>Оформление проекта после замера</h2>
+                <p style="color:var(--muted);margin-bottom:18px;">Замер назначен на ${o.measureDate||"—"}. Заполните точные данные и запустите проект в работу.</p>
+                ${projectForm(o)}
+                <div class="actions">
+                    <button class="btn btn-primary" id="startProjectBtn">Запустить проект в работу</button>
+                </div>
+            </div>`;
+    }else{
+        // в работе / завершён — редактирование проекта
+        actionBlock=`
+            <div class="block">
+                <h2>Управление проектом</h2>
+                ${projectForm(o)}
+                <div class="actions">
+                    <button class="btn btn-primary" id="saveProjectBtn">Сохранить изменения</button>
+                    <button class="btn btn-reject" id="deleteBtn">Удалить</button>
+                </div>
+            </div>`;
+    }
+
+    // информация
+    const infoBlock=`
+        <div class="block">
+            <h2>Информация по заказу</h2>
+            <div class="info-list">
+                <div class="info-box"><p>Статус</p><h3>${st}</h3></div>
+                <div class="info-box"><p>Бюджет</p><h3>${o.budget?Number(o.budget).toLocaleString("ru-RU")+" ₽":"—"}</h3></div>
+                <div class="info-box"><p>Дата замера</p><h3>${o.measureDate||"—"}</h3></div>
+                <div class="info-box"><p>Период работ</p><h3>${o.workPeriod||"—"}</h3></div>
+                <div class="info-box"><p>Срок сдачи</p><h3>${o.deadline||"—"}</h3></div>
+            </div>
+        </div>`;
+
+    // история
+    const historyBlock=`
+        <div class="block">
+            <h2>История заказа</h2>
+            <div class="timeline">${renderTimeline(o)}</div>
+        </div>`;
+
+    panel.innerHTML=clientBlock+actionBlock+infoBlock+historyBlock;
+    bindRightActions(o,st);
+}
+
+/* форма проекта */
+function projectForm(o){
+    return `
+    <div class="form-grid">
+        <div class="form-group"><label>Услуга</label><input id="fService" value="${(o.service||o.title||"").replace(/"/g,'&quot;')}"></div>
+        <div class="form-group"><label>Адрес</label><input id="fAddress" value="${(o.address||"").replace(/"/g,'&quot;')}"></div>
+        <div class="form-group"><label>Бюджет — из сметы (₽)</label><input type="number" id="fBudget" value="${o.budget||""}" readonly style="background:#eef1f6;color:#555;cursor:not-allowed;" title="Сумма берётся из сметы на странице Документы" placeholder="появится после сметы"></div>
+        <div class="form-group"><label>Дата начала</label><input type="date" id="fStart" value="${o.startDate||""}"></div>
+        <div class="form-group"><label>Срок сдачи</label><input type="date" id="fDeadline" value="${o.deadline||""}"></div>
+        <div class="form-group"><label>Прогресс (%)</label><input type="number" id="fProgress" min="0" max="100" value="${o.progress!=null?o.progress:""}"></div>
+        <div class="form-group"><label>Ответственный</label><input id="fManager" value="${(o.manager||managerName).replace(/"/g,'&quot;')}"></div>
+        <div class="form-group"><label>Статус</label>
+            <select id="fStatus">
+                <option ${o.status==="В работе"?"selected":""}>В работе</option>
+                <option ${o.status==="Завершён"?"selected":""}>Завершён</option>
+                <option ${o.status==="Отменён"?"selected":""}>Отменён</option>
+            </select>
+        </div>
+        <textarea id="fComment" placeholder="Комментарий менеджера...">${o.comment||""}</textarea>
+    </div>`;
+}
+
+/* timeline */
+function renderTimeline(o){
+    let items=[];
+    if(o.history && o.history.length){
+        items=o.history;
+    }else{
+        items=[{title:"Заявка создана",date:o.createdAt?new Date(o.createdAt).toLocaleString("ru-RU"):""}];
+    }
+    return items.map(h=>`
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div><h4>${h.title}</h4><p>${h.date||""}</p></div>
+        </div>`).join("");
+}
+
+/* действия */
+function bindRightActions(o,st){
+    const now=()=>new Date().toLocaleString("ru-RU");
+
+    // одобрить
+    $("approveBtn")?.addEventListener("click",async()=>{
+        await updateDoc(doc(db,"projects",o.id),{
+            status:"В работе",
+            manager:managerName,
+            history:arrayUnion({title:"Заявка одобрена менеджером",date:now()})
+        });
+        await notify(o.uid,"✅ Ваша заявка одобрена и переведена в работу!");
+        alert("Заявка одобрена и переведена в работу");
+    });
+
+    // отказать
+    $("rejectBtn")?.addEventListener("click",async()=>{
+        if(!confirm("Отклонить заявку?"))return;
+        await updateDoc(doc(db,"projects",o.id),{
+            status:"Отменён",
+            history:arrayUnion({title:"Заявка отклонена",date:now()})
+        });
+        await notify(o.uid,"К сожалению, ваша заявка отклонена. Свяжитесь с нами для уточнения деталей.");
+        alert("Заявка отклонена");
+    });
+
+    // записать на замер -> статус + запись в calendarEvents
+    $("measureBtn")?.addEventListener("click",async()=>{
+        const date=$("measureDate").value;
+        if(!date){alert("Выберите дату замера");return;}
+        try{
+            await updateDoc(doc(db,"projects",o.id),{
+                status:"Назначен замер",
+                measureDate:date,
+                manager:managerName,
+                history:arrayUnion({title:"Назначен замер на "+new Date(date).toLocaleDateString("ru-RU"),date:now()})
+            });
+            // автоматически в календарь
+            await addDoc(collection(db,"calendarEvents"),{
+                uid:o.uid,
+                workType:"Замер",
+                dateStart:date,
+                dateEnd:date,
+                comment:"Замер по заявке: "+(o.service||o.title||""),
+                orderId:o.id,
+                createdAt:Date.now()
+            });
+            alert("Замер назначен и добавлен в календарь");
+            await notify(o.uid,"📅 Назначен замер на "+new Date(date).toLocaleDateString("ru-RU")+". Ждём встречи!");
+        }catch(e){alert("Ошибка: "+e.message);}
+    });
+
+    // запустить проект после замера
+    $("startProjectBtn")?.addEventListener("click",async()=>{
+        const data=collectForm();
+        data.status="В работе";
+        data.history=arrayUnion({title:"Проект оформлен и запущен в работу",date:now()});
+        try{
+            await updateDoc(doc(db,"projects",o.id),data);
+            await notify(o.uid,"🔨 Ваш проект оформлен и запущен в работу! Следите за этапами в кабинете.");
+            alert("Проект запущен в работу — клиент видит детали в кабинете");
+        }catch(e){alert("Ошибка: "+e.message);}
+    });
+
+    // сохранить изменения
+    $("saveProjectBtn")?.addEventListener("click",async()=>{
+        const data=collectForm();
+        data.history=arrayUnion({title:"Проект обновлён ("+normStatus(data.status)+")",date:now()});
+        try{
+            await updateDoc(doc(db,"projects",o.id),data);
+            // уведомляем клиента о том, что изменилось
+            const oldStatus=normStatus(o.status), newStatus=normStatus(data.status);
+            const oldProg=o.progress!=null?Number(o.progress):null;
+            const newProg=data.progress!=null?Number(data.progress):null;
+            if(newStatus!==oldStatus){
+                await notify(o.uid,"📌 Статус вашего проекта изменён: «"+newStatus+"»");
+            }
+            if(newProg!=null && newProg!==oldProg){
+                await notify(o.uid,"📊 Готовность проекта обновлена: "+newProg+"%");
+            }
+            if(newStatus==="Завершён"){
+                await notify(o.uid,"🎉 Ваш объект сдан! Спасибо, что выбрали BuildHouse.");
+            }
+            alert("Изменения сохранены");
+        }catch(e){alert("Ошибка: "+e.message);}
+    });
+
+    // удалить
+    $("deleteBtn")?.addEventListener("click",async()=>{
+        if(!confirm("Удалить заказ навсегда?"))return;
+        try{
+            await deleteDoc(doc(db,"projects",o.id));
+            selectedId=null;
+            $("rightPanel").innerHTML='<div class="block"><div class="placeholder"><div class="big">📋</div><h3>Выберите заявку слева</h3></div></div>';
+            alert("Заказ удалён");
+        }catch(e){alert("Ошибка: "+e.message);}
+    });
+}
+
+/* сбор формы */
+function collectForm(){
+    const num=(v)=>v===""?null:Number(v);
+    const data={
+        service:$("fService").value,
+        address:$("fAddress").value,
+        startDate:$("fStart").value,
+        deadline:$("fDeadline").value,
+        progress:$("fProgress").value===""?null:Number($("fProgress").value),
+        manager:$("fManager").value,
+        status:$("fStatus").value,
+        comment:$("fComment").value
+    };
+    // бюджет сохраняем, только если он уже есть в поле (пришёл из сметы) —
+    // чтобы сохранение заказа не затёрло сумму нулём
+    const b=$("fBudget").value;
+    if(b!=="")data.budget=Number(b);
+    return data;
+}
+</script>
+
+</body>
+</html>
