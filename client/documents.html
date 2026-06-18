@@ -349,7 +349,8 @@ function render(){
             if(matsN)parts.push("материалы");
             bodyHtml=`
                 <div class="est-meta">${d.area?d.area+" м² · ":""}${d.className||""}${parts.length?" · "+parts.join(", "):""}</div>
-                <div class="est-total"><span>Сумма по смете:</span><b>${fmt(d.total)} ₽</b></div>
+                ${d.discount?`<div class="est-meta" style="margin-bottom:6px;">Стоимость: ${fmt(d.subtotal||d.total+d.discount)} ₽ · скидка постоянного клиента 5%: −${fmt(d.discount)} ₽</div>`:""}
+                <div class="est-total"><span>${d.discount?"К оплате со скидкой:":"Сумма по смете:"}</span><b>${fmt(d.total)} ₽</b></div>
                 <a class="document-btn" data-dl="${d.id}" style="cursor:pointer;margin-bottom:12px;">📄 Скачать смету (Word)</a>
                 <div class="pay-row">
                     <span class="pay-status ${d.paid?'paid':'unpaid'}">${d.paid?'✓ Оплачено':'● Ожидает оплаты'}</span>
@@ -527,12 +528,15 @@ function downloadEstimate(d){
         children.push(tableFor(mats));
         children.push(P("",{after:120}));
     }
+    if(d.discount){
+        children.push(P("Стоимость работ и материалов: "+fmt(d.subtotal||d.total+d.discount)+" руб.",{after:40}));
+        children.push(P("Скидка постоянного клиента 5%: −"+fmt(d.discount)+" руб.",{bold:true,after:40}));
+    }
     children.push(P("ИТОГО к оплате: "+fmt(d.total)+" руб.",{bold:true,size:26,after:60}));
     children.push(P("Статус оплаты: "+(d.paid?"оплачено":"ожидает оплаты"),{after:200}));
     children.push(P("ООО «BuildHouse», г. Астрахань, ул. Антокольского, д. 6"));
     children.push(P("Тел.: +7 903 349-11-91",{after:60}));
-    children.push(P("Смету составил:",{after:20}));
-    signatureBlock(P,d.createdBy||"Менеджер").forEach(p=>children.push(p));
+    children.push(P("Смету составил: "+(d.createdBy||"Менеджер")));
 
     const docFile=new Document({sections:[{children}]});
     Packer.toBlob(docFile).then(blob=>{
@@ -705,8 +709,7 @@ function downloadContract(d){
         P("Адрес: г. Астрахань, ул. Антокольского, д. 6"),
         P("Тел.: +7 903 349-11-91"),
         P("E-mail: vitalikpozolotin@yandex.ru",{after:60}),
-        ...signatureBlock(P,mgr),
-        P("",{after:120}),
+        P("_______________ / "+mgr+" /  (подпись)",{after:120}),
         P("Заказчик: "+client,{bold:true}),
         P("Тел.: "+(d.phone||"_______________"),{after:60}),
         P("_______________ / "+client+" /  (подпись)")
@@ -755,8 +758,7 @@ function downloadAct(d){
     children.push(P("Работы выполнены в полном объёме, в срок и с надлежащим качеством. Заказчик претензий не имеет.",{after:160}));
     children.push(P("Гарантийный срок — 24 месяца.",{after:200}));
     children.push(P("Подрядчик: ООО «BuildHouse»",{bold:true,after:40}));
-    signatureBlock(P,d.createdBy||"Менеджер").forEach(p=>children.push(p));
-    children.push(P("",{after:80}));
+    children.push(P("_______________ / "+(d.createdBy||"Менеджер")+" /  (подпись)",{after:80}));
     children.push(P("Заказчик: _______________ / "+(d.clientName||"")+" /  (подпись)"));
     saveDocx(new Document({sections:[{children}]}),"Акт_BuildHouse.docx");
 }
