@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Документы | BuildHouse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- генерация Word — локальная библиотека (положить рядом с этим файлом) -->
+<script src="docx.js"></script>
+
+<style>
+:root{
+    --primary:#ffb547;
+    --primary-dark:#f39a1f;
+    --accent:#ff8c42;
+    --navy:#0b1220;
+    --bg:#f5f6fa;
+    --white:#fff;
+    --border:#e8edf4;
+    --text:#1b2430;
+    --muted:#7d8896;
+    --success:#22c55e;
+    --shadow:0 4px 14px rgba(0,0,0,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+a{text-decoration:none;}
+.dashboard{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--navy);padding:30px 20px;display:flex;flex-direction:column;z-index:1000;}
+.logo h2{color:var(--primary);font-size:28px;font-weight:900;}
+.logo p{color:#8f9aad;margin-top:6px;font-size:14px;}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:34px;flex-grow:1;}
+.menu a{display:flex;align-items:center;gap:12px;color:#aab2c5;padding:14px 18px;border-radius:14px;transition:.25s;font-weight:500;cursor:pointer;}
+.menu a .m-ic{font-size:19px;}
+.menu a:hover{background:#1d2638;color:white;}
+.menu .active{background:var(--primary);color:#111;font-weight:700;}
+#logoutBtn{width:100%;border:none;padding:14px;border-radius:14px;background:#1d2638;color:#ff9b9b;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;margin-top:auto;}
+#logoutBtn:hover{background:#26344a;}
+
+/* MAIN */
+.main-content{flex:1;margin-left:260px;padding:35px;width:100%;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;gap:20px;}
+.tb-left{display:flex;align-items:center;gap:16px;}
+.top-bar h1{font-size:32px;margin-bottom:6px;}
+.top-bar p{color:var(--muted);}
+.burger{display:none;background:none;border:none;font-size:28px;cursor:pointer;color:#111;}
+.manager-card{display:flex;align-items:center;gap:12px;background:white;padding:10px 16px;border-radius:18px;box-shadow:var(--shadow);}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--primary);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
+.manager-card h4{font-size:15px;}.manager-card p{color:var(--muted);font-size:13px;}
+
+.layout{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start;}
+
+/* CLIENTS */
+.panel{background:white;border-radius:24px;padding:24px;box-shadow:var(--shadow);}
+.panel h2{font-size:19px;margin-bottom:18px;}
+.search{width:100%;border:none;background:#f5f6fa;padding:13px;border-radius:13px;margin-bottom:14px;font-family:inherit;font-size:14px;}
+.search:focus{outline:none;box-shadow:0 0 0 3px rgba(255,181,71,.2);}
+.clients-list{display:flex;flex-direction:column;gap:10px;max-height:560px;overflow-y:auto;}
+.client-item{background:#f8fafc;border-radius:14px;padding:14px;cursor:pointer;transition:.2s;border:2px solid transparent;}
+.client-item:hover{background:white;}
+.client-item.active{border-color:var(--primary);background:#fff8eb;}
+.client-item h3{font-size:15px;margin-bottom:3px;}
+.client-item p{color:var(--muted);font-size:13px;}
+
+/* FORM */
+.doc-area{display:flex;flex-direction:column;gap:22px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.fg label{display:block;font-weight:600;font-size:13px;color:#555;margin-bottom:7px;}
+.fg input,.fg select{width:100%;border:none;background:#f5f6fa;padding:14px;border-radius:13px;font-family:inherit;font-size:15px;}
+.fg input:focus,.fg select:focus{outline:none;box-shadow:0 0 0 3px rgba(255,181,71,.2);}
+
+/* WORKS CHECKLIST */
+.works-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.quick-btn{border:none;background:#111;color:white;padding:10px 16px;border-radius:12px;font-weight:700;cursor:pointer;font-family:inherit;font-size:13px;}
+.works-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;}
+.work-check{display:flex;align-items:center;gap:12px;background:#f8fafc;border-radius:14px;padding:14px;cursor:pointer;transition:.2s;border:2px solid transparent;}
+.work-check:hover{background:#fff8eb;}
+.work-check.on{border-color:var(--primary);background:#fff8eb;}
+.work-check input{width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;}
+.work-check .wc-body{flex:1;}
+.work-check .wc-name{font-weight:600;font-size:14px;}
+.work-check .wc-price{color:var(--muted);font-size:12px;}
+.work-check .wc-sum{font-weight:700;color:var(--accent);font-size:14px;}
+
+/* TOTAL */
+.total-bar{display:flex;justify-content:space-between;align-items:center;background:#fff4df;border-radius:18px;padding:22px;margin-top:6px;}
+.total-bar b{font-size:16px;}
+.total-bar span{font-size:30px;font-weight:800;color:var(--accent);}
+
+/* ACTIONS */
+.doc-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.doc-btn{border:none;padding:16px 24px;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;display:flex;align-items:center;gap:8px;transition:.2s;}
+.doc-btn:hover{transform:translateY(-2px);}
+.btn-estimate{background:#fff3df;color:#a86500;}
+.btn-contract{background:var(--primary);color:#111;}
+.btn-act{background:#e3f9ea;color:#1e7c3a;}
+.btn-save{background:#111;color:white;}
+.hint{color:var(--muted);font-size:13px;margin-top:4px;}
+
+/* СПИСОК ДОКУМЕНТОВ КЛИЕНТА */
+.cdoc{display:flex;align-items:center;gap:14px;background:#f8fafc;border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.cdoc .cd-ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:#fff3df;}
+.cdoc .cd-body{flex:1;min-width:0;}
+.cdoc .cd-title{font-weight:600;font-size:14px;}
+.cdoc .cd-sub{color:var(--muted);font-size:12px;margin-top:2px;}
+.cdoc .cd-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;}
+.cb-est{background:#fff3df;color:#a86500;}.cb-con{background:#eef4ff;color:#2563c0;}.cb-act{background:#eafaf0;color:#1e7c3a;}.cb-oth{background:#eee;color:#555;}
+.cdoc .cd-paid{font-size:11px;font-weight:700;}
+.paid-yes{color:#1e7c3a;}.paid-no{color:#c0392b;}
+.cd-btns{display:flex;gap:8px;flex-shrink:0;}
+.cd-edit,.cd-del{border:none;padding:8px 12px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;}
+.cd-edit{background:var(--primary);color:#111;}
+.cd-del{background:#fdecea;color:#ef4444;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
+.overlay.show{display:block;}
+::-webkit-scrollbar{width:8px;}::-webkit-scrollbar-thumb{background:#d6dce5;border-radius:20px;}
+
+@media(max-width:1000px){.layout{grid-template-columns:1fr;}}
+@media(max-width:1000px){
+    .layout{grid-template-columns:1fr;}
+}
+@media(max-width:900px){
+    .sidebar{transform:translateX(-100%);transition:.3s;}
+    .sidebar.open{transform:translateX(0);}
+    .main-content{margin-left:0;padding:24px;}
+    .burger{display:block;}
+    .top-bar{flex-direction:column;align-items:flex-start;}
+}
+@media(max-width:600px){
+    .main-content{padding:16px;}
+    .form-grid{grid-template-columns:1fr;}
+    .works-grid{grid-template-columns:1fr;}
+    .cdoc{flex-wrap:wrap;}
+    .cdoc .cd-body{flex:1 1 100%;order:-1;}
+    .doc-actions{flex-direction:column;}
+    .doc-actions .doc-btn{width:100%;justify-content:center;}
+}
+
+/* анти-горизонтальный скролл (мобилки): ничего не вылезает вбок */
+html,body{max-width:100%;overflow-x:hidden;}
+
+img,table,video,canvas{max-width:100%;}
+@media(max-width:768px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
+</style>
+</head>
+
+<body>
+<div class="dashboard">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>BuildHouse</h2>
+            <p>Панель менеджера</p>
+        </div>
+        <nav class="menu">
+            <a href="manager-panel.html"><span class="m-ic">📊</span> Главная</a>
+            <a href="projects.html"><span class="m-ic">📦</span> Заказы</a>
+            <a href="klients.html"><span class="m-ic">👥</span> Клиенты</a>
+            <a href="messages.html"><span class="m-ic">💬</span> Сообщения</a>
+            <a href="calendar.html"><span class="m-ic">📅</span> Замеры</a>
+            <a class="active"><span class="m-ic">📄</span> Документы</a>
+            <a href="setting.html"><span class="m-ic">⚙️</span> Настройки</a>
+        </nav>
+        <button id="logoutBtn">Выйти</button>
+    </aside>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="main-content">
+
+        <div class="top-bar">
+            <div class="tb-left">
+                <button class="burger" id="burger">☰</button>
+                <div>
+                    <h1>Документы</h1>
+                    <p>Авто-создание сметы, договора и акта — менеджер вводит минимум</p>
+                </div>
+            </div>
+            <div class="manager-card">
+                <div class="avatar" id="mgrAvatar">М</div>
+                <div><h4 id="managerName">Менеджер</h4><p>BuildHouse CRM</p></div>
+            </div>
+        </div>
+
+        <div class="layout">
+
+            <!-- КЛИЕНТЫ -->
+            <div class="panel">
+                <h2>Клиент</h2>
+                <input type="text" class="search" id="searchInput" placeholder="Поиск клиента...">
+                <div id="clientsList" class="clients-list"></div>
+            </div>
+
+            <!-- ДОКУМЕНТ -->
+            <div class="doc-area">
+
+                <div class="panel">
+                    <h2>Данные объекта</h2>
+                    <div class="form-grid">
+                        <div class="fg"><label>Клиент</label><input type="text" id="clientName" placeholder="выберите слева" readonly></div>
+                        <div class="fg"><label>Телефон</label><input type="text" id="clientPhone" readonly></div>
+                        <div class="fg"><label>Адрес объекта</label><input type="text" id="projectAddress" placeholder="г. Астрахань, ул. ..."></div>
+                        <div class="fg"><label>Площадь, м²</label><input type="number" id="area" value="40" min="1"></div>
+                        <div class="fg"><label>Класс ремонта</label>
+                            <select id="repairClass">
+                                <option value="1">Косметический</option>
+                                <option value="1.4">Капитальный</option>
+                                <option value="2">Премиум / дизайнерский</option>
+                            </select>
+                        </div>
+                        <div class="fg"><label>Срок выполнения</label><input type="text" id="deadline" placeholder="например: 45 дней"></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="works-head">
+                        <h2>Состав работ</h2>
+                        <div style="display:flex;gap:8px;">
+                            <button class="quick-btn" id="selectAll">Полный ремонт под ключ</button>
+                            <button class="quick-btn" id="clearAll" style="background:#f5f6fa;color:#555;">Снять всё</button>
+                        </div>
+                    </div>
+                    <div class="works-grid" id="worksGrid"></div>
+
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin:24px 0 14px;flex-wrap:wrap;gap:10px;">
+                        <h2 style="font-size:19px;">Материалы</h2>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;font-size:14px;">
+                            <input type="checkbox" id="useMaterials" style="width:20px;height:20px;accent-color:var(--primary);"> Включить материалы в смету
+                        </label>
+                    </div>
+                    <div class="works-grid" id="materialsGrid" style="opacity:.5;pointer-events:none;"></div>
+
+                    <div class="total-bar">
+                        <b>Итого по смете:</b>
+                        <span id="totalPrice">0 ₽</span>
+                    </div>
+                    <p class="hint">Цены рассчитываются от площади и класса ремонта. Отметьте работы и при необходимости включите материалы — смета соберётся сама.</p>
+                </div>
+
+                <div class="panel">
+                    <h2>Формирование документов</h2>
+                    <p class="hint" id="editHint" style="margin-bottom:18px;">Выберите клиента и состав работ — документы соберутся автоматически.</p>
+                    <div class="doc-actions">
+                        <button class="doc-btn btn-estimate" id="estimateBtn">🧮 Смета (Word)</button>
+                        <button class="doc-btn btn-contract" id="contractBtn">📑 Договор (Word)</button>
+                        <button class="doc-btn btn-act" id="actBtn">✅ Акт (Word)</button>
+                        <button class="doc-btn btn-save" id="saveBtn">💾 Сохранить клиенту</button>
+                        <button class="doc-btn" id="newDocBtn" style="background:#f5f6fa;color:#555;display:none;">＋ Новый документ</button>
+                    </div>
+                </div>
+
+                <!-- ДОКУМЕНТЫ КЛИЕНТА -->
+                <div class="panel" id="clientDocsPanel" style="display:none;">
+                    <h2>Документы клиента</h2>
+                    <div id="clientDocsList"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+</div>
+
+
+<script type="module">
+import { auth, db } from "../js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* уведомление клиенту */
+async function notify(uid,text){
+    if(!uid||!text)return;
+    try{
+        await addDoc(collection(db,"notifications",uid,"items"),{
+            text, read:false, time:serverTimestamp(), clientTime:Date.now()
+        });
+    }catch(e){console.warn("notify:",e);}
+}
+
+const $ = (id)=>document.getElementById(id);
+
+let managerName="Менеджер";
+let clients=[];
+let currentClient=null;
+let editingDocId=null;
+let clientDocs=[];
+
+/* СРЕДНИЕ РАСЦЕНКИ за м² (базовые, косметический класс) */
+const WORKS=[
+    {id:"demont", name:"Демонтажные работы", price:350},
+    {id:"electric", name:"Электромонтаж", price:800},
+    {id:"plumbing", name:"Сантехнические работы", price:900},
+    {id:"screed", name:"Стяжка пола", price:700},
+    {id:"plaster", name:"Штукатурка стен", price:500},
+    {id:"putty", name:"Шпаклёвка стен", price:350},
+    {id:"tile", name:"Укладка плитки", price:1500},
+    {id:"wallpaper", name:"Поклейка обоев", price:450},
+    {id:"paint", name:"Покраска стен", price:400},
+    {id:"ceiling", name:"Натяжной потолок", price:600},
+    {id:"laminate", name:"Укладка ламината", price:500},
+    {id:"doors", name:"Установка дверей", price:550},
+];
+
+/* МАТЕРИАЛЫ — ориентировочная стоимость за м² (зависит от класса ремонта) */
+const MATERIALS=[
+    {id:"m_rough", name:"Черновые материалы (смеси, грунтовка, профиль)", price:1200},
+    {id:"m_finish", name:"Чистовые материалы (краска, обои, плитка)", price:2500},
+    {id:"m_floor", name:"Напольные покрытия", price:900},
+    {id:"m_electric", name:"Электрика (кабель, розетки, автоматы)", price:600},
+    {id:"m_plumb", name:"Сантехника (трубы, фитинги)", price:700},
+];
+
+/* БУРГЕР */
+const sidebar=$("sidebar"), overlay=$("overlay");
+$("burger").addEventListener("click",()=>{sidebar.classList.add("open");overlay.classList.add("show");});
+overlay.addEventListener("click",()=>{sidebar.classList.remove("open");overlay.classList.remove("show");});
+
+/* LOGOUT */
+$("logoutBtn").addEventListener("click",async()=>{await signOut(auth);window.location.href="../login.html";});
+
+/* AUTH + роль */
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){window.location.href="../login.html";return;}
+    try{
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists()){
+            const d=snap.data();
+            if(d.role!=="manager"){window.location.href="../client-cabinet.html";return;}
+            managerName=d.name||"Менеджер";
+            $("managerName").textContent=managerName;
+            $("mgrAvatar").textContent=managerName.charAt(0).toUpperCase();
+        }
+    }catch(e){}
+    loadClients();
+});
+
+/* КЛИЕНТЫ */
+async function loadClients(){
+    try{
+        const snap=await getDocs(collection(db,"users"));
+        clients=[];
+        snap.forEach(d=>{const u=d.data();if(u.role!=="manager")clients.push(u);});
+        renderClients();
+    }catch(e){console.error(e);}
+}
+function renderClients(){
+    const search=$("searchInput").value.toLowerCase();
+    const list=clients.filter(c=>((c.name||"")+" "+(c.phone||"")).toLowerCase().includes(search));
+    const wrap=$("clientsList");
+    if(!list.length){wrap.innerHTML='<p class="hint">Клиенты не найдены</p>';return;}
+    wrap.innerHTML="";
+    list.forEach(c=>{
+        const div=document.createElement("div");
+        div.className="client-item"+(currentClient&&currentClient.uid===c.uid?" active":"");
+        div.innerHTML=`<h3>${c.name||"Клиент"}</h3><p>${c.phone||"телефон не указан"}</p>`;
+        div.addEventListener("click",async()=>{
+            currentClient=c;
+            $("clientName").value=c.name||"";
+            $("clientPhone").value=c.phone||"";
+            editingDocId=null;
+            // считаем заказы клиента — постоянный, если 2+
+            try{
+                const ps=await getDocs(collection(db,"projects"));
+                let cnt=0;
+                ps.forEach(d=>{const p=d.data();const ow=p.uid||p.userId||p.clientUid;if(ow===c.uid)cnt++;});
+                currentClient.ordersCount=cnt;
+                currentClient.isRegular=cnt>=2;
+            }catch(e){currentClient.isRegular=false;}
+            renderClients();
+            loadClientDocs();
+            updateRegularHint();
+        });
+        wrap.appendChild(div);
+    });
+}
+$("searchInput").addEventListener("input",renderClients);
+
+/* подсказка: постоянный клиент — будет скидка 5% */
+function updateRegularHint(){
+    let hint=document.getElementById("regularHint");
+    if(!hint){
+        hint=document.createElement("div");
+        hint.id="regularHint";
+        hint.style.cssText="margin:10px 0;padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;display:none;";
+        const cn=$("clientName");
+        if(cn&&cn.parentNode)cn.parentNode.insertBefore(hint,cn);
+    }
+    if(currentClient&&currentClient.isRegular){
+        hint.style.display="block";
+        hint.style.background="#fff4df";
+        hint.style.color="#a86500";
+        hint.textContent="★ Постоянный клиент ("+(currentClient.ordersCount||2)+" заказа). В смете применится скидка 5%.";
+    }else{
+        hint.style.display="none";
+    }
+}
+
+/* ЧЕК-ЛИСТ РАБОТ */
+function renderWorks(){
+    const grid=$("worksGrid");
+    grid.innerHTML="";
+    WORKS.forEach(w=>{
+        const div=document.createElement("label");
+        div.className="work-check";
+        div.dataset.id=w.id;
+        div.innerHTML=`
+            <input type="checkbox" data-id="${w.id}">
+            <div class="wc-body">
+                <div class="wc-name">${w.name}</div>
+                <div class="wc-price">${w.price} ₽/м²</div>
+            </div>
+            <div class="wc-sum" data-sum="${w.id}">—</div>`;
+        const cb=div.querySelector("input");
+        cb.addEventListener("change",()=>{div.classList.toggle("on",cb.checked);calcTotal();});
+        grid.appendChild(div);
+    });
+}
+renderWorks();
+
+/* ЧЕК-ЛИСТ МАТЕРИАЛОВ */
+function renderMaterials(){
+    const grid=$("materialsGrid");
+    grid.innerHTML="";
+    MATERIALS.forEach(w=>{
+        const div=document.createElement("label");
+        div.className="work-check";
+        div.dataset.id="mat-"+w.id;
+        div.innerHTML=`
+            <input type="checkbox" data-mat="${w.id}">
+            <div class="wc-body">
+                <div class="wc-name">${w.name}</div>
+                <div class="wc-price">${w.price} ₽/м²</div>
+            </div>
+            <div class="wc-sum" data-matsum="${w.id}">—</div>`;
+        const cb=div.querySelector("input");
+        cb.addEventListener("change",()=>{div.classList.toggle("on",cb.checked);calcTotal();});
+        grid.appendChild(div);
+    });
+}
+renderMaterials();
+
+/* переключатель материалов */
+$("useMaterials").addEventListener("change",function(){
+    const grid=$("materialsGrid");
+    if(this.checked){
+        grid.style.opacity="1";
+        grid.style.pointerEvents="auto";
+        // по умолчанию отметим все материалы
+        document.querySelectorAll('#materialsGrid input').forEach(cb=>{cb.checked=true;cb.closest(".work-check").classList.add("on");});
+    }else{
+        grid.style.opacity=".5";
+        grid.style.pointerEvents="none";
+        document.querySelectorAll('#materialsGrid input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+    }
+    calcTotal();
+});
+
+function getRate(){return parseFloat($("repairClass").value)||1;}
+function getArea(){return Number($("area").value)||0;}
+
+function calcTotal(){
+    const area=getArea();
+    const rate=getRate();
+    let total=0;
+    WORKS.forEach(w=>{
+        const cb=document.querySelector(`input[data-id="${w.id}"]`);
+        const sumEl=document.querySelector(`[data-sum="${w.id}"]`);
+        if(cb&&cb.checked){
+            const sum=Math.round(w.price*rate*area);
+            total+=sum;
+            sumEl.textContent=sum.toLocaleString("ru-RU")+" ₽";
+        }else if(sumEl){
+            sumEl.textContent="—";
+        }
+    });
+    // материалы
+    MATERIALS.forEach(w=>{
+        const cb=document.querySelector(`input[data-mat="${w.id}"]`);
+        const sumEl=document.querySelector(`[data-matsum="${w.id}"]`);
+        if(cb&&cb.checked){
+            const sum=Math.round(w.price*rate*area);
+            total+=sum;
+            if(sumEl)sumEl.textContent=sum.toLocaleString("ru-RU")+" ₽";
+        }else if(sumEl){
+            sumEl.textContent="—";
+        }
+    });
+    $("totalPrice").textContent=total.toLocaleString("ru-RU")+" ₽";
+    return total;
+}
+$("area").addEventListener("input",calcTotal);
+$("repairClass").addEventListener("change",calcTotal);
+
+/* быстрый выбор */
+$("selectAll").addEventListener("click",()=>{
+    document.querySelectorAll('.work-check input').forEach(cb=>{cb.checked=true;cb.closest(".work-check").classList.add("on");});
+    calcTotal();
+});
+$("clearAll").addEventListener("click",()=>{
+    document.querySelectorAll('.work-check input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+    calcTotal();
+});
+
+/* собрать выбранные работы */
+function collectItems(){
+    const area=getArea(), rate=getRate();
+    const items=[];
+    WORKS.forEach(w=>{
+        const cb=document.querySelector(`input[data-id="${w.id}"]`);
+        if(cb&&cb.checked){
+            const unit=Math.round(w.price*rate);
+            items.push({name:w.name, area, unit, sum:unit*area});
+        }
+    });
+    return items;
+}
+
+/* собрать выбранные материалы */
+function collectMaterials(){
+    const area=getArea(), rate=getRate();
+    const items=[];
+    MATERIALS.forEach(w=>{
+        const cb=document.querySelector(`input[data-mat="${w.id}"]`);
+        if(cb&&cb.checked){
+            const unit=Math.round(w.price*rate);
+            items.push({name:w.name, area, unit, sum:unit*area});
+        }
+    });
+    return items;
+}
+
+function validate(){
+    if(!currentClient){alert("Выберите клиента слева");return false;}
+    const items=collectItems();
+    if(!items.length){alert("Отметьте хотя бы одну работу");return false;}
+    return true;
+}
+
+/* данные шапки */
+function docMeta(){
+    const today=new Date().toLocaleDateString("ru-RU");
+    const num=Math.floor(1000+Math.random()*9000);
+    return {
+        today, num,
+        client:$("clientName").value||"Клиент",
+        phone:$("clientPhone").value||"—",
+        address:$("projectAddress").value||"—",
+        area:getArea(),
+        deadline:$("deadline").value||"по согласованию",
+        manager:managerName,
+        className:$("repairClass").selectedOptions[0].text
+    };
+}
+
+/* ===== ГЕНЕРАЦИЯ WORD ===== */
+let Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle,ImageRun;
+function docxLib(){
+    if(!window.docx || !window.docx.Document){
+        alert("Библиотека для Word не найдена.\n\nУбедитесь, что файл docx.js лежит в папке js рядом с сайтом, и обновите страницу (F5).");
+        return false;
+    }
+    ({Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle,ImageRun}=window.docx);
+    return true;
+}
+
+/* подпись «АВ» с росчерком — рисуем на canvas, отдаём PNG (Uint8Array) */
+function makeSignature(){
+    const w=240,h=110;
+    const c=document.createElement("canvas");
+    c.width=w;c.height=h;
+    const ctx=c.getContext("2d");
+    ctx.strokeStyle="#15307a";
+    ctx.lineCap="round";
+    ctx.lineJoin="round";
+
+    // буква А
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(20,80);
+    ctx.lineTo(42,26);              // левая ножка вверх
+    ctx.lineTo(64,80);              // правая ножка вниз
+    ctx.moveTo(30,60);
+    ctx.lineTo(56,60);              // перекладина
+    ctx.stroke();
+
+    // буква В
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(86,28);
+    ctx.lineTo(86,82);              // вертикаль В
+    // верхняя петля
+    ctx.moveTo(86,30);
+    ctx.bezierCurveTo(120,24, 122,50, 90,54);
+    // нижняя петля
+    ctx.moveTo(90,54);
+    ctx.bezierCurveTo(128,54, 126,86, 86,80);
+    ctx.stroke();
+
+    // росчерк-петля от В
+    ctx.lineWidth=2.4;
+    ctx.beginPath();
+    ctx.moveTo(112,60);
+    ctx.bezierCurveTo(150,30, 175,40, 168,62);
+    ctx.bezierCurveTo(163,78, 150,72, 158,58);
+    ctx.bezierCurveTo(168,40, 195,42, 224,66);
+    ctx.stroke();
+
+    // лёгкое подчёркивание-завиток
+    ctx.lineWidth=1.6;
+    ctx.beginPath();
+    ctx.moveTo(28,92);
+    ctx.bezierCurveTo(90,100, 170,98, 220,86);
+    ctx.stroke();
+
+    const dataUrl=c.toDataURL("image/png");
+    const bin=atob(dataUrl.split(",")[1]);
+    const arr=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+    return arr;
+}
+
+/* блок подписи: картинка-росчерк над строкой ФИО */
+function signatureBlock(who){
+    const {ImageRun}=window.docx;
+    const paras=[];
+    try{
+        paras.push(new Paragraph({
+            spacing:{before:100,after:0},
+            children:[new ImageRun({data:makeSignature(),transformation:{width:150,height:68}})]
+        }));
+    }catch(e){}
+    paras.push(new Paragraph({
+        spacing:{after:120},
+        children:[new TextRun({text:"_______________ / "+(who||"А. В. Позолотина")+" /",size:24,font:"Times New Roman"})]
+    }));
+    return paras;
+}
+
+function P(text,opts={}){
+    return new Paragraph({
+        alignment:opts.center?AlignmentType.CENTER:(opts.right?AlignmentType.RIGHT:AlignmentType.LEFT),
+        spacing:{after:opts.after!=null?opts.after:120},
+        children:[new TextRun({text,bold:!!opts.bold,size:opts.size||24,font:"Times New Roman"})]
+    });
+}
+function cell(text,opts={}){
+    return new TableCell({
+        width:{size:opts.w||25,type:WidthType.PERCENTAGE},
+        children:[new Paragraph({alignment:opts.center?AlignmentType.CENTER:AlignmentType.LEFT,children:[new TextRun({text:String(text),bold:!!opts.bold,size:22,font:"Times New Roman"})]})]
+    });
+}
+
+function estimateTable(items){
+    const rows=[new TableRow({children:[
+        cell("№",{w:8,bold:true,center:true}),
+        cell("Наименование работ",{w:46,bold:true}),
+        cell("Кол-во, м²",{w:16,bold:true,center:true}),
+        cell("Цена за м²",{w:15,bold:true,center:true}),
+        cell("Сумма, ₽",{w:15,bold:true,center:true})
+    ]})];
+    items.forEach((it,i)=>{
+        rows.push(new TableRow({children:[
+            cell(i+1,{w:8,center:true}),
+            cell(it.name,{w:46}),
+            cell(it.area,{w:16,center:true}),
+            cell(it.unit.toLocaleString("ru-RU"),{w:15,center:true}),
+            cell(it.sum.toLocaleString("ru-RU"),{w:15,center:true})
+        ]}));
+    });
+    const total=items.reduce((s,i)=>s+i.sum,0);
+    rows.push(new TableRow({children:[
+        cell("",{w:8}),cell("ИТОГО:",{w:46,bold:true}),cell("",{w:16}),cell("",{w:15}),
+        cell(total.toLocaleString("ru-RU"),{w:15,bold:true,center:true})
+    ]}));
+    return new Table({width:{size:100,type:WidthType.PERCENTAGE},rows});
+}
+
+function download(docFile,name){
+    Packer.toBlob(docFile).then(blob=>{
+        if(window.saveAs){ window.saveAs(blob,name); return; }
+        // запасной способ — без file-saver
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url; a.download=name;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }).catch(e=>alert("Ошибка генерации документа: "+e.message));
+}
+
+/* СМЕТА */
+function buildEstimate(){
+    if(!docxLib())return;
+    const m=docMeta(); const items=collectItems();
+    const materials=collectMaterials();
+    const workTotal=items.reduce((s,i)=>s+i.sum,0);
+    const matTotal=materials.reduce((s,i)=>s+i.sum,0);
+    const total=workTotal+matTotal;
+
+    const children=[
+        P("СМЕТА № "+m.num,{bold:true,size:30,center:true,after:80}),
+        P("на ремонтно-отделочные работы",{center:true,size:24}),
+        P("от "+m.today,{center:true,after:200}),
+        P("Заказчик: "+m.client+", тел. "+m.phone),
+        P("Объект: "+m.address+", площадь "+m.area+" м²"),
+        P("Класс ремонта: "+m.className,{after:200}),
+        P("РАЗДЕЛ 1. РАБОТЫ",{bold:true,size:24}),
+        estimateTable(items),
+        P("Стоимость работ: "+workTotal.toLocaleString("ru-RU")+" руб.",{bold:true,after:160})
+    ];
+
+    if(materials.length){
+        children.push(P("РАЗДЕЛ 2. МАТЕРИАЛЫ",{bold:true,size:24}));
+        children.push(estimateTable(materials));
+        children.push(P("Стоимость материалов: "+matTotal.toLocaleString("ru-RU")+" руб.",{bold:true,after:160}));
+    }
+
+    // скидка 5% постоянным клиентам (2+ заказа)
+    const isRegular = currentClient && currentClient.isRegular;
+    if(isRegular){
+        const discount=Math.round(total*0.05);
+        const final=total-discount;
+        children.push(P("Стоимость работ и материалов: "+total.toLocaleString("ru-RU")+" руб.",{after:40}));
+        children.push(P("Скидка постоянного клиента 5%: −"+discount.toLocaleString("ru-RU")+" руб.",{bold:true,after:40}));
+        children.push(P("ИТОГО К ОПЛАТЕ: "+final.toLocaleString("ru-RU")+" руб.",{bold:true,size:28,after:200}));
+    }else{
+        children.push(P("ИТОГО К ОПЛАТЕ: "+total.toLocaleString("ru-RU")+" руб.",{bold:true,size:28,after:200}));
+    }
+    children.push(P("Срок выполнения работ: "+m.deadline,{after:160}));
+    children.push(P("Исполнитель: ООО «BuildHouse»",{bold:true,after:20}));
+    children.push(P("Смету составил: "+m.manager,{after:120}));
+    children.push(P("Заказчик: _______________ / "+m.client+" /  (подпись)"));
+
+    const doc=new Document({sections:[{children}]});
+    download(doc,"Смета_"+m.client.replace(/\s/g,"_")+".docx");
+}
+
+/* ДОГОВОР */
+function buildContract(){
+    if(!docxLib())return;
+    const m=docMeta(); const items=collectItems();
+    const total=items.reduce((s,i)=>s+i.sum,0);
+    const half=Math.round(total/2);
+    const H=(t)=>P(t,{bold:true,size:26,after:100});
+    const J=(t,o={})=>new Paragraph({alignment:AlignmentType.JUSTIFIED,spacing:{after:o.after!=null?o.after:120},children:[new TextRun({text:t,size:24,font:"Times New Roman"})]});
+
+    const children=[
+        P("ДОГОВОР ПОДРЯДА № "+m.num,{bold:true,size:30,center:true,after:80}),
+        P("на выполнение ремонтно-отделочных работ",{center:true,after:140}),
+        P("г. Астрахань                                                            "+m.today,{after:150}),
+
+        J("ООО «BuildHouse», именуемое в дальнейшем «Подрядчик», в лице "+m.manager+", действующего на основании Устава, с одной стороны, и гражданин(ка) "+m.client+", именуемый(ая) в дальнейшем «Заказчик», с другой стороны, совместно именуемые «Стороны», заключили настоящий Договор о нижеследующем:",{after:160}),
+
+        H("1. ПРЕДМЕТ ДОГОВОРА"),
+        J("1.1. Подрядчик обязуется по заданию Заказчика выполнить комплекс ремонтно-отделочных работ на объекте по адресу: "+m.address+", общей площадью "+m.area+" кв. м, а Заказчик обязуется принять результат и оплатить его."),
+        P("1.2. Класс (категория) ремонта: "+m.className+"."),
+        P("1.3. Перечень, объём и стоимость работ определяются Сметой (Приложение № 1), являющейся неотъемлемой частью Договора."),
+        P("1.4. Работы выполняются из материалов Подрядчика либо Заказчика по согласованию Сторон.",{after:160}),
+
+        H("2. СТОИМОСТЬ РАБОТ И ПОРЯДОК РАСЧЁТОВ"),
+        P("2.1. Общая стоимость работ составляет "+total.toLocaleString("ru-RU")+" (рублей), НДС не облагается."),
+        P("2.2. Оплата производится в следующем порядке:"),
+        P("— аванс 50% ("+half.toLocaleString("ru-RU")+" руб.) — в течение 3 дней с момента подписания Договора, до начала работ;"),
+        P("— окончательный расчёт 50% ("+(total-half).toLocaleString("ru-RU")+" руб.) — в течение 3 дней после подписания Акта."),
+        P("2.3. Стоимость материалов в указанную сумму не включена, если иное не предусмотрено Сметой."),
+        P("2.4. Цена Договора фиксированная, изменяется только при согласовании дополнительных работ.",{after:160}),
+
+        H("3. СРОКИ ВЫПОЛНЕНИЯ РАБОТ"),
+        P("3.1. Срок выполнения работ: "+m.deadline+"."),
+        P("3.2. Подрядчик приступает к работам после внесения аванса и обеспечения доступа на объект."),
+        P("3.3. Подрядчик вправе завершить работы досрочно.",{after:160}),
+
+        H("4. ПРАВА И ОБЯЗАННОСТИ СТОРОН"),
+        J("4.1. Подрядчик обязуется: выполнить работы качественно, в срок, с соблюдением строительных норм и правил (СНиП); использовать материалы надлежащего качества; обеспечить уборку строительного мусора по завершении работ."),
+        J("4.2. Заказчик обязуется: обеспечить беспрепятственный доступ на объект; своевременно производить оплату; принять результат работ в установленном порядке."),
+        P("4.3. Заказчик вправе проверять ход и качество работ, не вмешиваясь в деятельность Подрядчика.",{after:160}),
+
+        H("5. КАЧЕСТВО И ГАРАНТИЯ"),
+        P("5.1. Качество работ должно соответствовать требованиям, обычно предъявляемым к работам данного рода."),
+        P("5.2. Гарантийный срок на выполненные работы — 24 (двадцать четыре) месяца с момента подписания Акта."),
+        P("5.3. В период гарантии Подрядчик безвозмездно устраняет недостатки, возникшие по его вине.",{after:160}),
+
+        H("6. ПОРЯДОК СДАЧИ И ПРИЁМКИ РАБОТ"),
+        P("6.1. По завершении работ Подрядчик уведомляет Заказчика и предоставляет Акт выполненных работ."),
+        P("6.2. Заказчик в течение 3 дней принимает работы либо предоставляет мотивированный отказ."),
+        P("6.3. При отсутствии отказа в указанный срок работы считаются принятыми.",{after:160}),
+
+        H("7. ОТВЕТСТВЕННОСТЬ СТОРОН"),
+        P("7.1. За нарушение сроков оплаты Заказчик уплачивает пеню 0,1% от суммы задолженности за каждый день просрочки."),
+        P("7.2. За нарушение сроков работ Подрядчик уплачивает пеню 0,1% от стоимости невыполненных работ за каждый день просрочки."),
+        P("7.3. Стороны освобождаются от ответственности при обстоятельствах непреодолимой силы (форс-мажор).",{after:160}),
+
+        H("8. РАЗРЕШЕНИЕ СПОРОВ И СРОК ДЕЙСТВИЯ"),
+        P("8.1. Споры решаются путём переговоров, при недостижении согласия — в судебном порядке по месту нахождения Подрядчика."),
+        P("8.2. Договор вступает в силу с момента подписания и действует до полного исполнения обязательств."),
+        P("8.3. Составлен в двух экземплярах равной юридической силы, по одному для каждой из Сторон.",{after:200}),
+
+        H("9. РЕКВИЗИТЫ И ПОДПИСИ СТОРОН"),
+        P("Подрядчик: ООО «BuildHouse»",{bold:true}),
+        P("Адрес: г. Астрахань, ул. Антокольского, д. 6"),
+        P("Тел.: +7 903 349-11-91, e-mail: vitalikpozolotin@yandex.ru",{after:60}),
+        P("_______________ / "+m.manager+" /  (подпись)",{after:100}),
+        P("",{after:60}),
+        P("Заказчик: "+m.client,{bold:true}),
+        P("Тел.: "+m.phone,{after:60}),
+        P("_______________ / "+m.client+" /  (подпись)")
+    ];
+    const doc=new Document({sections:[{children}]});
+    download(doc,"Договор_"+m.client.replace(/\s/g,"_")+".docx");
+}
+
+/* АКТ */
+function buildAct(){
+    if(!docxLib())return;
+    const m=docMeta(); const items=collectItems();
+    const total=items.reduce((s,i)=>s+i.sum,0);
+    const doc=new Document({sections:[{children:[
+        P("АКТ № "+m.num,{bold:true,size:30,center:true,after:80}),
+        P("выполненных работ",{center:true,size:24}),
+        P("от "+m.today,{center:true,after:200}),
+        P("Мы, нижеподписавшиеся, Подрядчик ООО «BuildHouse» в лице "+m.manager+" и Заказчик "+m.client+", составили настоящий акт о том, что Подрядчиком выполнены следующие работы на объекте по адресу "+m.address+":",{after:160}),
+        estimateTable(items),
+        P("",{after:120}),
+        P("Всего выполнено работ на сумму: "+total.toLocaleString("ru-RU")+" руб.",{bold:true,size:26}),
+        P("Работы выполнены в полном объёме, в установленные сроки и с надлежащим качеством. Заказчик претензий не имеет.",{after:200}),
+        P("Гарантийный срок на выполненные работы — 24 месяца.",{after:200}),
+        P("Подрядчик: ООО «BuildHouse»",{bold:true,after:40}),
+        P("_______________ / "+m.manager+" /  (подпись)",{after:80}),
+        P("Заказчик: _______________ / "+m.client+" /  (подпись)")
+    ]}]});
+    download(doc,"Акт_"+m.client.replace(/\s/g,"_")+".docx");
+}
+
+$("estimateBtn").addEventListener("click",()=>{if(validate())buildEstimate();});
+$("contractBtn").addEventListener("click",()=>{if(validate())buildContract();});
+$("actBtn").addEventListener("click",()=>{if(validate())buildAct();});
+
+/* ===== ДОКУМЕНТЫ КЛИЕНТА ===== */
+async function loadClientDocs(){
+    const panel=$("clientDocsPanel"), list=$("clientDocsList");
+    if(!currentClient){panel.style.display="none";return;}
+    panel.style.display="block";
+    list.innerHTML='<p class="hint">Загрузка...</p>';
+    try{
+        const snap=await getDocs(collection(db,"documents"));
+        clientDocs=[];
+        snap.forEach(d=>{const doc={id:d.id,...d.data()};if(doc.uid===currentClient.uid)clientDocs.push(doc);});
+        clientDocs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        renderClientDocs();
+    }catch(e){list.innerHTML='<p class="hint">Ошибка загрузки</p>';}
+}
+
+function renderClientDocs(){
+    const list=$("clientDocsList");
+    if(!clientDocs.length){list.innerHTML='<p class="hint">У клиента пока нет документов</p>';return;}
+    const ic={"Смета":"🧮","Договор":"📑","Акт":"✅"};
+    const bc={"Смета":"cb-est","Договор":"cb-con","Акт":"cb-act"};
+    list.innerHTML="";
+    clientDocs.forEach(d=>{
+        const date=d.createdAt?new Date(d.createdAt).toLocaleDateString("ru-RU"):"";
+        const canEdit=d.type==="Смета" && d.estimate; // редактируем только сметы с данными
+        const div=document.createElement("div");
+        div.className="cdoc";
+        div.innerHTML=`
+            <div class="cd-ic">${ic[d.type]||"📄"}</div>
+            <div class="cd-body">
+                <div class="cd-title">${d.title||d.type||"Документ"}</div>
+                <div class="cd-sub">${date}${d.total?" · "+Number(d.total).toLocaleString("ru-RU")+" ₽":""} ${d.type==="Смета"?`· <span class="cd-paid ${d.paid?'paid-yes':'paid-no'}">${d.paid?'оплачено':'не оплачено'}</span>`:""}</div>
+            </div>
+            <span class="cd-badge ${bc[d.type]||'cb-oth'}">${d.type||"Док"}</span>
+            <div class="cd-btns">
+                ${canEdit?`<button class="cd-edit" data-edit="${d.id}">Изменить</button>`:""}
+                <button class="cd-del" data-del="${d.id}">Удалить</button>
+            </div>`;
+        list.appendChild(div);
+    });
+    // редактировать
+    list.querySelectorAll("[data-edit]").forEach(b=>{
+        b.addEventListener("click",()=>loadDocIntoForm(b.dataset.edit));
+    });
+    // удалить
+    list.querySelectorAll("[data-del]").forEach(b=>{
+        b.addEventListener("click",async()=>{
+            if(!confirm("Удалить документ?"))return;
+            try{await deleteDoc(doc(db,"documents",b.dataset.del));loadClientDocs();}
+            catch(e){alert("Ошибка: "+e.message);}
+        });
+    });
+}
+
+/* загрузить смету обратно в форму для редактирования */
+function loadDocIntoForm(id){
+    const d=clientDocs.find(x=>x.id===id);
+    if(!d)return;
+    editingDocId=id;
+    // данные объекта
+    $("projectAddress").value=d.address||"";
+    if(d.area)$("area").value=d.area;
+    // класс
+    if(d.className){
+        [...$("repairClass").options].forEach(o=>{if(o.text===d.className)$("repairClass").value=o.value;});
+    }
+    // снять все галочки
+    document.querySelectorAll('.work-check input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+    // отметить работы по названиям
+    (d.estimate||[]).forEach(it=>{
+        const w=WORKS.find(x=>x.name===it.name);
+        if(w){const cb=document.querySelector(`input[data-id="${w.id}"]`);if(cb){cb.checked=true;cb.closest(".work-check").classList.add("on");}}
+    });
+    // материалы
+    if(d.materials&&d.materials.length){
+        $("useMaterials").checked=true;
+        const grid=$("materialsGrid");grid.style.opacity="1";grid.style.pointerEvents="auto";
+        document.querySelectorAll('#materialsGrid input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+        d.materials.forEach(it=>{
+            const m=MATERIALS.find(x=>x.name===it.name);
+            if(m){const cb=document.querySelector(`input[data-mat="${m.id}"]`);if(cb){cb.checked=true;cb.closest(".work-check").classList.add("on");}}
+        });
+    }
+    calcTotal();
+    // подсказка и кнопки
+    $("editHint").innerHTML="✏️ Редактируется: <b>"+(d.title||"смета")+"</b>. Кнопка «Сохранить» обновит этот документ.";
+    $("saveBtn").textContent="💾 Обновить документ";
+    $("newDocBtn").style.display="inline-flex";
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* сброс режима редактирования */
+$("newDocBtn").addEventListener("click",()=>{
+    editingDocId=null;
+    $("editHint").textContent="Выберите клиента и состав работ — документы соберутся автоматически.";
+    $("saveBtn").textContent="💾 Сохранить клиенту";
+    $("newDocBtn").style.display="none";
+    $("clearAll").click();
+    $("useMaterials").checked=false;
+    const grid=$("materialsGrid");grid.style.opacity=".5";grid.style.pointerEvents="none";
+    document.querySelectorAll('#materialsGrid input').forEach(cb=>{cb.checked=false;cb.closest(".work-check").classList.remove("on");});
+    calcTotal();
+});
+
+/* СОХРАНИТЬ КЛИЕНТУ — запись в documents (клиент увидит в кабинете) */
+$("saveBtn").addEventListener("click",async()=>{
+    if(!validate())return;
+    const m=docMeta();
+    const items=collectItems();
+    const materials=collectMaterials();
+    const workTotal=items.reduce((s,i)=>s+i.sum,0);
+    const matTotal=materials.reduce((s,i)=>s+i.sum,0);
+    const subtotal=workTotal+matTotal;
+    // скидка 5% постоянным (2+ заказа)
+    const isRegular=currentClient && currentClient.isRegular;
+    const discount=isRegular?Math.round(subtotal*0.05):0;
+    const total=subtotal-discount;
+    try{
+        const payload={
+            uid:currentClient.uid,
+            type:"Смета",
+            url:"",
+            fileName:"Смета на "+m.area+" м², "+m.className,
+            estimate:items,
+            materials:materials,
+            workTotal:workTotal,
+            matTotal:matTotal,
+            subtotal:subtotal,
+            discount:discount,
+            total:total,
+            area:m.area,
+            className:m.className,
+            createdBy:m.manager
+        };
+        if(editingDocId){
+            // обновляем существующую смету (paid и title не трогаем лишний раз)
+            await updateDoc(doc(db,"documents",editingDocId),payload);
+            alert("Документ обновлён.");
+        }else{
+            payload.title="Смета № "+m.num;
+            payload.paid=false;
+            payload.createdAt=Date.now();
+            await addDoc(collection(db,"documents"),payload);
+            await notify(currentClient.uid,"🧮 Для вас готова смета на "+total.toLocaleString("ru-RU")+" ₽. Смотрите в разделе «Документы».");
+            alert("Смета сохранена в кабинет клиента. Клиент увидит её таблицей в разделе «Документы».");
+        }
+        // записываем сумму сметы в бюджет проекта клиента
+        await updateClientProjectBudget(currentClient.uid,total);
+        loadClientDocs();
+    }catch(e){alert("Ошибка: "+e.message);}
+});
+
+/* сумма сметы -> бюджет проекта клиента */
+async function updateClientProjectBudget(uid,total){
+    try{
+        // ищем проект клиента (по uid в документе или по id=uid)
+        let projectId=null;
+        const q=query(collection(db,"projects"),where("uid","==",uid));
+        const snap=await getDocs(q);
+        if(!snap.empty){
+            // берём самый свежий проект
+            let newest=null,nt=-1;
+            snap.forEach(d=>{const p=d.data();const t=p.createdAt||0;if(t>=nt){nt=t;newest={id:d.id};}});
+            projectId=newest?.id;
+        }else{
+            // запасной вариант — документ с id=uid
+            const direct=await getDoc(doc(db,"projects",uid));
+            if(direct.exists())projectId=uid;
+        }
+        if(projectId){
+            await updateDoc(doc(db,"projects",projectId),{budget:total});
+        }
+    }catch(e){console.warn("Не удалось записать бюджет в проект:",e);}
+}
+</script>
+
+</body>
+</html>
