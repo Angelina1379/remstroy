@@ -490,6 +490,10 @@ body{
     gap:30px;
 }
 
+.manager-reply{margin-top:16px;background:#fff7eb;border-radius:14px;padding:14px 16px;border-left:3px solid #ffb547;}
+.manager-reply .mr-head{font-weight:700;font-size:13px;color:#f39a1f;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.manager-reply .mr-ic{font-size:15px;}
+.manager-reply .mr-text{font-size:14px;line-height:1.55;color:#555;}
 .review-card{
 
     background:white;
@@ -823,62 +827,6 @@ class="login-btn">
 </div>
 
 
-<!-- AUTH WARNING (показывается если не вошёл) -->
-
-<div class="auth-warning" id="authWarning" style="display:none;">
-
-Отзывы могут оставлять только авторизованные клиенты.
-<a href="login.html">Войти в личный кабинет →</a>
-
-</div>
-
-
-<!-- REVIEW FORM -->
-
-<div class="review-form">
-
-<h2>Оставить отзыв</h2>
-
-<div class="stars" id="starsInput">
-
-<span class="star" data-value="1">★</span>
-<span class="star" data-value="2">★</span>
-<span class="star" data-value="3">★</span>
-<span class="star" data-value="4">★</span>
-<span class="star" data-value="5">★</span>
-
-</div>
-
-<input type="text"
-id="reviewName"
-placeholder="Ваше имя"
-disabled>
-
-<textarea
-id="reviewText"
-placeholder="Напишите ваш отзыв..."
-disabled></textarea>
-
-<div class="file-upload">
-
-<label>Прикрепить фото (необязательно)</label>
-
-<input type="file"
-id="reviewPhoto"
-accept="image/*"
-disabled>
-
-</div>
-
-<button class="submit-review" id="submitReview" disabled>
-
-Войдите, чтобы оставить отзыв
-
-</button>
-
-</div>
-
-
 <!-- FILTERS -->
 
 <div class="reviews-filter">
@@ -976,137 +924,8 @@ import {
 
 /* ===== ЭЛЕМЕНТЫ ===== */
 
-const starsInput = document.getElementById("starsInput");
-const reviewName = document.getElementById("reviewName");
-const reviewText = document.getElementById("reviewText");
-const reviewPhoto = document.getElementById("reviewPhoto");
-const submitReview = document.getElementById("submitReview");
-const authWarning = document.getElementById("authWarning");
 const reviewsGrid = document.getElementById("reviewsGrid");
-
-let selectedRating = 5;
-let currentUser = null;
-let currentUserName = "";
 let allReviews = [];
-
-
-/* ===== ВЫБОР ЗВЁЗД В ФОРМЕ ===== */
-
-function paintStars(value) {
-    starsInput.querySelectorAll(".star").forEach((s) => {
-        s.classList.toggle("active", Number(s.dataset.value) <= value);
-    });
-}
-
-paintStars(selectedRating);
-
-starsInput.querySelectorAll(".star").forEach((star) => {
-    star.addEventListener("click", () => {
-        if (!currentUser) return;
-        selectedRating = Number(star.dataset.value);
-        paintStars(selectedRating);
-    });
-});
-
-
-/* ===== ПРОВЕРКА АВТОРИЗАЦИИ ===== */
-
-onAuthStateChanged(auth, async (user) => {
-
-    if (user) {
-        currentUser = user;
-
-        // берём имя из коллекции users
-        try {
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if (snap.exists()) {
-                currentUserName = snap.data().name || "Клиент";
-            } else {
-                currentUserName = "Клиент";
-            }
-        } catch (e) {
-            currentUserName = "Клиент";
-        }
-
-        // включаем форму
-        reviewName.disabled = false;
-        reviewText.disabled = false;
-        reviewPhoto.disabled = false;
-        submitReview.disabled = false;
-        submitReview.innerText = "Опубликовать отзыв";
-        reviewName.value = currentUserName;
-        authWarning.style.display = "none";
-
-    } else {
-        currentUser = null;
-        reviewName.disabled = true;
-        reviewText.disabled = true;
-        reviewPhoto.disabled = true;
-        submitReview.disabled = true;
-        submitReview.innerText = "Войдите, чтобы оставить отзыв";
-        authWarning.style.display = "block";
-    }
-});
-
-
-/* ===== ОТПРАВКА ОТЗЫВА ===== */
-
-submitReview.addEventListener("click", async () => {
-
-    if (!currentUser) return;
-
-    const name = reviewName.value.trim() || currentUserName;
-    const text = reviewText.value.trim();
-
-    if (!text) {
-        alert("Напишите текст отзыва");
-        return;
-    }
-
-    submitReview.disabled = true;
-    submitReview.innerText = "Публикуем...";
-
-    try {
-
-        let photoURL = "";
-
-        // загрузка фото в Storage, если выбрано
-        if (reviewPhoto.files.length > 0) {
-            const file = reviewPhoto.files[0];
-            const storageRef = ref(
-                storage,
-                "reviews/" + currentUser.uid + "_" + Date.now() + "_" + file.name
-            );
-            await uploadBytes(storageRef, file);
-            photoURL = await getDownloadURL(storageRef);
-        }
-
-        await addDoc(collection(db, "reviews"), {
-            uid: currentUser.uid,
-            name: name,
-            text: text,
-            rating: selectedRating,
-            photoURL: photoURL,
-            createdAt: Date.now()
-        });
-
-        alert("Спасибо! Ваш отзыв опубликован.");
-
-        reviewText.value = "";
-        reviewPhoto.value = "";
-        selectedRating = 5;
-        paintStars(selectedRating);
-
-        loadReviews();
-
-    } catch (error) {
-        console.error("Ошибка отправки отзыва:", error);
-        alert("Ошибка: " + error.message);
-    }
-
-    submitReview.disabled = false;
-    submitReview.innerText = "Опубликовать отзыв";
-});
 
 
 /* ===== ЗАГРУЗКА И ОТРИСОВКА ОТЗЫВОВ ===== */
@@ -1135,6 +954,13 @@ function renderReviews(list) {
             ? `<div class="review-image" style="background-image:url('${r.photoURL}')"></div>`
             : "";
 
+        const replyBlock = r.reply
+            ? `<div class="manager-reply">
+                    <div class="mr-head"><span class="mr-ic">🛠️</span> Ответ BuildHouse</div>
+                    <div class="mr-text">${r.reply}</div>
+               </div>`
+            : "";
+
         const card = document.createElement("div");
         card.className = "review-card";
         card.innerHTML = `
@@ -1148,6 +974,7 @@ function renderReviews(list) {
                     </div>
                 </div>
                 <div class="review-text">${r.text || ""}</div>
+                ${replyBlock}
             </div>
         `;
         reviewsGrid.appendChild(card);
