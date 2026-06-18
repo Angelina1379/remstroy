@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Контакты | BuildHouse</title>
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:#f5f6fa;
+
+    color:#222;
+}
+
+.container{
+
+    width:90%;
+
+    max-width:1350px;
+
+    margin:auto;
+}
+
+
+
+/* HEADER */
+
+.header{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    background:rgba(255,255,255,0.95);
+
+    backdrop-filter:blur(12px);
+
+    border-bottom:1px solid #eee;
+
+    z-index:1000;
+}
+
+.header-content{
+
+    height:90px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+.logo{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+}
+
+.nav{
+
+    display:flex;
+
+    gap:35px;
+}
+
+.nav a{
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:500;
+
+    transition:0.3s;
+}
+
+.nav a:hover{
+
+    color:#ff8c42;
+}
+
+.login-btn{
+
+    background:#ffb547;
+
+    padding:14px 24px;
+
+    border-radius:16px;
+
+    text-decoration:none;
+
+    color:#222;
+
+    font-weight:600;
+}
+
+.burger{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+    color:#222;
+}
+
+
+
+/* HERO */
+
+.hero{
+
+    padding-top:170px;
+
+    padding-bottom:80px;
+}
+
+.hero-box{
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url('https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1400');
+
+    background-size:cover;
+
+    background-position:center;
+
+    border-radius:42px;
+
+    padding:120px 70px;
+
+    color:white;
+}
+
+.hero-subtitle{
+
+    color:#ffb547;
+
+    margin-bottom:18px;
+
+    font-weight:600;
+}
+
+.hero-box h1{
+
+    font-size:72px;
+
+    line-height:1.05;
+
+    margin-bottom:28px;
+}
+
+.hero-text{
+
+    font-size:19px;
+
+    line-height:1.8;
+
+    max-width:700px;
+}
+
+
+
+/* CONTACTS */
+
+.contacts{
+
+    padding-bottom:100px;
+}
+
+.contact-info{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:25px;
+}
+
+.info-card{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:36px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    transition:0.3s;
+
+    border:2px solid transparent;
+}
+
+.info-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#ffb547;
+
+    box-shadow:0 16px 36px rgba(255,181,71,0.16);
+}
+
+.info-icon{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:18px;
+
+    background:#fff3df;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:28px;
+
+    margin-bottom:10px;
+}
+
+.info-card h3{
+
+    font-size:24px;
+
+    margin-bottom:6px;
+}
+
+.info-card p,
+.info-card a{
+
+    color:#666;
+
+    line-height:1.8;
+
+    text-decoration:none;
+
+    font-size:16px;
+}
+
+.info-card a:hover{
+
+    color:#ff8c42;
+}
+
+.info-card .big{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#222;
+}
+
+
+
+/* MAP */
+
+.map-section{
+
+    margin-bottom:110px;
+}
+
+.section-title{
+
+    font-size:50px;
+
+    margin-bottom:40px;
+}
+
+.map-box{
+
+    overflow:hidden;
+
+    border-radius:36px;
+
+    height:480px;
+}
+
+.map-box iframe{
+
+    width:100%;
+    height:100%;
+
+    border:none;
+}
+
+
+
+/* SOCIALS */
+
+.socials{
+
+    margin-bottom:110px;
+}
+
+.social-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+}
+
+.social-card{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:35px;
+
+    transition:0.3s;
+
+    border:2px solid transparent;
+}
+
+.social-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#ffb547;
+}
+
+.social-card h3{
+
+    font-size:26px;
+
+    margin-bottom:14px;
+}
+
+.social-card p{
+
+    color:#666;
+
+    line-height:1.8;
+
+    margin-bottom:20px;
+}
+
+.social-btn{
+
+    display:inline-block;
+
+    text-decoration:none;
+
+    background:#ffb547;
+
+    color:#222;
+
+    padding:13px 22px;
+
+    border-radius:16px;
+
+    font-weight:700;
+
+    transition:0.25s;
+}
+
+.social-btn:hover{
+
+    background:#ffa530;
+}
+
+
+
+/* FAQ */
+
+.faq{
+
+    margin-bottom:110px;
+}
+
+.faq-grid{
+
+    display:grid;
+
+    gap:18px;
+}
+
+.faq-card{
+
+    background:white;
+
+    border-radius:24px;
+
+    padding:8px 30px;
+
+    transition:0.3s;
+}
+
+.faq-card summary{
+
+    list-style:none;
+
+    cursor:pointer;
+
+    padding:22px 0;
+
+    font-size:21px;
+
+    font-weight:700;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+}
+
+.faq-card summary::-webkit-details-marker{
+
+    display:none;
+}
+
+.faq-card summary::after{
+
+    content:"+";
+
+    font-size:28px;
+
+    color:#ff8c42;
+
+    transition:0.3s;
+}
+
+.faq-card[open] summary::after{
+
+    transform:rotate(45deg);
+}
+
+.faq-card p{
+
+    color:#666;
+
+    line-height:1.8;
+
+    padding-bottom:24px;
+}
+
+
+
+/* FOOTER */
+
+.footer{
+
+    background:#111;
+
+    color:white;
+
+    padding:60px 0;
+}
+
+.footer-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:50px;
+}
+
+
+
+/* ADAPTIVE */
+
+@media(max-width:992px){
+
+    .hero-box h1{
+
+        font-size:52px;
+    }
+
+    .burger{
+
+        display:block;
+    }
+
+    .nav{
+
+        position:absolute;
+
+        top:90px;
+
+        left:0;
+
+        width:100%;
+
+        background:white;
+
+        flex-direction:column;
+
+        gap:0;
+
+        max-height:0;
+
+        overflow:hidden;
+
+        transition:0.3s;
+
+        border-bottom:1px solid #eee;
+    }
+
+    .nav.active{
+
+        max-height:500px;
+    }
+
+    .nav a{
+
+        padding:18px 30px;
+
+        border-bottom:1px solid #f0f0f0;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero-box{
+
+        padding:70px 40px;
+    }
+
+    .hero-box h1{
+
+        font-size:42px;
+    }
+
+    .section-title{
+
+        font-size:38px;
+    }
+
+    .contact-info{
+
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header class="header">
+
+<div class="container header-content">
+
+<div class="logo">
+    <a href="index.html">BuildHouse</a>
+</div>
+
+<button class="burger" id="burger">
+    ☰
+</button>
+
+<nav class="nav" id="nav">
+
+<a href="services.html">Услуги</a>
+<a href="portfolio.html">Портфолио</a>
+<a href="prices.html">Цены</a>
+<a href="about.html">О нас</a>
+<a href="reviews.html">Отзывы</a>
+<a href="contacts.html">Контакты</a>
+
+</nav>
+
+<a href="login.html"
+class="login-btn">
+
+Личный кабинет
+
+</a>
+
+</div>
+
+</header>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="container">
+
+<div class="hero-box">
+
+<p class="hero-subtitle">
+Свяжитесь с нами
+</p>
+
+<h1>
+
+Контакты
+BuildHouse
+
+</h1>
+
+<p class="hero-text">
+
+Ответим на любые вопросы,
+поможем подобрать ремонт
+и бесплатно рассчитаем
+стоимость проекта.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- CONTACTS -->
+
+<section class="contacts">
+
+<div class="container">
+
+<div class="contact-info">
+
+<div class="info-card">
+
+<div class="info-icon">📞</div>
+
+<h3>Телефон</h3>
+
+<a class="big" href="tel:+79033491191">
++7 903 349-11-91
+</a>
+
+<p>Звоните в рабочее время</p>
+
+</div>
+
+
+<div class="info-card">
+
+<div class="info-icon">✉️</div>
+
+<h3>Email</h3>
+
+<a class="big" href="mailto:vitalikpozolotin@yandex.ru">
+vitalikpozolotin@yandex.ru
+</a>
+
+<p>Ответим в течение дня</p>
+
+</div>
+
+
+<div class="info-card">
+
+<div class="info-icon">📍</div>
+
+<h3>Адрес офиса</h3>
+
+<p class="big" style="font-weight:700;">
+г. Астрахань
+</p>
+
+<p>ул. Антокольского, д. 6</p>
+
+</div>
+
+
+<div class="info-card">
+
+<div class="info-icon">🕒</div>
+
+<h3>График работы</h3>
+
+<p>Пн – Пт: 08:00 – 20:00</p>
+<p>Сб: 09:00 – 16:00</p>
+<p>Вс: выходной</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- MAP -->
+
+<section class="map-section">
+
+<div class="container">
+
+<h2 class="section-title">
+Мы на карте
+</h2>
+
+<div class="map-box">
+
+<iframe
+src="https://maps.google.com/maps?q=%D0%90%D1%81%D1%82%D1%80%D0%B0%D1%85%D0%B0%D0%BD%D1%8C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%90%D0%BD%D1%82%D0%BE%D0%BA%D0%BE%D0%BB%D1%8C%D1%81%D0%BA%D0%BE%D0%B3%D0%BE%206&t=&z=16&ie=UTF8&iwloc=&output=embed">
+</iframe>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- SOCIALS -->
+
+<section class="socials">
+
+<div class="container">
+
+<h2 class="section-title">
+Мы в соцсетях
+</h2>
+
+<div class="social-grid">
+
+<div class="social-card">
+
+<h3>WhatsApp</h3>
+
+<p>
+Напишите нам в WhatsApp —
+ответим быстро.
+</p>
+
+<a class="social-btn"
+href="https://wa.me/79033491191"
+target="_blank">
+Написать
+</a>
+
+</div>
+
+
+<div class="social-card">
+
+<h3>Telegram</h3>
+
+<p>
+Свяжитесь с нами
+в Telegram.
+</p>
+
+<a class="social-btn"
+href="https://t.me/+79033491191"
+target="_blank">
+Открыть
+</a>
+
+</div>
+
+
+<div class="social-card">
+
+<h3>Позвонить</h3>
+
+<p>
+Предпочитаете звонок?
+Мы на связи.
+</p>
+
+<a class="social-btn"
+href="tel:+79033491191">
+Позвонить
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- FAQ -->
+
+<section class="faq">
+
+<div class="container">
+
+<h2 class="section-title">
+Частые вопросы
+</h2>
+
+<div class="faq-grid">
+
+<details class="faq-card">
+<summary>Сколько стоит ремонт?</summary>
+<p>
+Стоимость зависит от площади,
+сложности работ и выбранных
+материалов. Рассчитаем
+бесплатно по вашему запросу.
+</p>
+</details>
+
+<details class="faq-card">
+<summary>Сколько длится ремонт?</summary>
+<p>
+В среднем ремонт квартиры
+занимает от 1 до 4 месяцев
+в зависимости от проекта.
+</p>
+</details>
+
+<details class="faq-card">
+<summary>Можно ли следить за ремонтом онлайн?</summary>
+<p>
+Да, у каждого клиента есть
+личный кабинет с фотоотчетами,
+документами и статусами работ.
+</p>
+</details>
+
+<details class="faq-card">
+<summary>Есть ли гарантия?</summary>
+<p>
+Да, мы предоставляем официальную
+гарантию на все выполненные работы.
+</p>
+</details>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<footer class="footer">
+
+<div class="container footer-content">
+
+<div>
+
+<h3>
+BuildHouse
+</h3>
+
+<p>
+Современный ремонт
+квартир под ключ.
+</p>
+
+</div>
+
+
+
+<div>
+
+<h4>
+Контакты
+</h4>
+
+<p>
++7 903 349-11-91
+</p>
+
+<p>
+vitalikpozolotin@yandex.ru
+</p>
+
+</div>
+
+</div>
+
+</footer>
+
+
+
+<script>
+
+/* ===== БУРГЕР ===== */
+
+const burger = document.getElementById("burger");
+const nav = document.getElementById("nav");
+
+burger.addEventListener("click", () => {
+    nav.classList.toggle("active");
+    burger.innerHTML = nav.classList.contains("active") ? "✕" : "☰";
+});
+
+</script>
+
+</body>
+</html>
