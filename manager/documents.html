@@ -361,18 +361,47 @@ function renderClients(){
         const div=document.createElement("div");
         div.className="client-item"+(currentClient&&currentClient.uid===c.uid?" active":"");
         div.innerHTML=`<h3>${c.name||"Клиент"}</h3><p>${c.phone||"телефон не указан"}</p>`;
-        div.addEventListener("click",()=>{
+        div.addEventListener("click",async()=>{
             currentClient=c;
             $("clientName").value=c.name||"";
             $("clientPhone").value=c.phone||"";
             editingDocId=null;
+            // считаем заказы клиента — постоянный, если 2+
+            try{
+                const ps=await getDocs(collection(db,"projects"));
+                let cnt=0;
+                ps.forEach(d=>{const p=d.data();const ow=p.uid||p.userId||p.clientUid;if(ow===c.uid)cnt++;});
+                currentClient.ordersCount=cnt;
+                currentClient.isRegular=cnt>=2;
+            }catch(e){currentClient.isRegular=false;}
             renderClients();
             loadClientDocs();
+            updateRegularHint();
         });
         wrap.appendChild(div);
     });
 }
 $("searchInput").addEventListener("input",renderClients);
+
+/* подсказка: постоянный клиент — будет скидка 5% */
+function updateRegularHint(){
+    let hint=document.getElementById("regularHint");
+    if(!hint){
+        hint=document.createElement("div");
+        hint.id="regularHint";
+        hint.style.cssText="margin:10px 0;padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;display:none;";
+        const cn=$("clientName");
+        if(cn&&cn.parentNode)cn.parentNode.insertBefore(hint,cn);
+    }
+    if(currentClient&&currentClient.isRegular){
+        hint.style.display="block";
+        hint.style.background="#fff4df";
+        hint.style.color="#a86500";
+        hint.textContent="★ Постоянный клиент ("+(currentClient.ordersCount||2)+" заказа). В смете применится скидка 5%.";
+    }else{
+        hint.style.display="none";
+    }
+}
 
 /* ЧЕК-ЛИСТ РАБОТ */
 function renderWorks(){
@@ -694,12 +723,20 @@ function buildEstimate(){
         children.push(P("Стоимость материалов: "+matTotal.toLocaleString("ru-RU")+" руб.",{bold:true,after:160}));
     }
 
-    children.push(P("ИТОГО К ОПЛАТЕ: "+total.toLocaleString("ru-RU")+" руб.",{bold:true,size:28,after:200}));
+    // скидка 5% постоянным клиентам (2+ заказа)
+    const isRegular = currentClient && currentClient.isRegular;
+    if(isRegular){
+        const discount=Math.round(total*0.05);
+        const final=total-discount;
+        children.push(P("Стоимость работ и материалов: "+total.toLocaleString("ru-RU")+" руб.",{after:40}));
+        children.push(P("Скидка постоянного клиента 5%: −"+discount.toLocaleString("ru-RU")+" руб.",{bold:true,after:40}));
+        children.push(P("ИТОГО К ОПЛАТЕ: "+final.toLocaleString("ru-RU")+" руб.",{bold:true,size:28,after:200}));
+    }else{
+        children.push(P("ИТОГО К ОПЛАТЕ: "+total.toLocaleString("ru-RU")+" руб.",{bold:true,size:28,after:200}));
+    }
     children.push(P("Срок выполнения работ: "+m.deadline,{after:160}));
     children.push(P("Исполнитель: ООО «BuildHouse»",{bold:true,after:20}));
-    children.push(P("Смету составил:",{after:20}));
-    signatureBlock(m.manager).forEach(p=>children.push(p));
-    children.push(P("",{after:80}));
+    children.push(P("Смету составил: "+m.manager,{after:120}));
     children.push(P("Заказчик: _______________ / "+m.client+" /  (подпись)"));
 
     const doc=new Document({sections:[{children}]});
@@ -770,8 +807,8 @@ function buildContract(){
         P("Подрядчик: ООО «BuildHouse»",{bold:true}),
         P("Адрес: г. Астрахань, ул. Антокольского, д. 6"),
         P("Тел.: +7 903 349-11-91, e-mail: vitalikpozolotin@yandex.ru",{after:60}),
-        ...signatureBlock(m.manager),
-        P("",{after:100}),
+        P("_______________ / "+m.manager+" /  (подпись)",{after:100}),
+        P("",{after:60}),
         P("Заказчик: "+m.client,{bold:true}),
         P("Тел.: "+m.phone,{after:60}),
         P("_______________ / "+m.client+" /  (подпись)")
@@ -796,8 +833,7 @@ function buildAct(){
         P("Работы выполнены в полном объёме, в установленные сроки и с надлежащим качеством. Заказчик претензий не имеет.",{after:200}),
         P("Гарантийный срок на выполненные работы — 24 месяца.",{after:200}),
         P("Подрядчик: ООО «BuildHouse»",{bold:true,after:40}),
-        ...signatureBlock(m.manager),
-        P("",{after:80}),
+        P("_______________ / "+m.manager+" /  (подпись)",{after:80}),
         P("Заказчик: _______________ / "+m.client+" /  (подпись)")
     ]}]});
     download(doc,"Акт_"+m.client.replace(/\s/g,"_")+".docx");
@@ -918,7 +954,11 @@ $("saveBtn").addEventListener("click",async()=>{
     const materials=collectMaterials();
     const workTotal=items.reduce((s,i)=>s+i.sum,0);
     const matTotal=materials.reduce((s,i)=>s+i.sum,0);
-    const total=workTotal+matTotal;
+    const subtotal=workTotal+matTotal;
+    // скидка 5% постоянным (2+ заказа)
+    const isRegular=currentClient && currentClient.isRegular;
+    const discount=isRegular?Math.round(subtotal*0.05):0;
+    const total=subtotal-discount;
     try{
         const payload={
             uid:currentClient.uid,
@@ -929,6 +969,8 @@ $("saveBtn").addEventListener("click",async()=>{
             materials:materials,
             workTotal:workTotal,
             matTotal:matTotal,
+            subtotal:subtotal,
+            discount:discount,
             total:total,
             area:m.area,
             className:m.className,
