@@ -208,6 +208,7 @@ const $ = (id)=>document.getElementById(id);
 let calendar=null;
 let selectedDate=null;
 let currentUser=null;
+let ordersById={};
 
 /* БУРГЕР */
 const sidebar=$("sidebar"), overlay=$("overlay");
@@ -275,6 +276,19 @@ function initCalendar(){
 /* загрузка событий — ТОЛЬКО СВОИ */
 async function loadEvents(){
     try{
+        // сначала грузим заказы клиента — чтобы знать верный адрес каждого
+        ordersById={};
+        try{
+            const psnap=await getDocs(collection(db,"projects"));
+            psnap.forEach(d=>{
+                const p=d.data();
+                const ow=p.uid||p.userId||p.clientUid;
+                if(ow===currentUser.uid){
+                    ordersById[d.id]={address:p.address||"", service:p.service||p.title||""};
+                }
+            });
+        }catch(e){}
+
         const snap=await getDocs(collection(db,"calendarEvents"));
         let mine=0;
         snap.forEach(docSnap=>{
@@ -284,6 +298,9 @@ async function loadEvents(){
             const start=data.date || data.dateStart || null;
             if(!start)return;
             const color=data.color||getColor(data.workType);
+            // адрес: сначала из заказа по orderId, иначе из самого события
+            const ord=data.orderId&&ordersById[data.orderId]?ordersById[data.orderId]:null;
+            const addr=(ord&&ord.address)?ord.address:(data.address||"");
             calendar.addEvent({
                 id:docSnap.id,
                 title:data.workType||"Работа",
@@ -291,7 +308,7 @@ async function loadEvents(){
                 backgroundColor:color,
                 borderColor:color,
                 extendedProps:{
-                    address:data.address||"",
+                    address:addr,
                     workType:data.workType||"",
                     manager:data.manager||"",
                     comment:data.comment||""
