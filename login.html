@@ -368,244 +368,282 @@
     <div id="toast"></div>
 
     <!-- ===== JAVASCRIPT ===== -->
-    <script>
-        // ============================================================
-        // 1. ПЕРЕКЛЮЧЕНИЕ ФОРМ
-        // ============================================================
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const forgotForm = document.getElementById('forgotForm');
+  <script type="module">
+       ```javascript
+import { auth } from "./firebase.js";
 
-        const goRegister = document.getElementById('goRegister');
-        const goForgot = document.getElementById('goForgot');
-        const goLoginLinks = document.querySelectorAll('.goLogin');
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        function showForm(formToShow) {
-            [loginForm, registerForm, forgotForm].forEach(f => f.classList.remove('active'));
-            formToShow.classList.add('active');
+
+// ============================================================
+// ПЕРЕКЛЮЧЕНИЕ ФОРМ
+// ============================================================
+
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+const forgotForm = document.getElementById("forgotForm");
+
+function showForm(form) {
+
+    loginForm.classList.remove("active");
+    registerForm.classList.remove("active");
+    forgotForm.classList.remove("active");
+
+    form.classList.add("active");
+
+}
+
+document.getElementById("goRegister").onclick = e => {
+    e.preventDefault();
+    showForm(registerForm);
+};
+
+document.getElementById("goForgot").onclick = e => {
+    e.preventDefault();
+    showForm(forgotForm);
+};
+
+document.querySelectorAll(".goLogin").forEach(link => {
+
+    link.onclick = e => {
+
+        e.preventDefault();
+        showForm(loginForm);
+
+    };
+
+});
+
+
+// ============================================================
+// TOAST
+// ============================================================
+
+const toast = document.getElementById("toast");
+
+function showToast(message, type) {
+
+    toast.textContent = message;
+    toast.className = "toast-" + type;
+    toast.style.display = "block";
+
+    setTimeout(() => {
+
+        toast.style.display = "none";
+        toast.className = "";
+
+    }, 3500);
+
+}
+
+
+// ============================================================
+// РЕГИСТРАЦИЯ
+// ============================================================
+
+document.getElementById("registerBtn").addEventListener("click", async () => {
+
+    const email = document.getElementById("regEmail").value.trim();
+    const password = document.getElementById("regPassword").value.trim();
+    const agree = document.getElementById("agreePersonal").checked;
+
+    if (!agree) {
+
+        showToast("Необходимо согласиться с обработкой персональных данных", "error");
+        return;
+
+    }
+
+    if (!email || !password) {
+
+        showToast("Заполните Email и пароль", "error");
+        return;
+
+    }
+
+    try {
+
+        await createUserWithEmailAndPassword(auth, email, password);
+
+        showToast("Регистрация успешно завершена!", "success");
+
+        showForm(loginForm);
+
+    }
+
+    catch (e) {
+
+        switch (e.code) {
+
+            case "auth/email-already-in-use":
+                showToast("Такой Email уже зарегистрирован", "error");
+                break;
+
+            case "auth/weak-password":
+                showToast("Пароль должен содержать минимум 6 символов", "error");
+                break;
+
+            default:
+                showToast("Ошибка регистрации", "error");
+
         }
 
-        if (goRegister) {
-            goRegister.addEventListener('click', function(e) {
-                e.preventDefault();
-                showForm(registerForm);
-            });
-        }
+    }
 
-        if (goForgot) {
-            goForgot.addEventListener('click', function(e) {
-                e.preventDefault();
-                showForm(forgotForm);
-            });
-        }
+});
 
-        goLoginLinks.forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                showForm(loginForm);
-            });
-        });
 
-        // ============================================================
-        // 2. TOAST (УВЕДОМЛЕНИЯ)
-        // ============================================================
-        const toast = document.getElementById('toast');
-        let toastTimeout = null;
+// ============================================================
+// ВХОД
+// ============================================================
 
-        function showToast(message, type) {
-            if (toastTimeout) {
-                clearTimeout(toastTimeout);
-                toastTimeout = null;
-            }
-            toast.textContent = message;
-            toast.className = 'toast-' + type;
-            toast.style.display = 'block';
-            toastTimeout = setTimeout(function() {
-                toast.style.display = 'none';
-                toast.className = '';
-                toastTimeout = null;
-            }, 3500);
-        }
+document.getElementById("loginBtn").addEventListener("click", async () => {
 
-        // ============================================================
-        // 3. РЕГИСТРАЦИЯ С ПРОВЕРКОЙ ГАЛОЧКИ
-        // ============================================================
-        const registerBtn = document.getElementById('registerBtn');
-        const agreeCheckbox = document.getElementById('agreePersonal');
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-        if (registerBtn) {
-            registerBtn.addEventListener('click', function() {
-                const name = document.getElementById('regName').value.trim();
-                const email = document.getElementById('regEmail').value.trim();
-                const phone = document.getElementById('regPhone').value.trim();
-                const password = document.getElementById('regPassword').value.trim();
+    if (!email || !password) {
 
-                if (!agreeCheckbox.checked) {
-                    showToast('Пожалуйста, дайте согласие на обработку персональных данных', 'error');
-                    return;
-                }
+        showToast("Введите Email и пароль", "error");
+        return;
 
-                if (!name || !email || !phone || !password) {
-                    showToast('Заполните все поля', 'error');
-                    return;
-                }
+    }
 
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                if (users.some(u => u.email === email)) {
-                    showToast('Пользователь с таким email уже существует', 'error');
-                    return;
-                }
+    try {
 
-                const newUser = {
-                    id: Date.now(),
-                    name: name,
-                    email: email,
-                    phone: phone,
-                    password: password
-                };
-                users.push(newUser);
-                localStorage.setItem('users', JSON.stringify(users));
+        await signInWithEmailAndPassword(auth, email, password);
 
-                showToast('Регистрация успешна! Теперь войдите.', 'success');
-                showForm(loginForm);
+        showToast("Вход выполнен!", "success");
 
-                document.getElementById('regName').value = '';
-                document.getElementById('regEmail').value = '';
-                document.getElementById('regPhone').value = '';
-                document.getElementById('regPassword').value = '';
-                agreeCheckbox.checked = false;
-            });
-        }
+        setTimeout(() => {
 
-        // ============================================================
-        // 4. ВХОД
-        // ============================================================
-        const loginBtn = document.getElementById('loginBtn');
+            window.location.href = "index.html";
 
-        if (loginBtn) {
-            loginBtn.addEventListener('click', function() {
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value.trim();
+        }, 1000);
 
-                if (!email || !password) {
-                    showToast('Введите email и пароль', 'error');
-                    return;
-                }
+    }
 
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                const user = users.find(u => u.email === email && u.password === password);
-                if (!user) {
-                    showToast('Неверный email или пароль', 'error');
-                    return;
-                }
+    catch (e) {
 
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                showToast('Вход выполнен!', 'success');
-                setTimeout(function() {
-                    window.location.href = 'index.html';
-                }, 1000);
-            });
-        }
+        showToast("Неверный Email или пароль", "error");
 
-        // ============================================================
-        // 5. ВОССТАНОВЛЕНИЕ ПАРОЛЯ
-        // ============================================================
-        const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+    }
 
-        if (forgotPasswordBtn) {
-            forgotPasswordBtn.addEventListener('click', function() {
-                const email = document.getElementById('forgotEmail').value.trim();
-                if (!email) {
-                    showToast('Введите email', 'error');
-                    return;
-                }
+});
 
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                const user = users.find(u => u.email === email);
-                if (!user) {
-                    showToast('Пользователь с таким email не найден', 'error');
-                    return;
-                }
 
-                showToast('Ссылка для восстановления отправлена на ' + email, 'success');
-                document.getElementById('forgotEmail').value = '';
-                setTimeout(function() {
-                    showForm(loginForm);
-                }, 1500);
-            });
-        }
+// ============================================================
+// ВОССТАНОВЛЕНИЕ ПАРОЛЯ
+// ============================================================
 
-        // ============================================================
-        // 6. КУКИ БАННЕР
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const cookieBanner = document.getElementById('cookieBanner');
-            const acceptBtn = document.getElementById('cookieAccept');
-            const declineBtn = document.getElementById('cookieDecline');
+document.getElementById("forgotPasswordBtn").addEventListener("click", async () => {
 
-            // Проверяем, согласился ли пользователь уже
-            if (document.cookie.split('; ').some(row => row.startsWith('cookie_consent=accepted'))) {
-                cookieBanner.style.display = 'none';
-            } else {
-                cookieBanner.style.display = 'flex';
-            }
+    const email = document.getElementById("forgotEmail").value.trim();
 
-            // Принять куки
-            if (acceptBtn) {
-                acceptBtn.addEventListener('click', function() {
-                    document.cookie = 'cookie_consent=accepted; path=/; max-age=' + (60 * 60 * 24 *
-                    365);
-                    cookieBanner.style.display = 'none';
-                });
-            }
+    if (!email) {
 
-            // Отказаться от куки
-            if (declineBtn) {
-                declineBtn.addEventListener('click', function() {
-                    document.cookie = 'cookie_consent=declined; path=/; max-age=' + (60 * 60 * 24 *
-                    365);
-                    cookieBanner.style.display = 'none';
-                    showToast('Вы отказались от использования cookie. Некоторые функции могут быть недоступны.',
-                        'error');
-                });
-            }
-        });
+        showToast("Введите Email", "error");
+        return;
 
-        // ============================================================
-        // 7. ПРОВЕРКА: ЕСЛИ УЖЕ ЗАЛОГИНЕНЫ — ПЕРЕБРОС НА ГЛАВНУЮ
-        // ============================================================
-        (function() {
-            const currentUser = localStorage.getItem('currentUser');
-            if (currentUser) {
-                try {
-                    const user = JSON.parse(currentUser);
-                    if (user && user.email) {
-                        // Если на странице входа — перенаправляем
-                        if (window.location.pathname.includes('login.html') ||
-                            window.location.pathname.endsWith('/') ||
-                            window.location.pathname === '' ||
-                            window.location.pathname === '/') {
-                            window.location.href = 'index.html';
-                        }
-                    }
-                } catch (e) {
-                    localStorage.removeItem('currentUser');
-                }
-            }
-        })();
+    }
 
-        // Обработка Enter
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                if (loginForm.classList.contains('active') && loginBtn) {
-                    loginBtn.click();
-                } else if (registerForm.classList.contains('active') && registerBtn) {
-                    registerBtn.click();
-                } else if (forgotForm.classList.contains('active') && forgotPasswordBtn) {
-                    forgotPasswordBtn.click();
-                }
-            }
-        });
+    try {
+
+        await sendPasswordResetEmail(auth, email);
+
+        showToast("Письмо отправлено на Email", "success");
+
+        showForm(loginForm);
+
+    }
+
+    catch (e) {
+
+        showToast("Пользователь не найден", "error");
+
+    }
+
+});
+
+
+// ============================================================
+// COOKIE
+// ============================================================
+
+const cookieBanner = document.getElementById("cookieBanner");
+
+if (!document.cookie.includes("cookie_consent")) {
+
+    cookieBanner.style.display = "flex";
+
+}
+
+document.getElementById("cookieAccept").onclick = () => {
+
+    document.cookie = "cookie_consent=accepted; path=/; max-age=31536000";
+
+    cookieBanner.style.display = "none";
+
+};
+
+document.getElementById("cookieDecline").onclick = () => {
+
+    document.cookie = "cookie_consent=declined; path=/; max-age=31536000";
+
+    cookieBanner.style.display = "none";
+
+};
+
+
+// ============================================================
+// ПРОВЕРКА АВТОРИЗАЦИИ
+// ============================================================
+
+onAuthStateChanged(auth, user => {
+
+    if (user) {
+
+        window.location.href = "index.html";
+
+    }
+
+});
+
+
+// ============================================================
+// ENTER
+// ============================================================
+
+document.addEventListener("keydown", e => {
+
+    if (e.key !== "Enter") return;
+
+    if (loginForm.classList.contains("active")) {
+
+        document.getElementById("loginBtn").click();
+
+    }
+
+    if (registerForm.classList.contains("active")) {
+
+        document.getElementById("registerBtn").click();
+
+    }
+
+    if (forgotForm.classList.contains("active")) {
+
+        document.getElementById("forgotPasswordBtn").click();
+
+    }
+
+});
+```
+
     </script>
 </body>
 </html>
