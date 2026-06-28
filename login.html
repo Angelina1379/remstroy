@@ -1,58 +1,611 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — BuildHouse</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ===== ОБЩИЕ СТИЛИ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<title>Вход</title>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-<link rel="stylesheet" href="css/login.css">
+        /* ===== ФОРМЫ ===== */
+        .form-block {
+            display: none;
+            width: 100%;
+            max-width: 450px;
+            background: #fff;
+            padding: 40px;
+            border-radius: 32px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+            flex-direction: column;
+            gap: 18px;
+            animation: showForm .3s ease;
+        }
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+        .form-block.active {
+            display: flex;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        @keyframes showForm {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
+        .form-block h2 {
+            font-size: 34px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        /* ===== INPUT ===== */
+        .form-block input {
+            width: 100%;
+            border: none;
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: .2s;
+        }
+
+        .form-block input:focus {
+            outline: none;
+            background: #efefef;
+            box-shadow: 0 0 0 2px #ffb547;
+        }
+
+        /* ===== BUTTON ===== */
+        .form-block button {
+            border: none;
+            background: #ffb547;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-block button:hover {
+            transform: translateY(-2px);
+            background: #ffaa27;
+        }
+
+        .form-block button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        /* ===== LINKS ===== */
+        .form-block p {
+            text-align: center;
+        }
+
+        .form-block a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .form-block a:hover {
+            color: #ff8c42;
+        }
+
+        /* ===== ГАЛОЧКА О ПЕРСОНАЛЬНЫХ ДАННЫХ ===== */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 5px 0 5px 0;
+            font-size: 14px;
+            color: #555;
+            text-align: left;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: #ffb547;
+        }
+
+        .checkbox-group input[type="checkbox"]:focus {
+            box-shadow: 0 0 0 2px #ffb547;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        .checkbox-group a {
+            color: #ffb547;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+
+        .checkbox-group a:hover {
+            color: #ff8c42;
+        }
+
+        /* ===== КУКИ БАННЕР ===== */
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #2c3e50;
+            color: #fff;
+            padding: 18px 30px;
+            z-index: 9999;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .cookie-banner p {
+            margin: 0;
+            flex: 1;
+            min-width: 200px;
+            font-size: 14px;
+        }
+
+        .cookie-banner a {
+            color: #ffb547;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .cookie-banner a:hover {
+            color: #fff;
+        }
+
+        .cookie-banner .cookie-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .cookie-banner button {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all .3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cookie-banner .btn-accept {
+            background: #ffb547;
+            color: #2c3e50;
+        }
+
+        .cookie-banner .btn-accept:hover {
+            background: #ffaa27;
+            transform: translateY(-2px);
+        }
+
+        .cookie-banner .btn-decline {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .cookie-banner .btn-decline:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #fff;
+        }
+
+        /* ===== TOAST ===== */
+        #toast {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            min-width: 260px;
+            max-width: 350px;
+            background: #fff;
+            padding: 18px 22px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+            display: none;
+            z-index: 9999;
+            font-weight: 600;
+        }
+
+        .toast-success {
+            border-left: 5px solid #2ecc71;
+        }
+
+        .toast-error {
+            border-left: 5px solid #e74c3c;
+        }
+
+        /* ===== МОБИЛКА ===== */
+        @media (max-width: 500px) {
+            .form-block {
+                padding: 30px 24px;
+                border-radius: 24px;
+            }
+
+            .form-block h2 {
+                font-size: 28px;
+            }
+
+            .cookie-banner {
+                padding: 15px 18px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cookie-banner .cookie-buttons {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .cookie-banner button {
+                flex: 1;
+                min-width: 120px;
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .checkbox-group {
+                font-size: 13px;
+            }
+
+            .checkbox-group label {
+                font-size: 13px;
+            }
+
+            #toast {
+                top: 15px;
+                right: 15px;
+                left: 15px;
+                min-width: auto;
+                max-width: none;
+                font-size: 14px;
+                padding: 14px 18px;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-  <!-- ВХОД -->
-<div id="loginForm" class="form-block active">
-    <h2>Вход</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Пароль">
-    <button type="button" id="loginBtn">Войти</button>
+    <!-- ===== КУКИ БАННЕР ===== -->
+    <div id="cookieBanner" class="cookie-banner" style="display: none;">
+        <p>
+            🍪 Мы используем cookie-файлы для улучшения работы сайта.
+            Продолжая использовать сайт, вы соглашаетесь с
+            <a href="cookies.html" target="_blank">политикой использования cookie</a>
+            и <a href="privacy.html" target="_blank">политикой конфиденциальности</a>.
+        </p>
+        <div class="cookie-buttons">
+            <button class="btn-accept" id="cookieAccept">Принять</button>
+            <button class="btn-decline" id="cookieDecline">Отказаться</button>
+        </div>
+    </div>
 
-    <p><a href="#" id="goForgot">Забыли пароль?</a></p>
-    <p><a href="#" id="goRegister">Создать аккаунт</a></p>
-  </div>
+    <!-- ===== ВХОД ===== -->
+    <div id="loginForm" class="form-block active">
+        <h2>Вход</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Пароль">
+        <button type="button" id="loginBtn">Войти</button>
 
-  <!-- РЕГИСТРАЦИЯ -->
-  <div id="registerForm" class="form-block">
-    <h2>Регистрация</h2>
-    <input type="text" id="regName" placeholder="Имя">
-    <input type="email" id="regEmail" placeholder="Email">
-    <input type="tel" id="regPhone" placeholder="Номер телефона">
-    <input type="password" id="regPassword" placeholder="Пароль">
-    <button type="button" id="registerBtn">Создать аккаунт</button>
+        <p><a href="#" id="goForgot">Забыли пароль?</a></p>
+        <p><a href="#" id="goRegister">Создать аккаунт</a></p>
+    </div>
 
-    <p><a href="#" class="goLogin">Назад ко входу</a></p>
-  </div>
+    <!-- ===== РЕГИСТРАЦИЯ ===== -->
+    <div id="registerForm" class="form-block">
+        <h2>Регистрация</h2>
+        <input type="text" id="regName" placeholder="Имя">
+        <input type="email" id="regEmail" placeholder="Email">
+        <input type="tel" id="regPhone" placeholder="Номер телефона">
+        <input type="password" id="regPassword" placeholder="Пароль">
 
-  <!-- ВОССТАНОВЛЕНИЕ -->
-  <div id="forgotForm" class="form-block">
-    <h2>Восстановление пароля</h2>
-    <input type="email" id="forgotEmail" placeholder="Email">
-    <button type="button" id="forgotPasswordBtn">Отправить письмо</button>
+        <!-- ГАЛОЧКА О ПЕРСОНАЛЬНЫХ ДАННЫХ -->
+        <div class="checkbox-group">
+            <input type="checkbox" id="agreePersonal">
+            <label for="agreePersonal">
+                Я даю согласие на обработку моих персональных данных в соответствии с
+                <a href="privacy.html" target="_blank">Политикой конфиденциальности</a>
+            </label>
+        </div>
 
-    <p><a href="#" class="goLogin">Назад ко входу</a></p>
-  </div>
+        <button type="button" id="registerBtn">Создать аккаунт</button>
 
-  <!-- TOAST -->
-  <div id="toast"></div>
+        <p><a href="#" class="goLogin">Назад ко входу</a></p>
+    </div>
 
-  <script type="module" src="js/login.js"></script>
+    <!-- ===== ВОССТАНОВЛЕНИЕ ===== -->
+    <div id="forgotForm" class="form-block">
+        <h2>Восстановление пароля</h2>
+        <input type="email" id="forgotEmail" placeholder="Email">
+        <button type="button" id="forgotPasswordBtn">Отправить письмо</button>
+
+        <p><a href="#" class="goLogin">Назад ко входу</a></p>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast"></div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ============================================================
+        // 1. ПЕРЕКЛЮЧЕНИЕ ФОРМ
+        // ============================================================
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const forgotForm = document.getElementById('forgotForm');
+
+        const goRegister = document.getElementById('goRegister');
+        const goForgot = document.getElementById('goForgot');
+        const goLoginLinks = document.querySelectorAll('.goLogin');
+
+        function showForm(formToShow) {
+            [loginForm, registerForm, forgotForm].forEach(f => f.classList.remove('active'));
+            formToShow.classList.add('active');
+        }
+
+        if (goRegister) {
+            goRegister.addEventListener('click', function(e) {
+                e.preventDefault();
+                showForm(registerForm);
+            });
+        }
+
+        if (goForgot) {
+            goForgot.addEventListener('click', function(e) {
+                e.preventDefault();
+                showForm(forgotForm);
+            });
+        }
+
+        goLoginLinks.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                showForm(loginForm);
+            });
+        });
+
+        // ============================================================
+        // 2. TOAST (УВЕДОМЛЕНИЯ)
+        // ============================================================
+        const toast = document.getElementById('toast');
+        let toastTimeout = null;
+
+        function showToast(message, type) {
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+                toastTimeout = null;
+            }
+            toast.textContent = message;
+            toast.className = 'toast-' + type;
+            toast.style.display = 'block';
+            toastTimeout = setTimeout(function() {
+                toast.style.display = 'none';
+                toast.className = '';
+                toastTimeout = null;
+            }, 3500);
+        }
+
+        // ============================================================
+        // 3. РЕГИСТРАЦИЯ С ПРОВЕРКОЙ ГАЛОЧКИ
+        // ============================================================
+        const registerBtn = document.getElementById('registerBtn');
+        const agreeCheckbox = document.getElementById('agreePersonal');
+
+        if (registerBtn) {
+            registerBtn.addEventListener('click', function() {
+                const name = document.getElementById('regName').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const phone = document.getElementById('regPhone').value.trim();
+                const password = document.getElementById('regPassword').value.trim();
+
+                if (!agreeCheckbox.checked) {
+                    showToast('Пожалуйста, дайте согласие на обработку персональных данных', 'error');
+                    return;
+                }
+
+                if (!name || !email || !phone || !password) {
+                    showToast('Заполните все поля', 'error');
+                    return;
+                }
+
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                if (users.some(u => u.email === email)) {
+                    showToast('Пользователь с таким email уже существует', 'error');
+                    return;
+                }
+
+                const newUser = {
+                    id: Date.now(),
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    password: password
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+
+                showToast('Регистрация успешна! Теперь войдите.', 'success');
+                showForm(loginForm);
+
+                document.getElementById('regName').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPhone').value = '';
+                document.getElementById('regPassword').value = '';
+                agreeCheckbox.checked = false;
+            });
+        }
+
+        // ============================================================
+        // 4. ВХОД
+        // ============================================================
+        const loginBtn = document.getElementById('loginBtn');
+
+        if (loginBtn) {
+            loginBtn.addEventListener('click', function() {
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                if (!email || !password) {
+                    showToast('Введите email и пароль', 'error');
+                    return;
+                }
+
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+                if (!user) {
+                    showToast('Неверный email или пароль', 'error');
+                    return;
+                }
+
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                showToast('Вход выполнен!', 'success');
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 1000);
+            });
+        }
+
+        // ============================================================
+        // 5. ВОССТАНОВЛЕНИЕ ПАРОЛЯ
+        // ============================================================
+        const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+
+        if (forgotPasswordBtn) {
+            forgotPasswordBtn.addEventListener('click', function() {
+                const email = document.getElementById('forgotEmail').value.trim();
+                if (!email) {
+                    showToast('Введите email', 'error');
+                    return;
+                }
+
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.email === email);
+                if (!user) {
+                    showToast('Пользователь с таким email не найден', 'error');
+                    return;
+                }
+
+                showToast('Ссылка для восстановления отправлена на ' + email, 'success');
+                document.getElementById('forgotEmail').value = '';
+                setTimeout(function() {
+                    showForm(loginForm);
+                }, 1500);
+            });
+        }
+
+        // ============================================================
+        // 6. КУКИ БАННЕР
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const cookieBanner = document.getElementById('cookieBanner');
+            const acceptBtn = document.getElementById('cookieAccept');
+            const declineBtn = document.getElementById('cookieDecline');
+
+            // Проверяем, согласился ли пользователь уже
+            if (document.cookie.split('; ').some(row => row.startsWith('cookie_consent=accepted'))) {
+                cookieBanner.style.display = 'none';
+            } else {
+                cookieBanner.style.display = 'flex';
+            }
+
+            // Принять куки
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', function() {
+                    document.cookie = 'cookie_consent=accepted; path=/; max-age=' + (60 * 60 * 24 *
+                    365);
+                    cookieBanner.style.display = 'none';
+                });
+            }
+
+            // Отказаться от куки
+            if (declineBtn) {
+                declineBtn.addEventListener('click', function() {
+                    document.cookie = 'cookie_consent=declined; path=/; max-age=' + (60 * 60 * 24 *
+                    365);
+                    cookieBanner.style.display = 'none';
+                    showToast('Вы отказались от использования cookie. Некоторые функции могут быть недоступны.',
+                        'error');
+                });
+            }
+        });
+
+        // ============================================================
+        // 7. ПРОВЕРКА: ЕСЛИ УЖЕ ЗАЛОГИНЕНЫ — ПЕРЕБРОС НА ГЛАВНУЮ
+        // ============================================================
+        (function() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    if (user && user.email) {
+                        // Если на странице входа — перенаправляем
+                        if (window.location.pathname.includes('login.html') ||
+                            window.location.pathname.endsWith('/') ||
+                            window.location.pathname === '' ||
+                            window.location.pathname === '/') {
+                            window.location.href = 'index.html';
+                        }
+                    }
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                }
+            }
+        })();
+
+        // Обработка Enter
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (loginForm.classList.contains('active') && loginBtn) {
+                    loginBtn.click();
+                } else if (registerForm.classList.contains('active') && registerBtn) {
+                    registerBtn.click();
+                } else if (forgotForm.classList.contains('active') && forgotPasswordBtn) {
+                    forgotPasswordBtn.click();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
-
