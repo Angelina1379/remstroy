@@ -360,7 +360,7 @@ $("deleteBtn").addEventListener("click",async()=>{
         // удаляем аккаунт из Authentication
         await deleteUser(currentUser);
         alert("Аккаунт удалён");
-        window.location.href="../login.html";
+        window.location.href="../index.html";
     }catch(e){
         if(e.code==="auth/requires-recent-login"){
             alert("Для удаления нужно заново войти. Выйдите и зайдите снова, затем повторите.");
@@ -381,7 +381,7 @@ function bindLogout(){
     btn.addEventListener("click",async(e)=>{
       e.preventDefault();
       try{ await signOut(auth); }catch(err){}
-      window.location.href="../login.html";
+      window.location.href="../index.html";
     });
   });
 }
