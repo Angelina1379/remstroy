@@ -866,7 +866,11 @@ function renderClientDocs(){
     list.innerHTML="";
     clientDocs.forEach(d=>{
         const date=d.createdAt?new Date(d.createdAt).toLocaleDateString("ru-RU"):"";
-        const canEdit=d.type==="Смета" && d.estimate; // редактируем только сметы с данными
+        const canEdit =
+        (d.type === "Смета" ||
+         d.type === "Договор" ||
+         d.type === "Акт")
+         && d.estimate; // редактируем только сметы с данными
         const div=document.createElement("div");
         div.className="cdoc";
         div.innerHTML=`
@@ -947,52 +951,88 @@ $("newDocBtn").addEventListener("click",()=>{
 });
 
 /* СОХРАНИТЬ КЛИЕНТУ — запись в documents (клиент увидит в кабинете) */
-$("saveBtn").addEventListener("click",async()=>{
-    if(!validate())return;
-    const m=docMeta();
-    const items=collectItems();
-    const materials=collectMaterials();
-    const workTotal=items.reduce((s,i)=>s+i.sum,0);
-    const matTotal=materials.reduce((s,i)=>s+i.sum,0);
-    const subtotal=workTotal+matTotal;
-    // скидка 5% постоянным (2+ заказа)
-    const isRegular=currentClient && currentClient.isRegular;
-    const discount=isRegular?Math.round(subtotal*0.05):0;
-    const total=subtotal-discount;
-    try{
-        const payload={
-            uid:currentClient.uid,
-            type:"Смета",
-            url:"",
-            fileName:"Смета на "+m.area+" м², "+m.className,
-            estimate:items,
-            materials:materials,
-            workTotal:workTotal,
-            matTotal:matTotal,
-            subtotal:subtotal,
-            discount:discount,
-            total:total,
-            address:m.address,
-            area:m.area,
-            className:m.className,
-            createdBy:m.manager
+$("saveBtn").addEventListener("click", async () => {
+    if (!validate()) return;
+
+    const m = docMeta();
+
+    const items = collectItems();
+    const materials = collectMaterials();
+
+    const workTotal = items.reduce((s, i) => s + i.sum, 0);
+    const matTotal = materials.reduce((s, i) => s + i.sum, 0);
+
+    const subtotal = workTotal + matTotal;
+
+    const isRegular = currentClient && currentClient.isRegular;
+    const discount = isRegular ? Math.round(subtotal * 0.05) : 0;
+
+    const total = subtotal - discount;
+
+    try {
+
+        const commonData = {
+            uid: currentClient.uid,
+            estimate: items,
+            materials: materials,
+
+            workTotal,
+            matTotal,
+            subtotal,
+            discount,
+            total,
+
+            address: m.address,
+            area: m.area,
+            className: m.className,
+
+            createdBy: m.manager,
+            createdAt: Date.now(),
+
+            paid: false
         };
-        if(editingDocId){
-            // обновляем существующую смету (paid и title не трогаем лишний раз)
-            await updateDoc(doc(db,"documents",editingDocId),payload);
-            alert("Документ обновлён.");
-        }else{
-            payload.title="Смета № "+m.num;
-            payload.paid=false;
-            payload.createdAt=Date.now();
-            await addDoc(collection(db,"documents"),payload);
-            await notify(currentClient.uid,"🧮 Для вас готова смета на "+total.toLocaleString("ru-RU")+" ₽. Смотрите в разделе «Документы».");
-            alert("Смета сохранена в кабинет клиента. Клиент увидит её таблицей в разделе «Документы».");
-        }
-        // записываем сумму сметы в бюджет проекта клиента
-        await updateClientProjectBudget(currentClient.uid,total);
+
+        // СМЕТА
+
+        await addDoc(collection(db, "documents"), {
+            ...commonData,
+            type: "Смета",
+            title: "Смета № " + m.num
+        });
+
+        // ДОГОВОР
+
+        await addDoc(collection(db, "documents"), {
+            ...commonData,
+            type: "Договор",
+            title: "Договор № " + m.num
+        });
+
+        // АКТ
+
+        await addDoc(collection(db, "documents"), {
+            ...commonData,
+            type: "Акт",
+            title: "Акт № " + m.num
+        });
+
+        await notify(
+            currentClient.uid,
+            "📄 Для вас подготовлены новые документы."
+        );
+
+        await updateClientProjectBudget(currentClient.uid, total);
+
+        alert("Смета, договор и акт сохранены.");
+
         loadClientDocs();
-    }catch(e){alert("Ошибка: "+e.message);}
+
+    } catch (e) {
+
+        alert(e.message);
+
+    }
+
 });
 
 /* сумма сметы -> бюджет проекта клиента */
