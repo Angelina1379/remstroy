@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Использование cookie-файлов — BuildHouse</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 50px 60px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 16px;
+            margin-bottom: 35px;
+            border-bottom: 2px solid #f1c40f;
+            padding-bottom: 20px;
+        }
+        h2 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin: 30px 0 15px 0;
+            border-left: 4px solid #f1c40f;
+            padding-left: 15px;
+        }
+        h3 {
+            font-size: 18px;
+            color: #34495e;
+            margin: 20px 0 10px 0;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul {
+            margin: 10px 0 20px 30px;
+        }
+        ul li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+        table th {
+            background: #2c3e50;
+            color: #fff;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        table tr:hover {
+            background: #f8f9fa;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: #2c3e50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .back-link:hover {
+            background: #f1c40f;
+            color: #2c3e50;
+        }
+        .highlight {
+            background: #fef9e7;
+            padding: 15px 20px;
+            border-left: 4px solid #f1c40f;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .highlight strong {
+            color: #2c3e50;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        @media (max-width: 768px) {
+            .card {
+                padding: 25px 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            table {
+                font-size: 13px;
+            }
+            table th, table td {
+                padding: 8px 10px;
+            }
+            ul {
+                margin-left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🍪 Использование cookie-файлов</h1>
+            <p class="subtitle">Сайт BuildHouse — ремонт квартир под ключ</p>
+
+            <h2>Что такое cookie?</h2>
+            <p>
+                <strong>Cookie (куки)</strong> — это небольшие текстовые файлы, которые сохраняются на вашем устройстве (компьютере, телефоне, планшете) при посещении сайта. Они содержат информацию о ваших действиях и настройках, что позволяет сайту <strong>запоминать</strong> вас и делать взаимодействие более удобным.
+            </p>
+
+            <div class="highlight">
+                <strong>📌 Аналогия:</strong> Cookie — это как бейджик с вашим именем в магазине. Пока вы ходите по магазину, продавцы знают, кто вы. Когда вы уходите — бейджик выбрасывается. Так и куки помогают сайту "узнавать" вас на время посещения.
+            </div>
+
+            <h2>Зачем мы используем cookie?</h2>
+            <p>На сайте <strong>BuildHouse</strong> cookie-файлы используются для следующих целей:</p>
+            <ul>
+                <li><strong>Авторизация и безопасность</strong> — чтобы вы могли войти в личный кабинет и не вводить логин и пароль при каждом переходе между страницами.</li>
+                <li><strong>Улучшение работы сайта</strong> — мы анализируем, какие страницы посещают пользователи, чтобы сделать сайт быстрее и удобнее.</li>
+                <li><strong>Сохранение настроек</strong> — например, ваш город или выбранные фильтры в каталоге.</li>
+                <li><strong>Техническая стабильность</strong> — чтобы сайт корректно отображался и работал без сбоев.</li>
+            </ul>
+
+            <h2>Какие cookie мы используем?</h2>
+            <p>На нашем сайте применяются следующие типы cookie-файлов:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Тип</th>
+                        <th>Назначение</th>
+                        <th>Срок хранения</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Обязательные</strong></td>
+                        <td>Необходимы для работы сайта. Без них невозможна авторизация и переход между страницами.</td>
+                        <td>До 1 года</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Функциональные</strong></td>
+                        <td>Запоминают ваши настройки (язык, регион, предпочтения).</td>
+                        <td>До 1 года</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Аналитические</strong></td>
+                        <td>Собирают статистику посещений, чтобы мы понимали, как улучшить сайт.</td>
+                        <td>До 2 лет</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Как управлять cookie?</h2>
+            <p>Вы можете контролировать и настраивать использование cookie-файлов в настройках вашего браузера:</p>
+            <ul>
+                <li><strong>Google Chrome</strong> → Настройки → Конфиденциальность и безопасность → Файлы cookie</li>
+                <li><strong>Yandex Browser</strong> → Настройки → Конфиденциальность → Содержимое → Файлы cookie</li>
+                <li><strong>Mozilla Firefox</strong> → Настройки → Приватность и защита → Файлы cookie</li>
+                <li><strong>Microsoft Edge</strong> → Настройки → Конфиденциальность → Файлы cookie</li>
+                <li><strong>Safari</strong> → Настройки → Конфиденциальность → Файлы cookie</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>⚠️ Важно:</strong> Отключение обязательных cookie может сделать некоторые функции сайта недоступными. Например, вы не сможете войти в личный кабинет.
+            </div>
+
+            <h2>Как мы защищаем ваши данные?</h2>
+            <ul>
+                <li>Все данные передаются по защищённому протоколу <strong>HTTPS</strong>.</li>
+                <li>Мы не передаём ваши персональные данные третьим лицам.</li>
+                <li>Cookie используются только для целей, указанных в этой политике.</li>
+                <li>Вы можете в любой момент отозвать согласие, очистив cookie в настройках браузера.</li>
+            </ul>
+
+            <h2>Аналитика</h2>
+            <p>
+                Для сбора статистики мы используем <strong>Яндекс.Метрику</strong>. Это помогает нам понимать, какие страницы наиболее популярны, и улучшать сайт на основе реальных данных. Яндекс.Метрика использует cookie для подсчёта уникальных посетителей и анализа поведения пользователей. 
+            </p>
+            <p>
+                Вы можете <a href="https://yandex.ru/support/metrika/general/opt-out.html" target="_blank" style="color: #f1c40f; text-decoration: underline;">отключить сбор данных Яндекс.Метрикой</a> в настройках браузера.
+            </p>
+
+            <h2>Изменение политики</h2>
+            <p>
+                Мы можем обновлять данную страницу в соответствии с изменениями законодательства или функционала сайта. Рекомендуем периодически проверять эту страницу для получения актуальной информации.
+            </p>
+            <p style="color: #7f8c8d; font-size: 14px; margin-top: 10px;">
+                <strong>Дата публикации:</strong> 28 июня 2026 г.
+            </p>
+
+            <a href="index.html" class="back-link">← На главную</a>
+        </div>
+    </div>
+    <footer>
+        <p>© 2026 BuildHouse — Все права защищены</p>
+    </footer>
+</body>
+</html>
